@@ -55,11 +55,17 @@ function LeftPanel({ farmlands, onSelect }) {
       {/* 농지 목록 */}
       <div className="FarmlandList">
         {filteredFarmlands.map((farm) => (
-          <div key={farm.id} className="FarmlandCard" onClick={() => onSelect(farm)}>
+          <div
+            key={farm.id}
+            className="FarmlandCard"
+            onClick={() => onSelect(farm)}
+          >
             <div className="FarmlandImage" />
             <div className="FarmlandContent">
-              <div className="FarmlandTag">{farm.crop}</div>
-              <div className="FarmlandName">{farm.name}</div>
+              <div className="FarmlandTitle">
+                <div className="FarmlandTag">{farm.crop}</div>
+                <div className="FarmlandName">{farm.name}</div>
+              </div>
               <div className="FarmlandMeta">
                 📍 {farm.address} <br />
                 📐 {farm.area}㎡ / 💰 {farm.price}만원

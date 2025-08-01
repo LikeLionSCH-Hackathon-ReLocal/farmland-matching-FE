@@ -21,6 +21,7 @@ function MainPage() {
         farmlands={farmlands}
         onSelect={setSelectedFarmland}
         onMapLoad={setMap} // 지도 객체 설정
+        selectedFarm={selectedFarmland} // 선택된 농지 정보 전달
       />
       <Header />
       <LeftPanel farmlands={farmlands} onSelect={setSelectedFarmland} />

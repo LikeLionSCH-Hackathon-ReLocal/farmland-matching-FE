@@ -1,43 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { useMarkerManager } from "../Hooks/useMakerManager"; // 경로 조정 필요
 
-const addFarmMarkers = (map, farmlands, onSelect) => { // 마커 이미지 설정
-  const blackMarkerImage = new window.kakao.maps.MarkerImage( // marker-black.png
-    "/marker-black.png",
-    new window.kakao.maps.Size(32, 32)
-  );
-  const blueMarkerImage = new window.kakao.maps.MarkerImage( // marker-blue.png
-    "/marker-blue.png",
-    new window.kakao.maps.Size(50, 50)
-  );
+function MapView({ farmlands, onSelect, onMapLoad, selectedFarm }) {
+  const mapRef = useRef(null);
+  const [isMapReady, setIsMapReady] = useState(false);
 
-  let currentMarker = null; // 현재 선택된 마커
+  const { focusOnFarm } = useMarkerManager(mapRef.current, farmlands, onSelect);
 
-  farmlands.forEach((farm) => { // 각 농지에 대해 마커 생성
-    const marker = new window.kakao.maps.Marker({ // 마커 생성
-      map,
-      position: new window.kakao.maps.LatLng(farm.lat, farm.lng),
-      title: farm.name,
-      image: blackMarkerImage,
-    });
-
-    window.kakao.maps.event.addListener(marker, "click", () => { // 마커 클릭 이벤트
-      if (currentMarker) currentMarker.setImage(blackMarkerImage);
-      marker.setImage(blueMarkerImage);
-      currentMarker = marker;
-
-      map.setLevel(3); // 지도 레벨 조정
-      map.panTo(marker.getPosition()); // 지도 중심 이동
-
-      if (onSelect) onSelect(farm); // 선택된 농지 정보 전달
-    });
-  });
-};
-
-function MapView({ farmlands, onSelect, onMapLoad }) {
-  const mapRef = useRef(null); // 카카오 맵 인스턴스를 저장할 Ref
-  const [isMapReady, setIsMapReady] = useState(false); // 맵 로딩 상태
-
-  // 1 지도 로딩
+  // 1. 지도 로딩
   useEffect(() => {
     const script = document.createElement("script");
     script.src =
@@ -55,7 +25,7 @@ function MapView({ farmlands, onSelect, onMapLoad }) {
         });
 
         mapRef.current = map;
-        setIsMapReady(true); // map 준비 완료
+        setIsMapReady(true);
         if (onMapLoad) onMapLoad(map);
       });
     };
@@ -63,15 +33,14 @@ function MapView({ farmlands, onSelect, onMapLoad }) {
     document.head.appendChild(script);
   }, []);
 
-  // 2️ 마커 렌더링은 map과 farmlands가 모두 준비된 후 실행
+  // 2. 왼쪽 패널에서 선택된 농지에 반응하여 줌인 및 마커 강조
   useEffect(() => {
-    const map = mapRef.current;
-    if (!isMapReady || !map || farmlands.length === 0) return;
+    if (selectedFarm && focusOnFarm) {
+      focusOnFarm(selectedFarm);
+    }
+  }, [selectedFarm, focusOnFarm]);
 
-    addFarmMarkers(map, farmlands, onSelect);
-  }, [isMapReady, farmlands, onSelect]);
-
-  return ( // 3️ 맵 컨테이너 렌더링
+  return (
     <div style={{ width: "100%", height: "100vh", position: "relative" }}>
       <div
         id="map"

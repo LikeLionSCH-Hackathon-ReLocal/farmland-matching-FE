@@ -20,7 +20,7 @@
 
 /* 검색창 */
 .SearchInput {
-  width: 100%;
+  width: 90%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 12px;
@@ -28,27 +28,34 @@
   font-size: 14px;
 }
 
-/* ✅ 필터 버튼 영역 */
 .FilterBar {
   display: flex;
-  gap: 6px;
+  gap: 0;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden;
   margin-bottom: 12px;
+  width: fit-content;
 }
 
 .FilterButton {
-  padding: 6px 12px;
-  background-color: #e0e0e0;
+  flex: 1;
+  padding: 8px 20px;         /* 내부 여백 넉넉히 */
+  white-space: nowrap;      /* 줄바꿈 방지 */
+  background-color: white;
   border: none;
-  border-radius: 12px;
-  font-size: 13px;
+  font-size: 14px;
+  color: #555;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background-color 0.2s, color 0.2s;
 }
 
+
 .FilterButton.active {
-  background-color: #4756ff;
+  background-color: #4a78ff;
   color: white;
 }
+
 
 /*  농지 카드 목록 */
 .FarmlandList {
@@ -89,8 +96,14 @@
   flex-direction: column;
 }
 
+.FarmlandTitle {
+  display: flex;
+  align-items: center;     /* 수직 정렬 맞춤 */
+  gap: 8px;                /* 요소 간 간격 */
+}
+
 .FarmlandTag {
-  font-size: 12px;
+  font-size: 14px;
   background: red;
   color: white;
   padding: 2px 6px;
@@ -100,7 +113,7 @@
 }
 
 .FarmlandName {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: bold;
 }
 
