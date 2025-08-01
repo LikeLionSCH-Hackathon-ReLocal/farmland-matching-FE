@@ -1,0 +1,91 @@
+.security-setting-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  color: #333;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.input {
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 15px;
+  border: 1.8px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  transition: border-color 0.3s;
+}
+
+.input:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #1d4ed8;
+}
+
+.error-text {
+  color: #e02424;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+.password-info {
+  font-size: 14px;
+  color: #777;
+  margin-top: -8px;
+}
+
+.login-record {
+  background-color: #c7c7c7;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.login-record table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #444;
+}
+
+.login-record td {
+  padding: 6px 10px;
+  vertical-align: middle;
+  font-weight: 500;
+  opacity: 0.7;
+}
