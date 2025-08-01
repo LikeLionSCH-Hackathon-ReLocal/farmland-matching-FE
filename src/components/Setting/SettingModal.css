@@ -1,0 +1,65 @@
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 9998;
+}
+
+.SettingsContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1500px;
+  height: 800px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 9999;
+  display: flex;
+  overflow: hidden;
+}
+
+.CloseButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #666;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+
+
+.MainSettingsArea {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.Tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.Tab {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.Tab.active {
+  border-bottom: 2px solid #4756ff;
+  color: #4756ff;
+}
+
+

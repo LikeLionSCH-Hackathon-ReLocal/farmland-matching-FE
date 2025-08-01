@@ -1,0 +1,54 @@
+.Sidebar {
+  padding: 1rem;
+  width: 360px;
+  border-right: 1px solid #2632b6;
+  background-color: #2632b6;
+}
+
+.SidebarSearch {
+  width: 90%;
+  padding: 8px 10px;
+  margin-left: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.SidebarSectionTitle {
+  font-size: 12px;
+  font-weight: bold;
+  color: #bababa;
+  margin-bottom: 0.4rem;
+  margin-top: 1.2rem;
+  padding-left: 4px;
+}
+
+.SidebarSection {
+  color: #fff;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.SidebarItem {
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.SidebarItem:hover {
+  background-color: #4c55b7;
+}
+
+.SidebarItem.active {
+  background-color: #1d2368;
+  font-weight: 600;
+}
+
+.SidebarDivider {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}

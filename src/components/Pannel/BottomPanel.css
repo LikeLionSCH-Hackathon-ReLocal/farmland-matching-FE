@@ -1,0 +1,20 @@
+.BottomContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background-color: #ffffffcc;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #ccc;
+}
+
+button.active {
+  background-color: #4756ff;
+  color: white;
+  font-weight: bold;
+}
+
