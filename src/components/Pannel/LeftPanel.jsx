@@ -20,36 +20,37 @@ function LeftPanel({ farmlands, onSelect }) {
   return (
     <div className="LeftContainer">
       {/* 검색창 */}
-      <input
-        className="SearchInput"
-        placeholder={`${filterKey} 검색`}
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-      />
-
-      {/* 필터 버튼 */}
-      <div className="FilterBar">
-        {filterOptions.map((key) => (
-          <button
-            key={key}
-            className={`FilterButton ${filterKey === key ? "active" : ""}`}
-            onClick={() => {
-              setFilterKey(key);
-              setSearchText(""); // 필터 바꾸면 검색 초기화
-            }}
-          >
-            {key === "address"
-              ? "주소"
-              : key === "crop"
-              ? "작물"
-              : key === "area"
-              ? "면적"
-              : key === "price"
-              ? "가격"
-              : key}
-          </button>
-        ))}
-        <button className="FilterButton">★</button>
+      <div className="LeftHeader">
+        <input
+          className="SearchInput"
+          placeholder={`${filterKey} 검색`}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+        {/* 필터 버튼 */}
+        <div className="FilterBar">
+          {filterOptions.map((key) => (
+            <button
+              key={key}
+              className={`FilterButton ${filterKey === key ? "active" : ""}`}
+              onClick={() => {
+                setFilterKey(key);
+                setSearchText(""); // 필터 바꾸면 검색 초기화
+              }}
+            >
+              {key === "address"
+                ? "주소"
+                : key === "crop"
+                ? "작물"
+                : key === "area"
+                ? "면적"
+                : key === "price"
+                ? "가격"
+                : key}
+            </button>
+          ))}
+          <button className="FilterButton">★</button>
+        </div>{" "}
       </div>
 
       {/* 농지 목록 */}

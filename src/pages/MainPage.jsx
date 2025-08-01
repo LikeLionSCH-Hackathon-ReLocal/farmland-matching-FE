@@ -25,7 +25,10 @@ function MainPage() {
       />
       <Header />
       <LeftPanel farmlands={farmlands} onSelect={setSelectedFarmland} />
-      <RightPanel selected={selectedFarmland} />
+      <RightPanel
+        selected={selectedFarmland}
+        onClose={() => setSelectedFarmland(null)} // ✨ 닫기 기능 연결
+      />
       <BottomPanel map={map} /> {/*  map 객체 전달 */}
     </div>
   );
