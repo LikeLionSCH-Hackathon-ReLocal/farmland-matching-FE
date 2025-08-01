@@ -1,5 +1,106 @@
-import React from "react";
-function AlertSettings() {
-  return <div>알림 설정 내용</div>;
+import React, { useState } from "react";
+import "./AlertSetting.css";
+
+export default function AlertSettings() {
+  const [matchAlert, setMatchAlert] = useState("on");
+  const [scheduleAlert, setScheduleAlert] = useState("on");
+  const [secondMatchAlert, setSecondMatchAlert] = useState("off");
+
+  const [emailEnabled, setEmailEnabled] = useState(false);
+  const [smsEnabled, setSmsEnabled] = useState(false);
+  const [webPushEnabled, setWebPushEnabled] = useState(true);
+
+  return (
+    <div className="alert-container full-width">
+      <h2 className="section-title">매칭 관련 알림</h2>
+
+      <div className="alert-row">
+        <div className="toggle-group">
+          <button
+            className={`btn ${matchAlert === "on" ? "on" : "off"}`}
+            onClick={() => setMatchAlert("on")}
+          >
+            허용
+          </button>
+          <button
+            className={`btn ${matchAlert === "off" ? "red" : "off"}`}
+            onClick={() => setMatchAlert("off")}
+          >
+            미허용
+          </button>
+        </div>
+        <span className="alert-text">내 농지에 매칭 요청이 올 때 알림 받기</span>
+      </div>
+
+      <div className="alert-row">
+        <div className="toggle-group">
+          <button
+            className={`btn ${scheduleAlert === "on" ? "on" : "off"}`}
+            onClick={() => setScheduleAlert("on")}
+          >
+            허용
+          </button>
+          <button
+            className={`btn ${scheduleAlert === "off" ? "red" : "off"}`}
+            onClick={() => setScheduleAlert("off")}
+          >
+            미허용
+          </button>
+        </div>
+        <span className="alert-text">면담 일정 하루 전 알림 받기</span>
+      </div>
+
+      <div className="alert-row">
+        <div className="toggle-group">
+          <button
+            className={`btn ${secondMatchAlert === "on" ? "on" : "off"}`}
+            onClick={() => setSecondMatchAlert("on")}
+          >
+            허용
+          </button>
+          <button
+            className={`btn ${secondMatchAlert === "off" ? "red" : "off"}`}
+            onClick={() => setSecondMatchAlert("off")}
+          >
+            미허용
+          </button>
+        </div>
+        <span className="alert-text">내 농지에 매칭 요청이 올 때 알림 받기</span>
+      </div>
+
+      <h2 className="section-title">알림 수신 방법</h2>
+
+      <div className="receive-methods">
+        <div className="method">
+          <button
+            className={`btn ${emailEnabled ? "on" : "red"}`}
+            onClick={() => setEmailEnabled(!emailEnabled)}
+          >
+            이메일
+          </button>
+        </div>
+        <div className="method">
+          <button
+            className={`btn ${smsEnabled ? "on" : "red"}`}
+            onClick={() => setSmsEnabled(!smsEnabled)}
+          >
+            문자메시지
+          </button>
+        </div>
+        <div className="method">
+          <button
+            className={`btn ${webPushEnabled ? "on" : "red"}`}
+            onClick={() => setWebPushEnabled(!webPushEnabled)}
+          >
+            웹 푸시
+          </button>
+        </div>
+      </div>
+
+      <div className="error-messages">
+        <p>현재 이메일 인증이 완료 되지 않았습니다.</p>
+        <p>현재 전화번호 인증이 완료 되지 않았습니다.</p>
+      </div>
+    </div>
+  );
 }
-export default AlertSettings;
