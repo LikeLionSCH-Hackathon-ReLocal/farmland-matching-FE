@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import ProfileSettings from "./SettingContent/ProfileSettings";
 import SecuritySettings from "./SettingContent/SecuritySettings";
 import AlertSettings from "./SettingContent/AlertSettings";
+import TrustProfileForm from "./SettingContent/TrustProfileForm";
 
 const sections = {
   "계정": ["내 프로필", "로그인 및 보안", "알림 설정"],
@@ -50,7 +51,7 @@ function SettingsModal({ onClose }) {
       case "관심 농지 목록":
         return <div>관심 농지 목록 내용</div>;
       case "신뢰 프로필 관리":
-        return <div>신뢰 프로필 관리 내용</div>;
+        return <TrustProfileForm />;
       case "자기소개 영상/음성 업로드":
         return <div>자기소개 영상/음성 업로드 내용</div>;
       case "추천인/보증인 등록":
