@@ -41,3 +41,144 @@ h1 {
 .start-button:hover {
   background-color: #2f54cc;
 }
+
+.KeyFeatures1 {
+  padding: 2rem;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.FeatureHeader {
+  color: #4b5563;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.FeatureTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #d1d5db;
+  padding-bottom: 0.5rem;
+}
+
+.FeatureList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.FeatureItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.FeatureContent {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.25rem;
+}
+
+.FeatureExplain {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+.FeatureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.FeatureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.FeatureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.FeatureIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.75rem;
+}
+
+.FeatureContent {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.4rem;
+}
+
+.FeatureExplain {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+.FeatureSectionWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 4rem 2rem;
+  flex-wrap: wrap;
+}
+
+.KeyFeaturesBox {
+  padding: 2rem;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  max-width: 500px;
+  flex: 1;
+  min-width: 320px;
+}
+
+.FeatureGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.FeatureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.FeatureIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.75rem;
+}
+
+.FeatureContent {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+
+.FeatureExplain {
+  font-size: 0.9rem;
+  color: #6b7280;
+  line-height: 1.3;
+}

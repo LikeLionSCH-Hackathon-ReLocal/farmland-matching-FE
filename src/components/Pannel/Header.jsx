@@ -1,22 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // ⬅ 추가
 import "./Header.css";
 import SettingsModal from "../Setting/SettingModal.jsx";
 
 function Header() {
   const [showSettings, setShowSettings] = useState(false);
+  const navigate = useNavigate(); // ⬅ 추가
 
   return (
     <>
       <div className="HeaderContainer">
         <div className="left-section">
-          {/* 로고 왼쪽 */}
+          {/* 로고 클릭 시 IntroPage로 이동 */}
           <img
             src="/logo.png"
             alt="Logo"
             className="HeaderLogo"
-            onClick={() => window.location.reload()}
+            onClick={() => navigate("/")} // ⬅ IntroPage 경로로 이동
           />
-          {/* 텍스트 오른쪽 */}
           <div className="TitleContainer">
             <span className="HeaderTitle">밭 볼텨유?</span>
             <span className="HeaderSubtitle">농지 매칭 플랫폼</span>
