@@ -13,53 +13,52 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 1500px;
-  height: 800px;
+  width: 70vw;          /* 기존 1500px */
+  height: 80vh;         /* 기존 800px */
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  border-radius: 1vw;
+  box-shadow: 0 0.8vw 2vw rgba(0, 0, 0, 0.3);
   z-index: 9999;
   display: flex;
   overflow: hidden;
 }
 
-.CloseButton {
+.Setting-CloseButton {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 1vw;
+  right: 1vw;
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 0.8vw;
   color: #666;
   cursor: pointer;
   z-index: 10000;
 }
 
-
-
 .MainSettingsArea {
   flex: 1;
-  padding: 24px;
+  padding: 2vw;
   overflow-y: auto;
+  font-size: 0.9vw;
 }
 
 .Tabs {
   display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 1vw;
+  margin-bottom: 2vw;
 }
 
 .Tab {
-  padding: 8px 16px;
+  padding: 0.6vw 1.2vw;
   background: none;
   border: none;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 0.9vw;
   cursor: pointer;
+  color: #333;
 }
 
 .Tab.active {
-  border-bottom: 2px solid #4756ff;
+  border-bottom: 0.2vw solid #4756ff;
   color: #4756ff;
 }
-
-

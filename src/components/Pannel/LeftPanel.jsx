@@ -65,7 +65,7 @@ function LeftPanel({ farmlands, onSelect }) {
             <div className="FarmlandContent">
               <div className="FarmlandTitle">
                 <div className="FarmlandTag">{farm.crop}</div>
-                <div className="FarmlandName">{farm.name}</div>
+                <div className="Left-FarmlandName">{farm.name}</div>
               </div>
               <div className="FarmlandMeta">
                 📍 {farm.address} <br />

@@ -1,18 +1,18 @@
 .HeaderContainer {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  right: 16px;
-  height: 60px;
-
+  top: 2%;
+  left: 2%;
+  right: 2%;
+  height: 8%;
   background-color: rgba(71, 86, 255, 0.8);
   z-index: 10;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 12px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 1vw;
+  box-shadow: 0px 0.5vw 1vw rgba(0, 0, 0, 0.2);
+  padding: 0 1vw;
 }
 
 /* ✅ 로고 + 텍스트 나란히 배치 */
@@ -20,13 +20,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 0.8vw;
 }
 
-/* 로고 고정 */
+/* 로고 */
 .HeaderLogo {
-  width: 40px;
-  height: 40px;
+  width: 2.8vw;
+  height: 2.8vw;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -42,13 +42,13 @@
 .HeaderTitle {
   color: white;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 1vw; /* 기존 18px → 축소 */
 }
 
 .HeaderSubtitle {
-  font-size: 12px;
+  font-size: 0.65vw; /* 기존 12px → 축소 */
   color: #e0e0e0;
-  margin-top: 2px;
+  margin-top: 0.2vw;
 }
 
 /* ✅ 설정 버튼 */
@@ -62,11 +62,12 @@
   background: none;
   border: none;
   color: white;
-  font-size: 20px;
+  font-size: 1vw;  /* 기존 20px → 축소 */
   cursor: pointer;
   transition: transform 0.2s;
+  padding: 0.4vw 0.6vw;
 }
 
 .SettingsButton:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }

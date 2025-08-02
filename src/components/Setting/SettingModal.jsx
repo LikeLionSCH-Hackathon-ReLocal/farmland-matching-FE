@@ -9,6 +9,9 @@ import IntroductionForm from "./SettingContent/TrustSetting/IntroductionForm";
 import RecommenderForm from "./SettingContent/TrustSetting/RecommenderForm";
 import TrustScore from "./SettingContent/TrustSetting/TrustScore";
 import FarmlandManage from "./SettingContent/FarmlandMatchingSetting/FarmlandManage";
+import FarmlandMatching from "./SettingContent/FarmlandMatchingSetting/FarmlandMatching";
+import FarmlandStar from "./SettingContent/FarmlandMatchingSetting/FarmlandStar";
+
 const sections = {
   계정: ["내 프로필", "로그인 및 보안", "알림 설정"],
   "농지 및 매칭": ["농지 관리", "신청한 매칭 내역", "관심 농지 목록"],
@@ -52,9 +55,9 @@ function SettingsModal({ onClose }) {
         return <FarmlandManage />;
 
       case "신청한 매칭 내역":
-        return <div>신청한 매칭 내역 내용</div>;
+        return <FarmlandMatching />;
       case "관심 농지 목록":
-        return <div>관심 농지 목록 내용</div>;
+        return <FarmlandStar />;
       case "신뢰 프로필 관리":
         return <TrustProfile />;
       case "자기소개 영상/음성 업로드":
@@ -91,7 +94,7 @@ function SettingsModal({ onClose }) {
           <div className="SettingsDetailArea">{renderContent()}</div>
         </div>
 
-        <button className="CloseButton" onClick={onClose}>
+        <button className="Setting-CloseButton" onClick={onClose}>
           ✕ ESC
         </button>
       </div>

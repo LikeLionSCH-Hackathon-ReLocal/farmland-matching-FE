@@ -1,0 +1,88 @@
+.form-container {
+  display: flex;
+  gap: 30px;
+  padding: 10px 20px;
+  background: #fff;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+}
+
+label {
+  font-size: 14px;
+  word-break: keep-all;
+  white-space: normal; 
+}
+
+.checkbox-row {
+  display: flex;
+  flex-direction: column; 
+  margin-top: 12px; 
+  
+}
+
+.checkbox-row input[type="checkbox"] {
+  position: relative;
+  top: 20px; 
+}
+
+.gray-map {
+  background-color: #ddd;
+  height: 180px;
+  border-radius: 8px;
+  text-align: center;
+  line-height: 180px;
+  color: #555;
+  margin-top: 10px;
+}
+
+.image-box {
+  background-color: #f9f9f9;
+  height: 150px;
+  border: 1px dashed #bbb;
+  border-radius: 8px;
+  text-align: center;
+  line-height: 150px;
+  color: #999;
+}
+
+.submit-btn {
+  margin-top: 20px;
+  background-color: #3b82f6;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ✅ 수직 구분선 */
+.vertical-divider {
+  width: 1px;
+  background-color: #ccc;
+  margin: 0 10px;
+}

@@ -1,34 +1,35 @@
 .BottomContainer {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px;
+  bottom: 2%;
+  left: 2%;
+  right: 2%;
+  height: 7%;
   background-color: transparent;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 1vw;
 }
 
 .BottomPanel {
-  background-color: rgba(71, 86, 255, 0.8); /* 반투명 파란색 배경 */
-  padding: 10px 16px;
-  border-radius: 12px;
+  background-color: rgba(71, 86, 255, 0.8);
+  padding: 0.5vw 1vw;
+  border-radius: 0.8vw;
   display: flex;
-  gap: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  gap: 0.6vw;
+  box-shadow: 0 0.3vw 0.8vw rgba(0, 0, 0, 0.15);
 }
 
 .BottomItem {
   background-color: white;
   color: #333;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 0.5vw 1vw;
+  border-radius: 0.6vw;
   cursor: pointer;
   user-select: none;
   font-weight: 500;
+  font-size: 0.75vw;   /* 기존 14px → 반응형 축소 */
   transition: all 0.2s ease;
   display: flex;
   align-items: center;

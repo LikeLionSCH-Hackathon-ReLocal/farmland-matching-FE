@@ -21,7 +21,7 @@ function MapView({ farmlands, onSelect, onMapLoad, selectedFarm }) {
 
         const map = new window.kakao.maps.Map(container, {
           center: new window.kakao.maps.LatLng(36.7691, 126.9334),
-          level: 6,
+          level: 7,
         });
 
         mapRef.current = map;

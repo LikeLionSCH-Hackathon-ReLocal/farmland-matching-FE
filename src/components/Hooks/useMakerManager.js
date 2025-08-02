@@ -6,12 +6,12 @@ export function useMarkerManager(map, farmlands, onSelect) {
 
   const blackMarkerImage =
     typeof window !== "undefined" && window.kakao
-      ? new window.kakao.maps.MarkerImage("/marker-black.png", new window.kakao.maps.Size(32, 32))
+      ? new window.kakao.maps.MarkerImage("/marker-black.png", new window.kakao.maps.Size(25, 25))
       : null;
 
   const blueMarkerImage =
     typeof window !== "undefined" && window.kakao
-      ? new window.kakao.maps.MarkerImage("/marker-blue.png", new window.kakao.maps.Size(50, 50))
+      ? new window.kakao.maps.MarkerImage("/marker-blue.png", new window.kakao.maps.Size(40, 40))
       : null;
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
     setActiveId(farm.id);
 
     const target = marker.getPosition();
-    map.setLevel(3); // 줌인 먼저 설정
+    map.setLevel(4); // 줌인 먼저 설정
 
     // 부드러운 panTo 애니메이션을 약간 지연시켜 적용
     setTimeout(() => {

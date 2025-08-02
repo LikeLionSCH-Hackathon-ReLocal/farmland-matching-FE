@@ -1,83 +1,80 @@
 .LeftContainer {
   position: absolute;
-  top: 150px; /* Header 아래 약간 여유 */
-  left: 16px; /* 왼쪽에서 살짝 띄우기 */
-  bottom: 64px; /* BottomPanel 위쪽 여유 */
-  width: 350px; /* 고정 너비 */
-  height: 600px; /* 고정 높이 */
-  background-color: #f9f9f9dd; /* 연한 회색 배경, 약간 투명 */
-  z-index: 10; /* 다른 요소 위에 표시되도록 z-index 설정 */
-  border-right: 1px solid #ccc; /* 오른쪽 경계선 추가 */
-  border-radius: 8px; /* 모서리 둥글게 */
-
-  overflow-y: auto; /* 내용이 많을 경우 스크롤 가능 */
-  padding: 16px; /* 내부 여백 */
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-  font-family: "Segoe UI", sans-serif; /* 폰트 설정 */
-  font-size: 14px; /* 기본 폰트 크기 */
-  line-height: 1.6; /* 줄 간격 */
+  top: 15%;
+  left: 2%;
+  bottom: 10%;
+  width: 20%;
+  height: 65%;
+  background-color: #f9f9f9dd;
+  z-index: 10;
+  border-right: 0.1vw solid #ccc;
+  border-radius: 0.8vw;
+  overflow-y: auto;
+  padding: 1.5%;
+  box-shadow: 0.3vw 0.3vw 1vw rgba(0, 0, 0, 0.2);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 0.8vw;
+  line-height: 1.6;
 }
+
 .LeftHeader {
   position: sticky;
   top: 0;
   background-color: #f9f9f9dd;
   z-index: 2;
-  padding-bottom: 12px;
+  padding-bottom: 1%;
 }
 
-/* 검색창 */
 .SearchInput {
-  width: 90%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  font-size: 14px;
+  width: 95%;
+  padding: 1%;
+  border-radius: 1vw;
+  margin-bottom: 1%;
+  font-size: 0.8vw;
 }
 
 .FilterBar {
   display: flex;
   gap: 0;
-  border: 1px solid #ccc;
-  border-radius: 12px;
+  border: 0.08vw solid #ccc;       /* 기존 0.1vw → 더 얇게 */
+  border-radius: 0.6vw;             /* 기존 1vw → 조금 작게 */
   overflow: hidden;
-  margin-bottom: 12px;
+  margin-bottom: 0.8vw;
   width: fit-content;
 }
 
 .FilterButton {
   flex: 1;
-  padding: 8px 20px; /* 내부 여백 넉넉히 */
-  white-space: nowrap; /* 줄바꿈 방지 */
+  padding: 0.5vw 1.2vw;             /* 기존 0.8vw 1.8vw → 작게 */
+  white-space: nowrap;
   background-color: white;
   border: none;
-  font-size: 14px;
+  font-size: 0.75vw;                /* 기존 0.8vw → 조금 더 줄임 */
   color: #555;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
+
 
 .FilterButton.active {
   background-color: #4a78ff;
   color: white;
 }
 
-/*  농지 카드 목록 */
 .FarmlandList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.7vw;
 }
 
-/* 각 농지 카드 */
 .FarmlandCard {
   display: flex;
   align-items: center;
   background: white;
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 1vw;
+  padding: 0.5vw;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 0.2vw 0.5vw rgba(0, 0, 0, 0.06);
   transition: transform 0.2s;
 }
 
@@ -85,16 +82,14 @@
   transform: scale(1.01);
 }
 
-/*  임시 이미지 (배경으로 변경 가능) */
 .FarmlandImage {
-  width: 60px;
-  height: 60px;
+  width: 5vw;
+  height: 5vw;
   background-color: #ddd;
-  border-radius: 12px;
-  margin-right: 10px;
+  border-radius: 1vw;
+  margin-right: 1vw;
 }
 
-/* 텍스트 콘텐츠 */
 .FarmlandContent {
   flex-grow: 1;
   display: flex;
@@ -103,27 +98,33 @@
 
 .FarmlandTitle {
   display: flex;
-  align-items: center; /* 수직 정렬 맞춤 */
-  gap: 8px; /* 요소 간 간격 */
+  align-items: center;
 }
 
 .FarmlandTag {
-  font-size: 14px;
+  font-size: 0.5vw;
   background: red;
   color: white;
-  padding: 2px 6px;
-  border-radius: 6px;
+  padding: 0.2vw 0.5vw;
+  border-radius: 0.5vw;
   width: fit-content;
-  margin-bottom: 4px;
+  margin-bottom: 0.5vw;
 }
 
-.FarmlandName {
-  font-size: 17px;
+.Left-FarmlandName {
+  font-size: 1vw;
   font-weight: bold;
+  padding: 0.2vw 0.5vw;
+  margin-bottom: 0.5vw;
 }
 
-/* 오른쪽 화살표 */
 .FarmlandArrow {
-  font-size: 16px;
+  font-size: 0.9vw;
   color: #888;
+}
+.FarmlandMetaText {
+  font-size: 0.7vw;  /* 작고 균형 있게 */
+  color: #666;
+  margin-top: 0.3vw;
+  line-height: 1.4;
 }
