@@ -1,0 +1,43 @@
+.IntroContainer {
+  padding: 0;
+  margin: 0;
+  background-color: F3F8FF;
+}
+
+.IntroContent {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.blue {
+  color: #3c67ff;
+}
+
+.purple {
+  color: #6e32e3;
+}
+
+.subtext {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.start-button {
+  margin-top: 30px;
+  padding: 12px 24px;
+  font-size: 16px;
+  background-color: #3c67ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.start-button:hover {
+  background-color: #2f54cc;
+}

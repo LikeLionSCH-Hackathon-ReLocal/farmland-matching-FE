@@ -26,7 +26,6 @@ function BottomPanel({ map }) {
       map.addOverlayMapTypeId(mapTypeId);
     }
 
-    // 상태 업데이트
     setActiveOverlays((prev) => ({
       ...prev,
       [type]: !isActive,
@@ -41,30 +40,34 @@ function BottomPanel({ map }) {
 
   return (
     <div className="BottomContainer">
-      <button onClick={() => setMapType("roadmap")}>🗺 일반</button>
-      <button onClick={() => setMapType("satellite")}>🛰 위성</button>
-
-      <button
-        onClick={() => toggleOverlay("terrain")}
-        className={activeOverlays.terrain ? "active" : ""}
-      >
-        ⛰ 지형
-      </button>
-      <button
-        onClick={() => toggleOverlay("traffic")}
-        className={activeOverlays.traffic ? "active" : ""}
-      >
-        🚗 교통
-      </button>
-      <button
-        onClick={() => toggleOverlay("bicycle")}
-        className={activeOverlays.bicycle ? "active" : ""}
-      >
-        🚴 자전거
-      </button>
-
-      <button onClick={() => zoom("in")}>➕ 줌인</button>
-      <button onClick={() => zoom("out")}>➖ 줌아웃</button>
+      <div className="BottomPanel BottomPanel1">
+        <div onClick={() => setMapType("roadmap")} className="BottomItem">🗺 일반</div>
+        <div onClick={() => setMapType("satellite")} className="BottomItem">🛰 위성</div>
+      </div>
+      <div className="BottomPanel BottomPanel2">
+        <div
+          onClick={() => toggleOverlay("terrain")}
+          className={`BottomItem ${activeOverlays.terrain ? "active" : ""}`}
+        >
+          ⛰ 지형
+        </div>
+        <div
+          onClick={() => toggleOverlay("traffic")}
+          className={`BottomItem ${activeOverlays.traffic ? "active" : ""}`}
+        >
+          🚗 교통
+        </div>
+        <div
+          onClick={() => toggleOverlay("bicycle")}
+          className={`BottomItem ${activeOverlays.bicycle ? "active" : ""}`}
+        >
+          🚴 자전거
+        </div>
+      </div>
+      <div className="BottomPanel BottomPanel3">
+        <div onClick={() => zoom("in")} className="BottomItem">➕ 줌인</div>
+        <div onClick={() => zoom("out")} className="BottomItem">➖ 줌아웃</div>
+      </div>
     </div>
   );
 }

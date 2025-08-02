@@ -1,8 +1,18 @@
-
-import React from "react";
+import React, { useState } from "react";
 import "./ProfileSetting.css";
 
 function ProfileSettings() {
+  const [selectedCertificates, setSelectedCertificates] = useState([]);
+  const [customCertificate, setCustomCertificate] = useState("");
+
+  const toggleCertificate = (cert) => {
+    setSelectedCertificates((prev) =>
+      prev.includes(cert)
+        ? prev.filter((c) => c !== cert)
+        : [...prev, cert]
+    );
+  };
+
   return (
     <div className="container">
       {/* 왼쪽 영역 */}
@@ -26,31 +36,44 @@ function ProfileSettings() {
         <div className="input-row">
           <label>전화번호</label>
           <input type="text" placeholder="010-1234-5678" className="num" />
-          <span className="error-text">현재 전화번호 인증이 완료되지 않았습니다.</span>  
+          <span className="error-text">현재 전화번호 인증이 완료되지 않았습니다.</span>
         </div>
         <div className="input-row">
           <label>메일</label>
           <input type="text" placeholder="asdf12345@naver.com" className="num" />
           <span className="error-text">현재 이메일 인증이 완료되지 않았습니다.</span>
-        </div>
-       
-      </div>
-
-      {/* 오른쪽 영역 */}
-      <div className="right-section">
         <div className="input-row">
           <label>주소</label>
           <input type="text" placeholder="충청남도 아산시 어쩌고 저쩌고" />
         </div>
+        </div>
+      </div>
+
+      {/* 오른쪽 영역 */}
+      <div className="right-section">
+
         <div className="input-row">
           <label>자격증</label>
-          <select>
-            <option>농기계운전기능사</option>
-            <option>귀농귀촌인증서</option>
-            <option>농업기술사</option>
-            <option>등등</option>
-          </select>
+          <div className="certificate-buttons">
+            {["농기계운전기능사", "귀농귀촌인증서", "농업기술사","뭐가 있겠지","뭐가 있겠지2","뭐가 있겠지3"].map((cert) => (
+              <button
+                key={cert}
+                className={`cert-button ${selectedCertificates.includes(cert) ? "selected" : ""}`}
+                onClick={() => toggleCertificate(cert)}
+              >
+                {cert}
+              </button>
+            ))}
+          </div>
+          <input
+            type="text"
+            placeholder="기타 자격증 입력"
+            value={customCertificate}
+            onChange={(e) => setCustomCertificate(e.target.value)}
+            className="custom-cert-input"
+          />
         </div>
+
         <div className="input-row">
           <label>농업 경력</label>
           <select>
@@ -60,6 +83,7 @@ function ProfileSettings() {
             <option>5년 이상</option>
           </select>
         </div>
+
         <div className="input-row">
           <label>관심 작물/농업 분야</label>
           <select>
@@ -69,6 +93,7 @@ function ProfileSettings() {
             <option>축산</option>
           </select>
         </div>
+
         <div className="input-row">
           <label>추천인 정보</label>
           <select>
@@ -77,10 +102,12 @@ function ProfileSettings() {
             <option>없음</option>
           </select>
         </div>
+
         <div className="input-row">
           <label>기술 장비 특기</label>
           <input type="text" placeholder="드론, 트랙터 등" />
         </div>
+
         <div className="input-row">
           <label>희망 거래</label>
           <input type="text" placeholder="토지 매입, 임대 등" />

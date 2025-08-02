@@ -1,0 +1,63 @@
+.recommender-container {
+  width: 100%;
+  max-width: 1000px;
+  padding: 40px 60px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.recommender-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.input {
+  padding: 12px 14px;
+  font-size: 16px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  flex: 1;
+}
+
+.input.phone {
+  flex: 2;
+}
+
+.remove-btn {
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  color: white;
+  background-color: #ff4d4f;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  line-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-button-wrapper {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.add-btn {
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  color: white;
+  background-color: #3b82f6;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}

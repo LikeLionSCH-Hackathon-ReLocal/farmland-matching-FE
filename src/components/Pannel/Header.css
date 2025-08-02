@@ -1,45 +1,48 @@
 .HeaderContainer {
-  position: absolute; /* 절대 위치 지정 */
-  top: 16px; /* 상단에서 16px */
-  left: 16px;     /* 좌측에서 16px */
-  right: 16px;    /* 우측에서 16px */
-  height: 60px; /* 고정 높이 */
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  height: 60px;
 
-  background-color: rgba(71, 86, 255, 0.8); /* 반투명 파란색 배경 */
-  z-index: 10; /* 다른 요소 위에 표시되도록 z-index 설정 */
+  background-color: rgba(71, 86, 255, 0.8);
+  z-index: 10;
 
-  display: flex; /* Flexbox 레이아웃 사용 */
-  align-items: center; /* 수직 중앙 정렬 */
-    justify-content: space-between;  /* 좌우 공간 확보 */
-  padding: 0 24px; /* 좌우 여백 */
-
-  border-radius: 12px; /* 모서리 둥글게 */ 
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* ✅ 로고 + 텍스트 나란히 배치 */
 .left-section {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
 }
 
+/* 로고 고정 */
 .HeaderLogo {
   width: 40px;
   height: 40px;
-  margin-right: 12px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
+/* 텍스트는 세로 정렬 */
 .TitleContainer {
   display: flex;
-  flex-direction: column; /* 세로 방향으로 정렬 */
-  justify-content: center; /* 수직 중앙 정렬 */
-  line-height:1.2;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
 }
 
 .HeaderTitle {
-  color: white; /* 텍스트 색상 */
-  font-weight: bold; /* 굵은 글씨 */
-  font-size: 18px; /* 폰트 크기 */
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
 }
 
 .HeaderSubtitle {
@@ -48,11 +51,11 @@
   margin-top: 2px;
 }
 
-/* 우측: 설정 버튼 */
+/* ✅ 설정 버튼 */
 .right-section {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: flex-end;
 }
 
 .SettingsButton {
