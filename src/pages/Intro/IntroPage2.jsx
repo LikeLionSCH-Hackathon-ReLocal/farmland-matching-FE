@@ -172,7 +172,7 @@ function IntroPage2() {
               <TypingText text={DIALECTS[dialect].typing} />
               <button
                 className="start-button"
-                onClick={() => navigate("/main")}
+                onClick={() => navigate("/YoungMain")}
               >
                 농지 매칭 시작하기 →
               </button>
@@ -345,7 +345,7 @@ function IntroPage2() {
 
         <section className="SectionBlock" data-aos="zoom-in">
           <h2 className="FeatureTitle2">지금, 땅의 미래를 함께 그려보세요</h2>
-          <button className="start-button" onClick={() => navigate("/main")}>
+          <button className="start-button" onClick={() => navigate("/YoungMain")}>
             농지 매칭 시작하기 →
           </button>
         </section>

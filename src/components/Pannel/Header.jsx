@@ -13,7 +13,7 @@ function Header() {
         <div className="left-section">
           {/* 로고 클릭 시 IntroPage로 이동 */}
           <img
-            src="/logo.png"
+            src="/LOGO1.png"
             alt="Logo"
             className="HeaderLogo"
             onClick={() => navigate("/")} // ⬅ IntroPage 경로로 이동

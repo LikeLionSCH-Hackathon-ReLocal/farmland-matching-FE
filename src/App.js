@@ -12,7 +12,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<IntroPage2 />} />
-        <Route path="/main" element={<MainPage />} />
+        <Route path="/YoungMain" element={<MainPage />} />
         <Route path="/SeniorMain" element={<SeniorMain />} />
         <Route path="/senior/register" element={<SeniorFlow />} />
         <Route path="/senior/lands" element={<MyRegisteredLand />} />
