@@ -225,7 +225,7 @@ function IntroPage2() {
                 합리적이고 신뢰 가능한 방식으로 연결됩니다.
               </p>
             </div>
-            <img src="/logo.png" alt="청년 농부" className="Intro2Image" />
+            <img src="/YoungFarmer.png" alt="청년 농부" className="Intro2Image" />
           </div>
         </section>
 
