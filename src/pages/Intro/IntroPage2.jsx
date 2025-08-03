@@ -4,8 +4,8 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 import "./IntroPage2.css";
-import FloatingEmojis from "./Effect/FloatingEmojis.jsx";
-import BgmController from "./Effect/BgmController.jsx";
+import FloatingEmojis from "../Effect/FloatingEmojis.jsx";
+import BgmController from "../Effect/BgmController.jsx";
 
 const DIALECTS = {
   서울: {
@@ -149,7 +149,7 @@ function IntroPage2() {
         <section className="SectionBlock" data-aos="fade-up">
           <div className="Intro2Background">
             <div className="Intro2Header">
-              <img src="/logo.png" alt="Logo" className="Intro2LogoImage" />
+              <img src="/LOGO1.png" alt="Logo" className="Intro2LogoImage" />
               <div className="Intro2Title">{DIALECTS[dialect].title}</div>
             </div>
 
@@ -174,8 +174,10 @@ function IntroPage2() {
                 className="start-button"
                 onClick={() => navigate("/main")}
               >
-                시작하기
+                농지 매칭 시작하기 →
               </button>
+              <button className ="start-button" 
+                onClick={() => navigate("/SeniorMain")}>어르신</button>
             </div>
             <div className="Intro2Video">
               <video

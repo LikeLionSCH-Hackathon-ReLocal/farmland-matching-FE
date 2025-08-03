@@ -1,11 +1,11 @@
 /*일반적인 웹 */
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import Header from "../components/Pannel/Header";
+import Header from "../../components/Pannel/Header";
 import "./IntroPage.css";
-import ParticleBackground from "./Effect/ParticleBackground.jsx";
-import FloatingEmojis from "./Effect/FloatingEmojis.jsx";
-import BgmController from "./Effect/BgmController.jsx";
+import ParticleBackground from "../Effect/ParticleBackground.jsx";
+import FloatingEmojis from "../Effect/FloatingEmojis.jsx";
+import BgmController from "../Effect/BgmController.jsx";
 const sellerFeatures = [
   {
     title: "간편한 농지 등록",

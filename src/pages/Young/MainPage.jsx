@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Header from "../components/Pannel/Header";
-import LeftPanel from "../components/Pannel/LeftPanel";
-import RightPanel from "../components/Pannel/RightPanel";
-import BottomPanel from "../components/Pannel/BottomPanel";
-import MapView from "../components/Map/MapView";
-import { getFarmlandData } from "../api/farmland";
+import Header from "../../components/Pannel/Header";
+import LeftPanel from "../../components/Pannel/LeftPanel";
+import RightPanel from "../../components/Pannel/RightPanel";
+import BottomPanel from "../../components/Pannel/BottomPanel";
+import MapView from "../../components/Map/MapView";
+import { getFarmlandData } from "../../api/farmland";
 
 function MainPage() {
   const [farmlands, setFarmlands] = useState([]);
