@@ -1,15 +1,15 @@
 import React from "react";
-import "./TrustProfileForm.css";
+import "./Certification.css";
 
-export default function TrustProfileForm() {
+export default function Certification() {
   return (
     <div className="form-container">
-      <FormRow label="자격증">
+      <FormRow label="자격증" large>
         <input className="input" placeholder="자격증 종류 입력 + pdf 첨부 (선택)" />
         <span className="more">더보기 ▾</span>
       </FormRow>
 
-      <FormRow label="수상 / 활동 경력">
+      <FormRow label="수상 / 활동 경력" large>
         <input className="input" placeholder="수상 / 활동 입력 (선택)" />
         <span className="more">더보기 ▾</span>
       </FormRow>
@@ -27,7 +27,7 @@ export default function TrustProfileForm() {
       <FormRow label="거래 형태">
         <select className="select">
           <option value="">선택 (필수)</option>
-          <option value="">매매</option>
+          <option value="매매">매매</option>
           <option value="임대">임대</option>
           <option value="기타">기타</option>
         </select>
@@ -36,10 +36,10 @@ export default function TrustProfileForm() {
   );
 }
 
-function FormRow({ label, children }) {
+function FormRow({ label, children, large }) {
   return (
     <div className="form-row">
-      <label className="form-label">{label}</label>
+      <label className={`form-label ${large ? "large" : ""}`}>{label}</label>
       <div className="form-input-wrapper">{children}</div>
     </div>
   );

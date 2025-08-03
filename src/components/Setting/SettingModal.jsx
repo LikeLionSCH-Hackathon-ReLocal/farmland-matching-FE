@@ -4,7 +4,7 @@ import Sidebar from "./Sidebar";
 import ProfileSettings from "./SettingContent/AccountSetting/ProfileSettings";
 import SecuritySettings from "./SettingContent/AccountSetting/SecuritySettings";
 import AlertSettings from "./SettingContent/AccountSetting/AlertSettings";
-import TrustProfile from "./SettingContent/TrustSetting/TrustProfileForm";
+import Certification from "./SettingContent/TrustSetting/Certification";
 import IntroductionForm from "./SettingContent/TrustSetting/IntroductionForm";
 import RecommenderForm from "./SettingContent/TrustSetting/RecommenderForm";
 import TrustScore from "./SettingContent/TrustSetting/TrustScore";
@@ -59,7 +59,7 @@ function SettingsModal({ onClose }) {
       case "관심 농지 목록":
         return <FarmlandStar />;
       case "신뢰 프로필 관리":
-        return <TrustProfile />;
+        return <Certification />;
       case "자기소개 영상/음성 업로드":
         return <IntroductionForm />;
       case "추천인/보증인 등록":
