@@ -51,13 +51,14 @@ function SettingsModal({ onClose }) {
         return <SecuritySettings />;
       case "알림 설정":
         return <AlertSettings />;
+
       case "농지 관리":
         return <FarmlandManage />;
-
       case "신청한 매칭 내역":
         return <FarmlandMatching />;
       case "관심 농지 목록":
         return <FarmlandStar />;
+        
       case "신뢰 프로필 관리":
         return <Certification />;
       case "자기소개 영상/음성 업로드":

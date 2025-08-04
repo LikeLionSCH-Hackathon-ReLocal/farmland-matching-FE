@@ -1,31 +1,30 @@
-// components/Setting/FarmlandMatchingSetting/FarmlandList.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getFarmlandData } from "../../../../api/farmland"; // 경로는 프로젝트 구조에 맞게 조정하세요
 
 export default function FarmlandList() {
-  // 실제 데이터는 props나 상태로 받아올 수 있음
-  const dummyFarmlands = [
-    {
-      id: 1,
-      image: "/images/farm1.jpg",
-      address: "충남 아산시 도고면",
-      crop: "벼",
-      area: "1.2ha",
-      date: "2025-08-01",
-    },
-    {
-      id: 2,
-      image: "/images/farm2.jpg",
-      address: "충남 아산시 음봉면",
-      crop: "토마토",
-      area: "0.9ha",
-      date: "2025-08-02",
-    },
-  ];
+  const [farmlands, setFarmlands] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getFarmlandData();
+      const firstTwo = data.slice(0, 2); // 상위 2개만 사용
+      const formatted = firstTwo.map((land, idx) => ({
+        id: land.id,
+        image: `/images/farm${idx + 1}.jpg`, // 이미지 경로 (없다면 대체 이미지로)
+        address: land.address,
+        crop: land.crop,
+        area: land.detail.landInfo.areaHectare,
+        date: "2025-08-04", // 더미 날짜 (필요시 land.detail.trade?.When 등으로 대체 가능)
+      }));
+      setFarmlands(formatted);
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className="FarmlandListWrapper">
       <div className="FarmlandSlider">
-        {dummyFarmlands.map((land) => (
+        {farmlands.map((land) => (
           <div className="FarmlandCard" key={land.id}>
             <img src={land.image} alt="농지 이미지" className="LandImage" />
             <div className="LandInfo">
@@ -42,7 +41,6 @@ export default function FarmlandList() {
           </div>
         ))}
       </div>
-      {/* 페이지네이션 대체 (1 / 3) 등 가능 */}
     </div>
   );
 }
