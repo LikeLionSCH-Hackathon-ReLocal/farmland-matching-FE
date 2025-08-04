@@ -174,10 +174,14 @@ function IntroPage2() {
                 className="start-button"
                 onClick={() => navigate("/YoungMain")}
               >
-                농지 매칭 시작하기 →
+                농지를 찾는 청년 / 중장년 농업인
               </button>
-              <button className ="start-button" 
-                onClick={() => navigate("/SeniorMain")}>어르신</button>
+              <button
+                className="start-button"
+                onClick={() => navigate("/SeniorMain")}
+              >
+                농지를 맡기고 싶은 고령 농업인
+              </button>
             </div>
             <div className="Intro2Video">
               <video
@@ -227,7 +231,11 @@ function IntroPage2() {
                 합리적이고 신뢰 가능한 방식으로 연결됩니다.
               </p>
             </div>
-            <img src="/YoungFarmer.png" alt="청년 농부" className="Intro2Image" />
+            <img
+              src="/YoungFarmer.png"
+              alt="청년 농부"
+              className="Intro2Image"
+            />
           </div>
         </section>
 
@@ -345,8 +353,17 @@ function IntroPage2() {
 
         <section className="SectionBlock" data-aos="zoom-in">
           <h2 className="FeatureTitle2">지금, 땅의 미래를 함께 그려보세요</h2>
-          <button className="start-button" onClick={() => navigate("/YoungMain")}>
-            농지 매칭 시작하기 →
+          <button
+            className="start-button"
+            onClick={() => navigate("/YoungMain")}
+          >
+            농지에서 새로운 시작을 하고 싶어요
+          </button>
+          <button
+            className="start-button"
+            onClick={() => navigate("/SeniorMain")}
+          >
+            내 농지를 믿고 맡길 청년을 찾고 싶어요
           </button>
         </section>
       </div>

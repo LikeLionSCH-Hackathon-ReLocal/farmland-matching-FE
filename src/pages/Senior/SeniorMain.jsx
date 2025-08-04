@@ -12,6 +12,12 @@ function SeniorMain() {
       <div className="ButtonGroup">
         <button
           className="RegisterButton"
+          onClick={() => navigate("/senior/profile")}
+        >
+          👤 개인 정보 입력하기
+        </button>
+        <button
+          className="RegisterButton"
           onClick={() => navigate("/senior/register")}
         >
           + 농지 등록하기
