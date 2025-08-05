@@ -10,7 +10,7 @@ function Header() {
   return (
     <>
       <div className="HeaderContainer">
-        <div className="left-section">
+        <div className="Header-left-section">
           {/* 로고 클릭 시 IntroPage로 이동 */}
           <img
             src="/LOGO1.png"
@@ -18,13 +18,13 @@ function Header() {
             className="HeaderLogo"
             onClick={() => navigate("/")} // ⬅ IntroPage 경로로 이동
           />
-          <div className="TitleContainer">
+          <div className="HeaderTitleContainer">
             <span className="HeaderTitle">밭 볼텨유?</span>
-            <span className="HeaderSubtitle">농지 매칭 플랫폼</span>
+            <span className="HeaderSubtitle">농지를 찾는 청년 / 중장년 농업인 Page</span>
           </div>
         </div>
 
-        <div className="right-section">
+        <div className="Header-right-section">
           <button
             className="SettingsButton"
             onClick={() => setShowSettings(true)}
