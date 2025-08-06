@@ -7,12 +7,18 @@ export function useMarkerManager(map, farmlands, onSelect) {
 
   const blackMarkerImage =
     typeof window !== "undefined" && window.kakao
-      ? new window.kakao.maps.MarkerImage("/marker-black.png", new window.kakao.maps.Size(25, 25))
+      ? new window.kakao.maps.MarkerImage(
+          "/marker-black.png",
+          new window.kakao.maps.Size(25, 25)
+        )
       : null;
 
   const blueMarkerImage =
     typeof window !== "undefined" && window.kakao
-      ? new window.kakao.maps.MarkerImage("/marker-blue.png", new window.kakao.maps.Size(40, 40))
+      ? new window.kakao.maps.MarkerImage(
+          "/marker-blue.png",
+          new window.kakao.maps.Size(40, 40)
+        )
       : null;
 
   useEffect(() => {
@@ -57,6 +63,19 @@ export function useMarkerManager(map, farmlands, onSelect) {
       });
       circle.setMap(map);
       circleMap.current.set(farm.id, circle);
+      // ✅ 이모지 오버레이 추가
+      const emojiContent = document.createElement("div");
+      emojiContent.className = "useMakerManager-emoji-overlay";
+      emojiContent.innerText = farm.emoji;
+
+      const emojiOverlay = new window.kakao.maps.CustomOverlay({
+        content: emojiContent,
+        position: position,
+        xAnchor: 0.5, // 가운데 정렬
+        yAnchor: 0, // 마커 아래로 이동
+        zIndex: 1,
+      });
+      emojiOverlay.setMap(map);
     });
   }, [map, farmlands]);
 
