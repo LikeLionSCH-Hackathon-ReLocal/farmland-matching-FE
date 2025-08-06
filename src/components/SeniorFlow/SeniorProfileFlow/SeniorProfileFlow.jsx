@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 import Step1_Name from "./Step1_Name";
 import Step2_BirthYear from "./Step2_BirthYear";
@@ -19,6 +20,7 @@ function SeniorProfileFlow() {
     address: "",
     landCount: "",
   });
+  const navigate = useNavigate();
 
   const updateProfile = (key, value) => {
     setProfile((prev) => ({ ...prev, [key]: value }));
@@ -29,36 +31,33 @@ function SeniorProfileFlow() {
     alert("저장되었습니다.");
   };
 
-  // 진행률 퍼센트 계산
   const progressPercent = Math.round((step / TOTAL_STEPS) * 100);
 
   return (
     <div className="SeniorProfile-Wrapper">
       <FloatingEmojis />
 
-      {/* 좌측 정보 요약 */}
-      <aside className="SeniorProfile-Summary">
-        <h3>입력 정보</h3>
-        <ul>
-          <li>👤 이름: {profile.name || "미입력"}</li>
-          <li>🎂 출생년도: {profile.birthYear || "미입력"}</li>
-          <li>📞 연락처: {profile.phone || "미입력"}</li>
-          <li>🏠 주소: {profile.address || "미입력"}</li>
-          <li>🌾 농지 수: {profile.landCount || "미입력"}</li>
-        </ul>
-      </aside>
+      {/* 좌측 상단 라우팅 버튼 */}
+      <button
+        className="SeniorProfile-BackButton"
+        onClick={() => navigate("/SeniorMain")}
+      >
+        ⬅ 홈으로
+      </button>
 
       {/* 우측 단계별 입력 */}
       <main className="SeniorProfile-FlowContainer">
         {/* 진행 바 */}
         <div className="SeniorProfile-ProgressBar">
-          <div className="SeniorProfile-ProgressFill" style={{ width: `${progressPercent}%` }} />
+          <div
+            className="SeniorProfile-ProgressFill"
+            style={{ width: `${progressPercent}%` }}
+          />
         </div>
         <div className="SeniorProfile-StepText">
           {step}단계 / 총 {TOTAL_STEPS}단계 ({progressPercent}%)
         </div>
 
-        {/* 단계별 컴포넌트 */}
         {step === 1 && (
           <Step1_Name profile={profile} updateProfile={updateProfile} onNext={() => setStep(2)} />
         )}
@@ -98,6 +97,18 @@ function SeniorProfileFlow() {
           <Step6_Summary profile={profile} onBack={() => setStep(5)} onSave={saveProfile} />
         )}
       </main>
+
+      {/* 우측 요약 정보 */}
+      <aside className="SeniorProfile-Summary">
+        <h3>입력 정보</h3>
+        <ul>
+          <li>👤 이름: {profile.name || "미입력"}</li>
+          <li>🎂 출생년도: {profile.birthYear || "미입력"}</li>
+          <li>📞 연락처: {profile.phone || "미입력"}</li>
+          <li>🏠 주소: {profile.address || "미입력"}</li>
+          <li>🌾 농지 수: {profile.landCount || "미입력"}</li>
+        </ul>
+      </aside>
     </div>
   );
 }

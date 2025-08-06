@@ -1,20 +1,53 @@
-/* 컨테이너 */
+/* 전체 레이아웃 */
+.SeniorProfile-Wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9f6f1;
+  font-family: 'Noto Sans KR', sans-serif;
+  position: relative;
+  gap: 40px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+/* 좌측 상단 홈 버튼 */
+.SeniorProfile-BackButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #eeeeee;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.SeniorProfile-BackButton:hover {
+  background-color: #ddd;
+}
+
+/* 오른쪽 입력 영역 */
 .SeniorProfile-FlowContainer {
-  padding: 2rem;
-  max-width: 600px;
+  flex: 1;
+  padding: 2rem 3rem;
+  position: relative;
+  max-width: 700px;
   margin: auto;
-  font-size: 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-
+/* 입력 단계 컴포넌트 */
 .SeniorProfile-Step {
   margin-top: 20px;
   animation: SeniorProfile-slideIn 0.3s ease-in-out;
 }
 
+/* 타이틀 */
 .SeniorProfile-StepTitle {
   font-size: 24px;
   font-weight: bold;
@@ -43,7 +76,7 @@
   background-color: #fff0f0;
 }
 
-/* 버튼 */
+/* 버튼 영역 */
 .SeniorProfile-Buttons {
   display: flex;
   justify-content: space-between;
@@ -59,7 +92,6 @@
   cursor: pointer;
 }
 
-/* 다음 버튼 */
 .SeniorProfile-Next {
   background-color: #5a914e;
   color: white;
@@ -70,7 +102,6 @@
   cursor: not-allowed;
 }
 
-/* 이전 버튼 */
 .SeniorProfile-Buttons button:not(.SeniorProfile-Next) {
   background-color: #f0f0f0;
   color: #333;
@@ -89,68 +120,29 @@
   margin-top: 6px;
 }
 
-/* 진행바 */
-.SeniorProfile-ProgressWrap {
+/* 진행 바 */
+.SeniorProfile-ProgressBar {
   width: 100%;
-  height: 6px;
-  background: #eee;
-  border-radius: 6px;
-  margin-bottom: 24px;
+  height: 10px;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
 .SeniorProfile-ProgressFill {
-  height: 6px;
-  background: #5a914e;
-  border-radius: 6px;
+  height: 100%;
+  background-color: #56ba7c;
   transition: width 0.3s ease;
 }
 
-/* 요약 정보 */
-.SeniorProfile-InfoRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.SeniorProfile-InfoLabel {
+.SeniorProfile-StepText {
+  font-size: 0.95rem;
   color: #666;
-  font-weight: 500;
+  margin-bottom: 2rem;
 }
 
-.SeniorProfile-InfoValue {
-  font-weight: bold;
-  color: #333;
-}
-
-/* 애니메이션 */
-@keyframes SeniorProfile-slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(25px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes SeniorProfile-fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.SeniorProfile-Wrapper {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f9f6f1;
-  font-family: 'Noto Sans KR', sans-serif;
-}
-
+/* 요약 정보 */
 .SeniorProfile-Summary {
   width: 280px;
   padding: 2rem;
@@ -171,28 +163,14 @@
   line-height: 1.8;
 }
 
-.SeniorProfile-FlowContainer {
-  flex: 1;
-  padding: 2rem 3rem;
-  position: relative;
-}
-
-.SeniorProfile-ProgressBar {
-  height: 10px;
-  background-color: #eee;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.SeniorProfile-ProgressFill {
-  height: 100%;
-  background-color: #56ba7c;
-  transition: width 0.3s ease;
-}
-
-.SeniorProfile-StepText {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 2rem;
+/* 애니메이션 */
+@keyframes SeniorProfile-slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
