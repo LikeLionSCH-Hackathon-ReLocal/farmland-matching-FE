@@ -51,7 +51,6 @@ function SettingsModal({ onClose }) {
         return <SecuritySettings />;
       case "알림 설정":
         return <AlertSettings />;
-
       case "농지 관리":
         return <FarmlandManage />;
       case "신청한 매칭 내역":
@@ -73,18 +72,18 @@ function SettingsModal({ onClose }) {
   };
 
   return (
-    <div className="ModalOverlay">
-      <div className="SettingsContainer">
+    <div className="SettingModal-ModalOverlay">
+      <div className="SettingModal-SettingsContainer">
         <Sidebar selected={selectedMenu} onMenuSelect={setSelectedMenu} />
 
-        <div className="MainSettingsArea">
-          <div className="SettingsSectionTitle">{currentSection}</div>
+        <div className="SettingModal-MainSettingsArea">
+          <div className="SettingModal-SettingsSectionTitle">{currentSection}</div>
 
-          <div className="SettingsTabs">
+          <div className="SettingModal-SettingsTabs">
             {sections[currentSection]?.map((item) => (
               <button
                 key={item}
-                className={`TabButton ${selectedMenu === item ? "active" : ""}`}
+                className={`SettingModal-TabButton ${selectedMenu === item ? "active" : ""}`}
                 onClick={() => setSelectedMenu(item)}
               >
                 {item}
@@ -92,10 +91,10 @@ function SettingsModal({ onClose }) {
             ))}
           </div>
 
-          <div className="SettingsDetailArea">{renderContent()}</div>
+          <div className="SettingModal-SettingsDetailArea">{renderContent()}</div>
         </div>
 
-        <button className="Setting-CloseButton" onClick={onClose}>
+        <button className="SettingModal-CloseButton" onClick={onClose}>
           ✕ ESC
         </button>
       </div>

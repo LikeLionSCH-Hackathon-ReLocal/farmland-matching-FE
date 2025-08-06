@@ -28,7 +28,7 @@ export default function Step2_BirthYear({ profile, updateProfile, onBack, onNext
         onChange={handleChange}
       />
       <p className="SeniorProfile-Help">• 4자리 (예: 1950)</p>
-      <div className="SeniorProfile-SeniorProfilButtons">
+      <div className="SeniorProfile-Buttons">
         <button onClick={onBack}>이전</button>
         <button className="SeniorProfile-Next" disabled={!valid} onClick={handleNext}>다음</button>
       </div>

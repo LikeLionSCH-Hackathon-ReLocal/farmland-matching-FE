@@ -1,4 +1,6 @@
-.RightContainer {
+/* RightPanel.css */
+
+.RightPanel-RightContainer {
   position: absolute;
   top: 12%;
   right: 2%;
@@ -9,7 +11,6 @@
   z-index: 10;
   border-left: 0.08vw solid #ccc;
   border-radius: 0.8vw;
-
   overflow-y: auto;
   padding: 1.2vw;
   box-shadow: 0.4vw 0.4vw 1vw rgba(0, 0, 0, 0.2);
@@ -18,7 +19,7 @@
   line-height: 1.5;
 }
 
-.CloseButton {
+.RightPanel-CloseButton {
   position: absolute;
   top: 1vw;
   right: 1vw;
@@ -28,7 +29,7 @@
   cursor: pointer;
 }
 
-.ImagePlaceholder {
+.RightPanel-ImagePlaceholder {
   width: 100%;
   height: 10vw;
   background-color: #ddd;
@@ -42,18 +43,56 @@
   font-size: 0.9vw;
 }
 
-.InfoBlock {
+.RightPanel-PageNav {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.2vw;
+}
+
+.RightPanel-PageButton {
+  background-color: #ffffff;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 0.4vw;
+  padding: 0.5vw 1vw;
+  font-size: 0.8vw;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.RightPanel-PageButton:hover {
+  background-color: #eee;
+}
+
+.RightPanel-InfoBlock {
+  background: #f7f7f7;
+  border-radius: 0.6vw;
+  padding: 1vw;
+  margin-bottom: 1.5vw;
+  box-shadow: 0.1vw 0.1vw 0.4vw rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   gap: 0.8vw;
 }
 
-.FarmlandName {
-  font-size: 1vw;     /* 기존 20px → 작게 */
+.RightPanel-InfoTitle {
+  font-size: 1vw;
   font-weight: bold;
-  margin-bottom: 0.6vw;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5vw;
+  margin-bottom: 1vw;
 }
 
-.InfoRow {
-  font-size: 0.8vw;   /* 기존 14px → 작게 */
+.RightPanel-InfoRow {
+  display: flex;
+  align-items: center;
+  font-size: 0.85vw;
+  color: #333;
+  gap: 0.4vw;
+  line-height: 1.6;
+}
+
+.RightPanel-InfoRow strong {
+  min-width: 6vw;
+  color: #0077cc;
 }

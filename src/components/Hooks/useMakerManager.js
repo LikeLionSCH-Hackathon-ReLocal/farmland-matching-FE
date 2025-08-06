@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 export function useMarkerManager(map, farmlands, onSelect) {
   const markerMap = useRef(new Map());
+  const circleMap = useRef(new Map());
   const [activeId, setActiveId] = useState(null);
 
   const blackMarkerImage =
@@ -17,13 +18,19 @@ export function useMarkerManager(map, farmlands, onSelect) {
   useEffect(() => {
     if (!map || !window.kakao || !blackMarkerImage || !blueMarkerImage) return;
 
+    // 기존 마커/원 제거
     markerMap.current.forEach((marker) => marker.setMap(null));
+    circleMap.current.forEach((circle) => circle.setMap(null));
     markerMap.current.clear();
+    circleMap.current.clear();
 
     farmlands.forEach((farm) => {
+      const position = new window.kakao.maps.LatLng(farm.lat, farm.lng);
+
+      // 마커 추가
       const marker = new window.kakao.maps.Marker({
         map,
-        position: new window.kakao.maps.LatLng(farm.lat, farm.lng),
+        position,
         title: farm.name,
         image: blackMarkerImage,
       });
@@ -34,12 +41,27 @@ export function useMarkerManager(map, farmlands, onSelect) {
       });
 
       markerMap.current.set(farm.id, marker);
+
+      // ⭕ 원 추가 (면적 기준)
+      const radius = Math.sqrt(farm.area) * 10; // 면적이 클수록 반지름 크게 (튜닝 가능)
+      const circle = new window.kakao.maps.Circle({
+        center: position,
+        radius: radius, // meter 단위
+        strokeWeight: 1,
+        strokeColor: "#3399ff",
+        strokeOpacity: 0.6,
+        strokeStyle: "solid",
+        fillColor: "#3399ff",
+        fillOpacity: 0.15,
+        zIndex: 0,
+      });
+      circle.setMap(map);
+      circleMap.current.set(farm.id, circle);
     });
   }, [map, farmlands]);
 
   useEffect(() => {
     if (!map) return;
-
     markerMap.current.forEach((marker, id) => {
       marker.setImage(id === activeId ? blueMarkerImage : blackMarkerImage);
     });
@@ -53,9 +75,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
     setActiveId(farm.id);
 
     const target = marker.getPosition();
-    map.setLevel(4); // 줌인 먼저 설정
-
-    // 부드러운 panTo 애니메이션을 약간 지연시켜 적용
+    map.setLevel(4);
     setTimeout(() => {
       map.panTo(target);
     }, 100);

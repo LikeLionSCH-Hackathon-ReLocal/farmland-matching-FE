@@ -39,34 +39,34 @@ function BottomPanel({ map }) {
   };
 
   return (
-    <div className="BottomContainer">
-      <div className="BottomPanel BottomPanel1">
-        <div onClick={() => setMapType("roadmap")} className="BottomItem">🗺 일반</div>
-        <div onClick={() => setMapType("satellite")} className="BottomItem">🛰 위성</div>
+    <div className="BttomPanel-BottomContainer">
+      <div className="BttomPanel-BottomPanel BottomPanel1">
+        <div onClick={() => setMapType("roadmap")} className="BttomPanel-BottomItem">🗺 일반</div>
+        <div onClick={() => setMapType("satellite")} className="BttomPanel-BottomItem">🛰 위성</div>
       </div>
-      <div className="BottomPanel BottomPanel2">
+      <div className="BttomPanel-BottomPanel BottomPanel2">
         <div
           onClick={() => toggleOverlay("terrain")}
-          className={`BottomItem ${activeOverlays.terrain ? "active" : ""}`}
+          className={`BttomPanel-BottomItem ${activeOverlays.terrain ? "active" : ""}`}
         >
           ⛰ 지형
         </div>
         <div
           onClick={() => toggleOverlay("traffic")}
-          className={`BottomItem ${activeOverlays.traffic ? "active" : ""}`}
+          className={`BttomPanel-BottomItem ${activeOverlays.traffic ? "active" : ""}`}
         >
           🚗 교통
         </div>
         <div
           onClick={() => toggleOverlay("bicycle")}
-          className={`BottomItem ${activeOverlays.bicycle ? "active" : ""}`}
+          className={`BttomPanel-BottomItem ${activeOverlays.bicycle ? "active" : ""}`}
         >
           🚴 자전거
         </div>
       </div>
-      <div className="BottomPanel BottomPanel3">
-        <div onClick={() => zoom("in")} className="BottomItem">➕ 줌인</div>
-        <div onClick={() => zoom("out")} className="BottomItem">➖ 줌아웃</div>
+      <div className="BttomPanel-BottomPanel BottomPanel3">
+        <div onClick={() => zoom("in")} className="BttomPanel-BottomItem">➕ 줌인</div>
+        <div onClick={() => zoom("out")} className="BttomPanel-BottomItem">➖ 줌아웃</div>
       </div>
     </div>
   );

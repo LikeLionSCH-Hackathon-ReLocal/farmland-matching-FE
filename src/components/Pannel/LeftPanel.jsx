@@ -19,21 +19,21 @@ function LeftPanel({ farmlands, onSelect }) {
   });
 
   return (
-    <div className="LeftContainer">
+    <div className="LeftPanel-LeftContainer">
       {/* 검색창 */}
-      <div className="LeftHeader">
+      <div className="LeftPanel-LeftHeader">
         <input
-          className="SearchInput"
+          className="LeftPanel-SearchInput"
           placeholder={`${filterKey} 검색`}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
         {/* 필터 버튼 */}
-        <div className="FilterBar">
+        <div className="LeftPanel-FilterBar">
           {filterOptions.map((key) => (
             <button
               key={key}
-              className={`FilterButton ${filterKey === key ? "active" : ""}`}
+              className={`LeftPanel-FilterButton ${filterKey === key ? "active" : ""}`}
               onClick={() => {
                 setFilterKey(key);
                 setSearchText(""); // 필터 바꾸면 검색 초기화
@@ -50,30 +50,30 @@ function LeftPanel({ farmlands, onSelect }) {
                 : key}
             </button>
           ))}
-          <button className="FilterButton">★</button>
+          <button className="LeftPanel-FilterButton">★</button>
         </div>{" "}
       </div>
 
       {/* 농지 목록 */}
-      <div className="FarmlandList">
+      <div className="LeftPanel-FarmlandList">
         {filteredFarmlands.map((farm) => (
           <div
             key={farm.id}
-            className="FarmlandCard"
+            className="LeftPanel-FarmlandCard"
             onClick={() => onSelect(farm)}
           >
-            <div className="FarmlandImage" />
-            <div className="FarmlandContent">
-              <div className="FarmlandTitle">
-                <div className="FarmlandTag">{farm.crop}</div>
-                <div className="Left-FarmlandName">{farm.name}</div>
+            <div className="LeftPanel-FarmlandImage" />
+            <div className="LeftPanel-FarmlandContent">
+              <div className="LeftPanel-FarmlandTitle">
+                <div className="LeftPanel-FarmlandTag">{farm.crop}</div>
+                <div className="LeftPanel-Left-FarmlandName">{farm.name}</div>
               </div>
-              <div className="FarmlandMeta">
+              <div className="LeftPanel-FarmlandMeta">
                 📍 {farm.address} <br />
                 📐 {farm.area}㎡ / 💰 {farm.price}만원
               </div>
             </div>
-            <div className="FarmlandArrow">➤</div>
+            <div className="LeftPanel-FarmlandArrow">➤</div>
           </div>
         ))}
       </div>

@@ -1,4 +1,4 @@
-.BottomContainer {
+.BttomPanel-BottomContainer {
   position: absolute;
   bottom: 2%;
   left: 2%;
@@ -12,7 +12,7 @@
   gap: 1vw;
 }
 
-.BottomPanel {
+.BttomPanel-BottomPanel {
   background-color: rgba(71, 86, 255, 0.8);
   padding: 0.5vw 1vw;
   border-radius: 0.8vw;
@@ -21,7 +21,7 @@
   box-shadow: 0 0.3vw 0.8vw rgba(0, 0, 0, 0.15);
 }
 
-.BottomItem {
+.BttomPanel-BottomItem {
   background-color: white;
   color: #333;
   padding: 0.5vw 1vw;
@@ -36,11 +36,11 @@
   justify-content: center;
 }
 
-.BottomItem:hover {
+.BttomPanel-BottomItem:hover {
   background-color: #e8f0ff;
 }
 
-.BottomItem.active {
+.BttomPanel-BottomItem.active {
   background-color: #4756ff;
   color: white;
   font-weight: bold;

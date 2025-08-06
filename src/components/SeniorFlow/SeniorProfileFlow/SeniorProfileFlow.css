@@ -143,3 +143,56 @@
     opacity: 1;
   }
 }
+
+.SeniorProfile-Wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9f6f1;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.SeniorProfile-Summary {
+  width: 280px;
+  padding: 2rem;
+  background-color: #fff;
+  border-right: 1px solid #eee;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.SeniorProfile-Summary h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.SeniorProfile-Summary ul {
+  list-style: none;
+  padding: 0;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.SeniorProfile-FlowContainer {
+  flex: 1;
+  padding: 2rem 3rem;
+  position: relative;
+}
+
+.SeniorProfile-ProgressBar {
+  height: 10px;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.SeniorProfile-ProgressFill {
+  height: 100%;
+  background-color: #56ba7c;
+  transition: width 0.3s ease;
+}
+
+.SeniorProfile-StepText {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
