@@ -1,80 +1,85 @@
-.alert-container.full-width {
-  width: 100%;
-  padding: 40px 60px;
+.AlertSetting-container.full-width {
+  width: 85%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2% 4%;
   box-sizing: border-box;
   font-family: "Noto Sans KR", sans-serif;
   color: #333;
 }
 
-.section-title {
-  font-size: 20px;
+.AlertSetting-section-title {
+  font-size: 1.1rem; /* 약 17.6px */
   font-weight: 600;
-  margin: 40px 0 20px;
+  margin: 2rem 0 1rem;
 }
 
-.alert-row {
+.AlertSetting-alert-row {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #ccc;
-  padding: 20px 0;
-  gap: 24px;
+  padding: 1.2rem 0;
+  gap: 3%;
+  flex-wrap: wrap;
 }
 
-.toggle-group {
+.AlertSetting-toggle-group {
   display: flex;
-  gap: 10px;
+  gap: 0.6rem;
+  flex-wrap: wrap;
 }
 
-.btn {
+.AlertSetting-btn {
   border: none;
-  border-radius: 20px;
-  padding: 8px 20px;
-  font-size: 15px;
+  border-radius: 2rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
 }
 
-.btn.on {
+.AlertSetting-btn.on {
   background-color: #3b82f6;
   color: white;
 }
 
-.btn.off {
+.AlertSetting-btn.off {
   background-color: #e5e7eb;
   color: #333;
 }
 
-.btn.red {
+.AlertSetting-btn.red {
   background-color: #ef4444;
   color: white;
 }
 
-.alert-text {
-  flex: 1;
-  font-size: 16px;
+.AlertSetting-alert-text {
+  flex: 1 1 60%;
+  font-size: 0.95rem;
   font-weight: 500;
 }
 
-.receive-methods {
+.AlertSetting-receive-methods {
   display: flex;
-  gap: 30px;
-  margin-top: 20px;
+  gap: 2rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
 }
 
-.method {
+.AlertSetting-method {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 15px;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
-.error-messages {
-  margin-top: 30px;
+.AlertSetting-error-messages {
+  margin-top: 1.5rem;
   color: #dc2626;
-  font-size: 14px;
+  font-size: 0.85rem;
   font-weight: 500;
   line-height: 1.6;
 }

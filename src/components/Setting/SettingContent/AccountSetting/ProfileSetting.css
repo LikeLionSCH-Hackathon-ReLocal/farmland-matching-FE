@@ -1,132 +1,100 @@
-.container {
+.ProfileSettings-container {
+  width: 80%;
+  max-width: 800px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 20px 0px;
-  gap: 150px;
-  width: 100%;
+  padding: 1% 0;
+  gap: 3%;
+  flex-wrap: wrap;
   box-sizing: border-box;
 }
 
-/* 좌/우 영역 */
-.left-section,
-.right-section {
-  flex: 1;
+.ProfileSettings-left-section,
+.ProfileSettings-right-section {
+  flex: 1 1 45%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.5em;
 }
 
-/* 프로필 이미지 */
-.profile-img {
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-.gray-circle {
-  width: 150px;
-  height: 150px;
-  background-color: #e0e0e0;
-  border-radius: 50%;
-}
-
-/* 입력 폼 */
-.input-row {
+.ProfileSettings-input-row {
   display: flex;
   flex-direction: column;
 }
 
-.input-row label {
-  font-weight: bold;
-  margin-bottom: 8px;
-  font-size: 16px;
-}
-
-.input-row input,
-.input-row select,
-.input-row textarea {
-  padding: 14px 16px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.error-text {
-  color: red;
+.ProfileSettings-input-row label {
   font-size: 13px;
-  margin-top: 6px;
+  font-weight: 500;
+  margin-bottom: 4px;
 }
 
-/* 등록 버튼 */
-.submit-button {
-  margin-top: 10px;
+.ProfileSettings-input-row input,
+.ProfileSettings-input-row select,
+.ProfileSettings-input-row textarea {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.ProfileSettings-error-text {
+  font-size: 12px;
+  color: red;
+  margin-top: 4px;
+}
+
+.ProfileSettings-submit-button {
+  margin-top: 0.5em;
   align-self: flex-end;
-  padding: 14px 32px;
-  font-size: 18px;
+  padding: 8px 16px;
+  font-size: 14px;
   background-color: #3366ff;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-.submit-button:hover {
+.ProfileSettings-submit-button:hover {
   background-color: #254eda;
 }
 
-.multi-select {
+/* 자격증/기술 관련 버튼 */
+.ProfileSettings-certificate-buttons,
+.ProfileSettings-multi-select {
   display: flex;
+  gap: 6px;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 0.5em;
 }
 
-.select-button {
-  padding: 8px 12px;
+.ProfileSettings-cert-button,
+.ProfileSettings-select-button {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  background-color: white;
-  border-radius: 8px;
+  background-color: #f9f9f9;
   cursor: pointer;
-  font-size: 14px;
 }
 
-.select-button.selected {
+.ProfileSettings-cert-button.selected,
+.ProfileSettings-select-button.selected {
   background-color: #3366ff;
   color: white;
   border-color: #3366ff;
 }
 
-.selected-items {
-  font-size: 14px;
-  color: #333;
-}
-.certificate-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-
-.cert-button {
-  padding: 8px 14px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f2f2f2;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.cert-button.selected {
-  background-color: #3366ff;
-  color: white;
-  border-color: #3366ff;
-}
-
-.custom-cert-input {
-  padding: 12px 14px;
-  font-size: 16px;
-  border-radius: 8px;
+.ProfileSettings-custom-cert-input {
+  font-size: 13px;
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
   width: 100%;
+  box-sizing: border-box;
 }

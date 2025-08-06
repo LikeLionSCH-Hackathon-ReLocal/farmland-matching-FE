@@ -1,40 +1,42 @@
-.recommender-container {
-  width: 100%;
+.RecommenderForm-container {
+  width: 90%;
   max-width: 1000px;
-  padding: 40px 60px;
+  padding: 3% 4%;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-.form-title {
-  font-size: 18px;
+.RecommenderForm-title {
+  font-size: 1.05rem;
   font-weight: bold;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
-.recommender-row {
+.RecommenderForm-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
-.input {
-  padding: 12px 14px;
-  font-size: 16px;
+.RecommenderForm-input {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.9rem;
   border: 1.5px solid #ccc;
-  border-radius: 8px;
-  flex: 1;
+  border-radius: 2rem;
+  flex: 1 1 40%;
+  box-sizing: border-box;
 }
 
-.input.phone {
-  flex: 2;
+.RecommenderForm-input.phone {
+  flex: 2 1 55%;
 }
 
-.remove-btn {
-  width: 32px;
-  height: 32px;
-  font-size: 20px;
+.RecommenderForm-remove-btn {
+  width: 2rem;
+  height: 2rem;
+  font-size: 1.1rem;
   color: white;
   background-color: #ff4d4f;
   border: none;
@@ -46,15 +48,15 @@
   align-items: center;
 }
 
-.add-button-wrapper {
+.RecommenderForm-add-button-wrapper {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 1.5rem;
 }
 
-.add-btn {
-  width: 36px;
-  height: 36px;
-  font-size: 22px;
+.RecommenderForm-add-btn {
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.2rem;
   color: white;
   background-color: #3b82f6;
   border: none;

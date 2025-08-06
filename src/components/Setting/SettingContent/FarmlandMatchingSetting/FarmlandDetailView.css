@@ -1,30 +1,37 @@
-.form-container {
+.FarmlandDetailView-container {
   display: flex;
-  gap: 30px;
-  padding: 10px 20px;
+  flex-wrap: wrap;
+  gap: 2%;
+  padding: 1.5% 3%;
   background: #fff;
-  max-width: 1280px;
+  width: 90%;
+  max-width: 1024px;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.form-section {
-  flex: 1;
+.FarmlandDetailView-section {
+  flex: 1 1 48%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.6rem;
 }
 
-.row {
+.FarmlandDetailView-row {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 1%;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
-  padding: 10px;
+  padding: 0.6rem 0.8rem;
   border: 1px solid #ccc;
-  border-radius: 9px;
-  font-size: 14px;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
 }
 
 textarea {
@@ -32,54 +39,60 @@ textarea {
 }
 
 label {
-  font-size: 14px;
+  font-size: 0.85rem;
   word-break: keep-all;
-  white-space: normal; 
+  white-space: normal;
 }
 
-.checkbox-row {
+/* 체크박스 라인 */
+.FarmlandDetailView-checkbox-row {
   display: flex;
   flex-direction: column;
-  margin-top: 12px;
+  margin-top: 0.8rem;
 }
 
-.gray-map {
+/* 지도 및 이미지 박스 */
+.FarmlandDetailView-gray-map {
   background-color: #ddd;
-  height: 180px;
-  border-radius: 8px;
+  height: 10rem;
+  border-radius: 0.5rem;
   text-align: center;
-  line-height: 180px;
+  line-height: 10rem;
   color: #555;
-  margin-top: 10px;
+  margin-top: 0.6rem;
 }
 
-.image-box {
+.FarmlandDetailView-image-box {
   background-color: #f9f9f9;
-  height: 150px;
+  height: 9rem;
   border: 1px dashed #bbb;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   text-align: center;
-  line-height: 150px;
+  line-height: 9rem;
   color: #999;
 }
 
-.submit-btn, .close-btn {
-  margin-top: 12px;
+/* 버튼 */
+.FarmlandDetailView-submit-btn,
+.FarmlandDetailView-close-btn {
+  margin-top: 0.8rem;
   background-color: #3b82f6;
   color: white;
-  font-weight: bold;
-  padding: 12px;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
   cursor: pointer;
 }
 
-.close-btn {
+.FarmlandDetailView-close-btn {
   background-color: #ef4444;
 }
 
-.vertical-divider {
+/* 구분선 */
+.FarmlandDetailView-vertical-divider {
   width: 1px;
   background-color: #ccc;
-  margin: 0 10px;
+  margin: 0 1%;
 }

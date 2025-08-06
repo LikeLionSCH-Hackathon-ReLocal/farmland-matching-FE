@@ -4,89 +4,91 @@
   align-items: center;
   background-color: #474bb3;
   min-height: 70vh;
-  padding: 40px 20px;
+  padding: 3% 2%;
   box-sizing: border-box;
-  margin-top: 50px;
+  margin-top: 3%;
 }
 
 .Star-wrapper {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 90px;
+  gap: 4%;
   flex-wrap: wrap;
-  margin-bottom: 60px;
+  margin-bottom: 4%;
 }
 
 .Star-card {
   background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  width: 250px;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  width: 100%;
+  max-width: 220px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0.8rem;
   box-sizing: border-box;
-
 }
 
-.info-row {
+.Star-info-row {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 0.3rem;
 }
 
-.info-row label {
+.Star-info-row label {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 0.85rem;
 }
 
-.info-row input {
-  padding: 8px;
+.Star-info-row input {
+  padding: 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
   background-color: #f7f7f7;
   pointer-events: none;
 }
 
-.btn-group {
+/* 버튼 그룹 */
+.Star-btn-group {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 0.5rem;
 }
 
-.btn {
+.Star-btn {
   flex: 1;
-  padding: 10px 0;
+  padding: 0.5rem 0;
   border: none;
-  border-radius: 5px;
+  border-radius: 0.4rem;
   font-weight: bold;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.85rem;
 }
 
-.btn.match {
+.Star-btn.match {
   background-color: #3b82f6;
   color: white;
 }
 
-.btn.detail {
+.Star-btn.detail {
   background-color: #facc15;
   color: black;
 }
 
-.btn.reject {
+.Star-btn.reject {
   background-color: #ef4444;
   color: white;
 }
 
+/* 상단 컨트롤 */
 .Star-controls {
   display: flex;
   align-items: center;
-  gap: 20px;
-  font-size: 18px;
+  gap: 1rem;
+  font-size: 1rem;
   font-weight: bold;
   color: white;
 }
@@ -95,7 +97,7 @@
   background: none;
   border: none;
   color: white;
-  font-size: 22px;
+  font-size: 1.3rem;
   cursor: pointer;
 }
 
@@ -103,10 +105,12 @@
   color: #aaa;
   cursor: not-allowed;
 }
-.farm-image {
+
+/* 농지 이미지 */
+.Star-farm-image {
   width: 100%;
-  height: 160px;
+  height: 9rem;
   object-fit: cover;
-  border-radius: 6px;
-  margin-bottom: 12px;
+  border-radius: 0.4rem;
+  margin-bottom: 0.75rem;
 }

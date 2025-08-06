@@ -20,31 +20,31 @@ export default function RecommenderForm() {
   };
 
   return (
-    <div className="recommender-container">
-      <div className="form-title">추천인 등록</div>
+    <div className="RecommenderForm-container">
+      <div className="RecommenderForm-title">추천인 등록</div>
       {rows.map((row, index) => (
-        <div className="recommender-row" key={index}>
+        <div className="RecommenderForm-row" key={index}>
           <input
-            className="input"
+            className="RecommenderForm-input"
             placeholder="이름"
             value={row.name}
             onChange={(e) => handleChange(index, "name", e.target.value)}
           />
           <input
-            className="input"
+            className="RecommenderForm-input"
             placeholder="관계"
             value={row.relation}
             onChange={(e) => handleChange(index, "relation", e.target.value)}
           />
           <input
-            className="input phone"
+            className="RecommenderForm-input phone"
             placeholder="전화번호"
             value={row.phone}
             onChange={(e) => handleChange(index, "phone", e.target.value)}
           />
           {index >= 1 && (
             <button
-              className="remove-btn"
+              className="RecommenderForm-remove-btn"
               onClick={() => handleRemoveRow(index)}
             >
               −
@@ -53,8 +53,8 @@ export default function RecommenderForm() {
         </div>
       ))}
 
-      <div className="add-button-wrapper">
-        <button className="add-btn" onClick={handleAddRow}>
+      <div className="RecommenderForm-add-button-wrapper">
+        <button className="RecommenderForm-add-btn" onClick={handleAddRow}>
           +
         </button>
       </div>

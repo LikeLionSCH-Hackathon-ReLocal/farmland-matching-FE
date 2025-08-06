@@ -12,51 +12,51 @@ export default function TrustScore() {
   ).toFixed(1);
 
   return (
-    <div className="trust-container">
-      <div className="title">{userName} 의 신뢰 레벨</div>
+    <div className="TrustScore-container">
+      <div className="TrustScore-title">{userName} 의 신뢰 레벨</div>
 
-      <div className="bar-wrapper">
-        <div className="bar-background">
+      <div className="TrustScore-bar-wrapper">
+        <div className="TrustScore-bar-background">
           <div
-            className="bar-foreground"
+            className="TrustScore-bar-foreground"
             style={{ width: `${(average / 100) * 100}%` }}
           ></div>
-          <div className="marker" style={{ left: `${(average / 100) * 100}%` }}>
-            <div className="marker-name">{userName}</div>
+          <div className="TrustScore-marker" style={{ left: `${(average / 100) * 100}%` }}>
+            <div className="TrustScore-marker-name">{userName}</div>
           </div>
         </div>
-        <div className="score-display">{average} 점</div>
+        <div className="TrustScore-score-display">{average} 점</div>
       </div>
 
-      <div className="score-table">
-        <div className="row header">
-          <div className="cell label"></div>
+      <div className="TrustScore-score-table">
+        <div className="TrustScore-row header">
+          <div className="TrustScore-cell label"></div>
           {categories.map((cat, i) => (
-            <div className="cell category" key={i}>
+            <div className="TrustScore-cell category" key={i}>
               {cat}
             </div>
           ))}
-          <div className="cell category">평균</div>
+          <div className="TrustScore-cell category">평균</div>
         </div>
 
-        <div className="row">
-          <div className="cell label user-name">{userName}</div>
+        <div className="TrustScore-row">
+          <div className="TrustScore-cell label user-name">{userName}</div>
           {userScores.map((score, i) => (
-            <div className="cell score user" key={i}>
+            <div className="TrustScore-cell score user" key={i}>
               {score}점
             </div>
           ))}
-          <div className="cell score user">{average}점</div>
+          <div className="TrustScore-cell score user">{average}점</div>
         </div>
 
-        <div className="row">
-          <div className="cell label avg">평균</div>
+        <div className="TrustScore-row">
+          <div className="TrustScore-cell label avg">평균</div>
           {avgScores.map((score, i) => (
-            <div className="cell score avg" key={i}>
+            <div className="TrustScore-cell score avg" key={i}>
               {score}점
             </div>
           ))}
-          <div className="cell score avg">
+          <div className="TrustScore-cell score avg">
             {Math.round(
               avgScores.reduce((sum, s) => sum + s, 0) / avgScores.length
             )}

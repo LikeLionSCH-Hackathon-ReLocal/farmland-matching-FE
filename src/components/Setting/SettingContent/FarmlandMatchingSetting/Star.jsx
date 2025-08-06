@@ -49,31 +49,31 @@ const Star = () => {
       <div className="Star-wrapper">
         {currentUsers.map((user, index) => (
           <div key={index} className="Star-card">
-            <img src={user.image} alt="farm" className="farm-image" />
-            <div className="info-row">
+            <img src={user.image} alt="farm" className="Star-farm-image" />
+            <div className="Star-info-row">
               <label>주소</label>
               <input type="text" value={user.address} readOnly />
             </div>
-            <div className="info-row">
+            <div className="Star-info-row">
               <label>작물</label>
               <input type="text" value={user.crop} readOnly />
             </div>
-            <div className="info-row">
+            <div className="Star-info-row">
               <label>등록일</label>
               <input type="text" value={user.date} readOnly />
             </div>
-            <div className="info-row">
+            <div className="Star-info-row">
               <label>매칭 상태</label>
               <input type="text" value={user.status} readOnly />
             </div>
-            <div className="info-row">
+            <div className="Star-info-row">
               <label>예상 수익</label>
               <input type="text" value={user.profit} readOnly />
             </div>
-            <div className="btn-group">
-              <button className="btn detail">상세 보기</button>
-              <button className="btn match">수락</button>
-              <button className="btn reject">삭제</button>
+            <div className="Star-btn-group">
+              <button className="Star-btn detail">상세 보기</button>
+              <button className="Star-btn match">수락</button>
+              <button className="Star-btn reject">삭제</button>
             </div>
           </div>
         ))}

@@ -55,7 +55,7 @@
   transition: background-color 0.2s, color 0.2s;
 }
 
-.LeftPanel-ilterButton.active {
+.LeftPanel-FilterButton.active {
   background-color: #4a78ff;
   color: white;
 }

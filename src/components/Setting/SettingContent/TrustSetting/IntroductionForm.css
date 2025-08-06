@@ -1,68 +1,71 @@
-.intro-form-container {
-  width: 100%;
+.IntroductionForm-container {
+  width: 90%;
   max-width: 1200px;
-  padding: 60px 70px;
+  padding: 4% 5%;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
-.form-row {
+.IntroductionForm-row {
   display: flex;
   align-items: flex-start;
-  gap: 24px;
-  margin-bottom: 40px;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
-.form-label {
-  width: 140px;
-  font-size: 18px;
+.IntroductionForm-label {
+  width: 8.75rem; /* 140px */
+  font-size: 1rem;
   font-weight: bold;
-  padding-top: 12px;
+  padding-top: 0.75rem;
   flex-shrink: 0;
 }
 
-.form-input-wrapper {
+.IntroductionForm-input-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
-.input {
+.IntroductionForm-input {
   width: 100%;
-  padding: 14px 18px;
-  font-size: 18px;
-  border: 1.8px solid #ccc;
-  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.95rem;
+  border: 1.5px solid #ccc;
+  border-radius: 0.6rem;
   transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
-.input:focus {
+.IntroductionForm-input:focus {
   border-color: #3b82f6;
   outline: none;
 }
 
-.textarea {
+.IntroductionForm-textarea {
   width: 100%;
-  padding: 15px 18px;
-  font-size: 16px;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.95rem;
   resize: vertical;
-  border: 1.8px solid #ccc;
-  border-radius: 10px;
-  min-height: 200px;
+  border: 1.5px solid #ccc;
+  border-radius: 0.6rem;
+  min-height: 12rem;
   transition: border-color 0.2s ease;
+  box-sizing: border-box;
 }
 
-.textarea:focus {
+.IntroductionForm-textarea:focus {
   border-color: #3b82f6;
   outline: none;
 }
 
-.more {
-  font-size: 15px;
+.IntroductionForm-more {
+  font-size: 0.85rem;
   color: #555;
   cursor: pointer;
   align-self: flex-end;
-  margin-top: 4px;
+  margin-top: 0.3rem;
   user-select: none;
 }

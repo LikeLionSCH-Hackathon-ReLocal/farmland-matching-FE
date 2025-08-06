@@ -1,72 +1,77 @@
-.detail-container {
-  width: 100%;
+.Userdetail-container {
+  width: 90%;
+  max-width: 1100px;
   height: 100vh;
-  padding: 40px;
+  padding: 2.5%;
   background-color: #f9f9f9;
   overflow-y: auto;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
-.detail-header {
+.Userdetail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.close-btn {
-  font-size: 24px;
+.Userdetail-close-btn {
+  font-size: 1.5rem;
   background: none;
   border: none;
   cursor: pointer;
 }
 
-.detail-body {
+.Userdetail-body {
   display: flex;
-  gap: 40px;
-  margin-top: 30px;
+  flex-wrap: wrap;
+  gap: 2.5%;
+  margin-top: 2rem;
 }
 
-.detail-left {
-  width: 250px;
+.Userdetail-left {
+  width: 100%;
+  max-width: 220px;
   text-align: center;
 }
 
-.profile-image {
+.Userdetail-profile-image {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 0.6rem;
 }
 
-.tag-list {
-  margin-top: 20px;
+.Userdetail-tag-list {
+  margin-top: 1rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
-.tag {
+.Userdetail-tag {
   background-color: #ffd700;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 14px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 1.25rem;
+  font-size: 0.85rem;
 }
 
-.detail-right {
-  flex: 1;
+.Userdetail-right {
+  flex: 1 1 60%;
+  min-width: 280px;
 }
 
-.row {
+.Userdetail-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px 20px;
-  font-size: 18px;
-  margin-bottom: 24px;
+  gap: 0.8rem 1.2rem;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-.section {
-  margin-bottom: 20px;
+.Userdetail-section {
+  margin-bottom: 1.2rem;
 }
 
-.section h3 {
-  font-size: 20px;
-  margin-bottom: 8px;
+.Userdetail-section h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }

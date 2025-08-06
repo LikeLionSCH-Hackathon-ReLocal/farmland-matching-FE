@@ -43,17 +43,17 @@ const Sell = () => {
             <img
               src={`/images/farm${(farm.id % 5) + 1}.jpg`}
               alt="farm"
-              className="farm-image"
+              className="Sell-farm-image"
             />
-            <div className="info-row">
+            <div className="Sell-info-row">
               <label>주소</label>
               <input type="text" value={farm.address} readOnly />
             </div>
-            <div className="info-row">
+            <div className="Sell-info-row">
               <label>작물</label>
               <input type="text" value={farm.crop} readOnly />
             </div>
-            <div className="info-row">
+            <div className="Sell-info-row">
               <label>등록일</label>
               <input
                 type="text"
@@ -61,7 +61,7 @@ const Sell = () => {
                 readOnly
               />
             </div>
-            <div className="info-row">
+            <div className="Sell-info-row">
               <label>매칭 상태</label>
               <input
                 type="text"
@@ -69,7 +69,7 @@ const Sell = () => {
                 readOnly
               />
             </div>
-            <div className="info-row">
+            <div className="Sell-info-row">
               <label>예상 수익</label>
               <input
                 type="text"
@@ -77,13 +77,13 @@ const Sell = () => {
                 readOnly
               />
             </div>
-            <div className="btn-group">
+            <div className="Sell-btn-group">
               {/* ✅ 상세 보기 클릭 시 선택 설정 */}
-              <button className="btn detail" onClick={() => setSelectedFarm(farm)}>
+              <button className="Sell-btn detail" onClick={() => setSelectedFarm(farm)}>
                 상세 보기
               </button>
-              <button className="btn match">수락</button>
-              <button className="btn reject">삭제</button>
+              <button className="Sell-btn match">수락</button>
+              <button className="Sell-btn reject">삭제</button>
             </div>
           </div>
         ))}

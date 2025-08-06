@@ -31,15 +31,15 @@ const Purchase = () => {
       <div className="Purchase-wrapper">
         {users.map((user, index) => (
           <div key={index} className="Purchase-card">
-            <div className="info-row"><label>이름</label><input type="text" value={user.name} readOnly /></div>
-            <div className="info-row"><label>나이</label><input type="text" value={user.age} readOnly /></div>
-            <div className="info-row"><label>성별</label><input type="text" value={user.gender} readOnly /></div>
-            <div className="info-row"><label>거주지</label><input type="text" value={user.address} readOnly /></div>
-            <div className="info-row"><label>연락처</label><input type="text" value={user.phone} readOnly /></div>
-            <div className="btn-group">
-              <button className="btn match">매칭</button>
-              <button className="btn detail" onClick={() => setSelectedUser(user)}>상세 정보</button>
-              <button className="btn reject">거절</button>
+            <div className="Purchase-info-row"><label>이름</label><input type="text" value={user.name} readOnly /></div>
+            <div className="Purchase-info-row"><label>나이</label><input type="text" value={user.age} readOnly /></div>
+            <div className="Purchase-info-row"><label>성별</label><input type="text" value={user.gender} readOnly /></div>
+            <div className="Purchase-info-row"><label>거주지</label><input type="text" value={user.address} readOnly /></div>
+            <div className="Purchase-info-row"><label>연락처</label><input type="text" value={user.phone} readOnly /></div>
+            <div className="Purchase-btn-group">
+              <button className="Purchase-btn match">매칭</button>
+              <button className="Purchase-btn detail" onClick={() => setSelectedUser(user)}>상세 정보</button>
+              <button className="Purchase-btn reject">거절</button>
             </div>
           </div>
         ))}

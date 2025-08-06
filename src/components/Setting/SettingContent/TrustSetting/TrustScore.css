@@ -1,100 +1,101 @@
-.trust-container {
-  width: 100%;
+.TrustScore-container {
+  width: 90%;
   max-width: 900px;
-  margin: 90px auto;
-  padding: 0 50px;
+  margin: 5rem auto;
+  padding: 0 4%;
+  box-sizing: border-box;
 }
 
-.title {
-  font-size: 25px;
+.TrustScore-title {
+  font-size: 1.5rem;
   font-weight: bold;
-  margin-bottom: 40px;
+  margin-bottom: 2rem;
 }
 
-.bar-wrapper {
+.TrustScore-bar-wrapper {
   position: relative;
-  margin-bottom: 200px;
+  margin-bottom: 8rem;
 }
 
-.bar-background {
+.TrustScore-bar-background {
   width: 100%;
-  height: 12px;
+  height: 0.75rem;
   background-color: #e0e0e0;
-  border-radius: 6px;
+  border-radius: 0.4rem;
   position: relative;
 }
 
-.bar-foreground {
+.TrustScore-bar-foreground {
   height: 100%;
   background-color: #3b82f6;
-  border-radius: 6px 0 0 6px;
+  border-radius: 0.4rem 0 0 0.4rem;
   position: absolute;
   top: 0;
   left: 0;
 }
 
-.marker {
+.TrustScore-marker {
   position: absolute;
-  top: -28px;
+  top: -2rem;
   transform: translateX(-50%);
-}
-
-.marker-name {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 4px;
   text-align: center;
 }
 
-.score-display {
-  font-size: 30px;
+.TrustScore-marker-name {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.TrustScore-score-display {
+  font-size: 1.8rem;
   font-weight: bold;
-  margin-top: 8px;
+  margin-top: 0.5rem;
   color: #3b82f6;
   text-align: right;
 }
 
-.score-table {
+.TrustScore-score-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 1.25rem;
 }
 
-.row {
+.TrustScore-row {
   display: flex;
   align-items: center;
-  margin-bottom: 35px;
+  margin-bottom: 1.5rem;
 }
 
-.cell {
+.TrustScore-cell {
   flex: 1;
   text-align: center;
-  font-size: 20px;
-   font-weight: bold;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
-.cell.label {
+.TrustScore-cell.label {
   flex: 1.2;
   text-align: left;
   font-weight: bold;
 }
 
-.cell.category {
+.TrustScore-cell.category {
   font-weight: 600;
 }
 
-.cell.score.user {
+.TrustScore-cell.score.user {
   color: #3b82f6;
 }
 
-.cell.score.avg {
+.TrustScore-cell.score.avg {
   color: #888;
 }
 
-.cell.user-name {
+.TrustScore-cell.user-name {
   color: #3b82f6;
 }
 
-.cell.avg {
+.TrustScore-cell.avg {
   color: #666;
 }

@@ -1,11 +1,11 @@
-.MyLandContainer {
+.MyRegisteredLand-MyLandContainer {
   padding: 2rem;
   max-width: 600px;
   margin: auto;
   font-size: 18px;
 }
 
-.LandCard {
+.MyRegisteredLand-LandCard {
   background-color: #f8f3eb;
   border: 1px solid #ddd;
   border-radius: 12px;
@@ -13,18 +13,18 @@
   margin-bottom: 1rem;
 }
 
-.LandTitle {
+.MyRegisteredLand-LandTitle {
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 0.5rem;
 }
 
-.LandDetails {
+.MyRegisteredLand-LandDetails {
   font-size: 16px;
   color: #555;
 }
 
-.LandStatus {
+.MyRegisteredLand-LandStatus {
   margin-top: 0.5rem;
   font-size: 16px;
   color: #333;

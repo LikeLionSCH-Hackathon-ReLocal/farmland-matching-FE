@@ -1,5 +1,5 @@
 import "./MyRegisteredLand.css";
-
+import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 const dummyLands = [
   {
     id: 1,
@@ -21,18 +21,19 @@ const dummyLands = [
 
 function MyRegisteredLand() {
   return (
-    <div className="MyLandContainer">
+    <div className="MyRegisteredLand-MyLandContainer">
+      <FloatingEmojis />
       <h2>📋 내가 등록한 농지 목록</h2>
       {dummyLands.length === 0 ? (
         <p>아직 등록된 농지가 없습니다.</p>
       ) : (
         dummyLands.map((land) => (
-          <div key={land.id} className="LandCard">
-            <div className="LandTitle">{land.name}</div>
-            <div className="LandDetails">
+          <div key={land.id} className="MyRegisteredLand-LandCard">
+            <div className="MyRegisteredLand-LandTitle">{land.name}</div>
+            <div className="MyRegisteredLand-LandDetails">
               📍 {land.location} | 🌱 {land.crop} | 📐 {land.area}㎡
             </div>
-            <div className="LandStatus">상태: {land.status}</div>
+            <div className="MyRegisteredLand-LandStatus">상태: {land.status}</div>
           </div>
         ))
       )}

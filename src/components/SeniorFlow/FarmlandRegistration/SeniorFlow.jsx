@@ -6,7 +6,7 @@ import Step4_Facility from "./Step4_Facility";
 import Step5_Access from "./Step5_Access";
 import Step6_Review from "./Step6_Review";
 import Step7_TradeDocs from "./Step7_TradeDocs";
-
+import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 function SeniorFlow({ onSubmit }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -78,6 +78,7 @@ function SeniorFlow({ onSubmit }) {
 
   return (
     <div className="LandRegisterFlow">
+      <FloatingEmojis />
       <div className="Progress">Step {step} / 6</div>
 
       {step === 1 && (
