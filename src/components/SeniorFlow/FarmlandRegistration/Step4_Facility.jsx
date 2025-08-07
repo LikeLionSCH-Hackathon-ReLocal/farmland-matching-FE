@@ -1,7 +1,7 @@
 
 function Check({ label, value, checked, onChange }) {
   return (
-    <label className="CheckItem">
+    <label className="FarmlandRegistration-CheckItem">
       <input
         type="checkbox"
         checked={checked}
@@ -16,12 +16,12 @@ function Step4_Facility({ data, updateData, updateArray, onNext, onBack }) {
   const canNext = data.hasWater !== "" && data.hasElectricity !== "" && data.machineAccess !== "";
 
   return (
-    <div className="Step">
+    <div className="FarmlandRegistration-Step">
       <h2>Step 4. 기반시설</h2>
 
       <label>농업용수</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.hasWater}
         onChange={(e) => updateData("hasWater", e.target.value)}
       >
@@ -32,7 +32,7 @@ function Step4_Facility({ data, updateData, updateArray, onNext, onBack }) {
 
       <label>전기</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.hasElectricity}
         onChange={(e) => updateData("hasElectricity", e.target.value)}
       >
@@ -43,7 +43,7 @@ function Step4_Facility({ data, updateData, updateArray, onNext, onBack }) {
 
       <label>농기계 접근</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.machineAccess}
         onChange={(e) => updateData("machineAccess", e.target.value)}
       >
@@ -52,9 +52,9 @@ function Step4_Facility({ data, updateData, updateArray, onNext, onBack }) {
         <option value="불가">불가</option>
       </select>
 
-      <div className="FieldGroup">
-        <div className="FieldLabel">시설 (복수 선택)</div>
-        <div className="Checks">
+      <div className="FarmlandRegistration-FieldGroup">
+        <div className="FarmlandRegistration-FieldLabel">시설 (복수 선택)</div>
+        <div className="FarmlandRegistration-Checks">
           {["창고", "비닐하우스", "울타리"].map((f) => (
             <Check
               key={f}
@@ -67,9 +67,18 @@ function Step4_Facility({ data, updateData, updateArray, onNext, onBack }) {
         </div>
       </div>
 
-      <div className="ButtonGroup">
-        <button onClick={onBack}>이전</button>
-        <button disabled={!canNext} onClick={onNext}>다음</button>
+      <div className="FarmlandRegistration-ButtonGroup">
+        <div className="FarmlandRegistration-Button" onClick={onBack}>
+          이전
+        </div>
+        <div
+          className={`FarmlandRegistration-Button ${
+            !canNext ? "disabled" : ""
+          }`}
+          onClick={canNext ? onNext : undefined}
+        >
+          다음
+        </div>
       </div>
     </div>
   );

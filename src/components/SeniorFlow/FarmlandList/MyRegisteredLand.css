@@ -1,8 +1,10 @@
 .MyRegisteredLand-MyLandContainer {
   padding: 2rem;
-  max-width: 600px;
+  height: 100%;
+  width: 100%;
   margin: auto;
   font-size: 18px;
+  background-color: #f9f6f1;
 }
 
 .MyRegisteredLand-LandCard {
@@ -11,6 +13,7 @@
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
+  width : 80%;
 }
 
 .MyRegisteredLand-LandTitle {
@@ -28,4 +31,74 @@
   margin-top: 0.5rem;
   font-size: 16px;
   color: #333;
+}
+.MyRegisteredLand-ButtonGroup {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  gap: 0.5rem;
+}
+
+.MyRegisteredLand-Button {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #5a914e;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.MyRegisteredLand-Button:hover {
+  background-color: #4b7e41;
+}
+
+.MyRegisteredLand-Button.danger {
+  background-color: #c84646;
+}
+
+.MyRegisteredLand-Button.danger:hover {
+  background-color: #a93838;
+}
+.MyRegisteredLand-Wrapper {
+  display: flex;
+  gap: 2rem;
+  background-color: #f9f6f1;
+  padding: 2rem;
+}
+
+.MyRegisteredLand-LeftPanel {
+  flex: 1;
+  max-width: 420px;
+}
+
+.MyRegisteredLand-DetailPanel {
+  flex: 2;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  min-height: 300px;
+  font-size: 16px;
+}
+
+.MyRegisteredLand-EmptyDetail {
+  color: #999;
+  font-style: italic;
+}
+
+.MyRegisteredLand-Button.gray {
+  background-color: #999;
+}
+
+.MyRegisteredLand-Button.gray:hover {
+  background-color: #777;
+}
+.MyRegisteredLand-Input {
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
 }

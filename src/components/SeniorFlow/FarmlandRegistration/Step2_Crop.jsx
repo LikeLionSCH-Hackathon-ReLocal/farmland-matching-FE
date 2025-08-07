@@ -1,4 +1,3 @@
-
 function Step2_Crop({ data, updateData, onNext, onBack }) {
   const handleAreaSquare = (v) => {
     updateData("areaSquare", v);
@@ -11,12 +10,12 @@ function Step2_Crop({ data, updateData, onNext, onBack }) {
   const canNext = data.crop && data.areaSquare;
 
   return (
-    <div className="Step">
+    <div className="FarmlandRegistration-Step">
       <h2>Step 2. 최근 재배 작물과 면적</h2>
 
       <label>재배 작물</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.crop}
         onChange={(e) => updateData("crop", e.target.value)}
       >
@@ -30,7 +29,7 @@ function Step2_Crop({ data, updateData, onNext, onBack }) {
 
       <label>면적(㎡)</label>
       <input
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         type="number"
         min="1"
         placeholder="예: 863"
@@ -40,15 +39,24 @@ function Step2_Crop({ data, updateData, onNext, onBack }) {
 
       <label>면적(ha)</label>
       <input
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         placeholder="자동 계산"
         value={data.areaHectare}
         onChange={(e) => updateData("areaHectare", e.target.value)}
       />
 
-      <div className="ButtonGroup">
-        <button onClick={onBack}>이전</button>
-        <button disabled={!canNext} onClick={onNext}>다음</button>
+      <div className="FarmlandRegistration-ButtonGroup">
+        <div className="FarmlandRegistration-Button" onClick={onBack}>
+          이전
+        </div>
+        <div
+          className={`FarmlandRegistration-Button ${
+            !canNext ? "disabled" : ""
+          }`}
+          onClick={canNext ? onNext : undefined}
+        >
+          다음
+        </div>
       </div>
     </div>
   );

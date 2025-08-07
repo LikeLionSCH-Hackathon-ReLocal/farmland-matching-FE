@@ -40,6 +40,7 @@ function SeniorMain() {
           description="등록한 농지의 목록을 확인할 수 있어요. 각 농지의 상세 정보를 확인하고 수정할 수 있습니다."
           onClick={() => navigate("/senior/lands")}
         />
+        
       </section>
     </div>
   );

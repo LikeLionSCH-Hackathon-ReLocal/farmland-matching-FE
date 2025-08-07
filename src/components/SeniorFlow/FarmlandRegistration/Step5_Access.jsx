@@ -3,12 +3,12 @@ function Step5_Access({ data, updateData, onNext, onBack }) {
   const canNext = data.nearRoad !== "" && data.pavedRoad !== "" && data.publicTransit !== "" && data.carAccess !== "";
 
   return (
-    <div className="Step">
+    <div className="FarmlandRegistration-Step">
       <h2>Step 5. 접근성</h2>
 
       <label>도로 인접</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.nearRoad}
         onChange={(e) => updateData("nearRoad", e.target.value)}
       >
@@ -19,7 +19,7 @@ function Step5_Access({ data, updateData, onNext, onBack }) {
 
       <label>포장도로</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.pavedRoad}
         onChange={(e) => updateData("pavedRoad", e.target.value)}
       >
@@ -30,7 +30,7 @@ function Step5_Access({ data, updateData, onNext, onBack }) {
 
       <label>대중교통 접근성</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.publicTransit}
         onChange={(e) => updateData("publicTransit", e.target.value)}
       >
@@ -42,7 +42,7 @@ function Step5_Access({ data, updateData, onNext, onBack }) {
 
       <label>차량 진입</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.carAccess}
         onChange={(e) => updateData("carAccess", e.target.value)}
       >
@@ -51,9 +51,18 @@ function Step5_Access({ data, updateData, onNext, onBack }) {
         <option value="불가">불가</option>
       </select>
 
-      <div className="ButtonGroup">
-        <button onClick={onBack}>이전</button>
-        <button disabled={!canNext} onClick={onNext}>다음</button>
+      <div className="FarmlandRegistration-ButtonGroup">
+        <div className="FarmlandRegistration-Button" onClick={onBack}>
+          이전
+        </div>
+        <div
+          className={`FarmlandRegistration-Button ${
+            !canNext ? "disabled" : ""
+          }`}
+          onClick={canNext ? onNext : undefined}
+        >
+          다음
+        </div>
       </div>
     </div>
   );

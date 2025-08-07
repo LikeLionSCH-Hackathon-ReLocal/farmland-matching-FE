@@ -3,12 +3,12 @@ function Step3_LandDetail({ data, updateData, onNext, onBack }) {
   const canNext = data.soilType && data.waterSource && data.owner;
 
   return (
-    <div className="Step">
+    <div className="FarmlandRegistration-Step">
       <h2>Step 3. 토지 상세 정보</h2>
 
       <label>토양 형태</label>
       <select
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         value={data.soilType}
         onChange={(e) => updateData("soilType", e.target.value)}
       >
@@ -20,7 +20,7 @@ function Step3_LandDetail({ data, updateData, onNext, onBack }) {
 
       <label>용수 접근성</label>
       <input
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         placeholder="예: 인근 하천과 연결됨"
         value={data.waterSource}
         onChange={(e) => updateData("waterSource", e.target.value)}
@@ -28,17 +28,17 @@ function Step3_LandDetail({ data, updateData, onNext, onBack }) {
 
       <label>소유자 이름</label>
       <input
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         placeholder="예: 이말순"
         value={data.owner}
         onChange={(e) => updateData("owner", e.target.value)}
       />
 
-      <div className="Row">
-        <div className="Col">
+      <div className="FarmlandRegistration-Row">
+        <div className="FarmlandRegistration-Col">
           <label>소유자 연령 (선택)</label>
           <input
-            className="InputField"
+            className="FarmlandRegistration-InputField"
             type="number"
             min="0"
             placeholder="예: 75"
@@ -46,10 +46,10 @@ function Step3_LandDetail({ data, updateData, onNext, onBack }) {
             onChange={(e) => updateData("ownerAge", e.target.value)}
           />
         </div>
-        <div className="Col">
+        <div className="FarmlandRegistration-Col">
           <label>거주지 (선택)</label>
           <input
-            className="InputField"
+            className="FarmlandRegistration-InputField"
             placeholder="예: 순천향대"
             value={data.home}
             onChange={(e) => updateData("home", e.target.value)}
@@ -59,15 +59,24 @@ function Step3_LandDetail({ data, updateData, onNext, onBack }) {
 
       <label>등록일 (선택)</label>
       <input
-        className="InputField"
+        className="FarmlandRegistration-InputField"
         type="date"
         value={data.registerDate}
         onChange={(e) => updateData("registerDate", e.target.value)}
       />
 
-      <div className="ButtonGroup">
-        <button onClick={onBack}>이전</button>
-        <button disabled={!canNext} onClick={onNext}>다음</button>
+      <div className="FarmlandRegistration-ButtonGroup">
+        <div className="FarmlandRegistration-Button" onClick={onBack}>
+          이전
+        </div>
+        <div
+          className={`FarmlandRegistration-Button ${
+            !canNext ? "disabled" : ""
+          }`}
+          onClick={canNext ? onNext : undefined}
+        >
+          다음
+        </div>
       </div>
     </div>
   );
