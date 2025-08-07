@@ -39,17 +39,17 @@
 
 .SettingModal-MainSettingsArea {
   flex: 1;
-  padding: 2vw;
+  padding: 1.8vw;
   overflow-y: auto;
   font-size: 0.9vw;
 }
 
 .SettingModal-SettingsSectionTitle {
-  font-size: 1.1vw;
+  font-size: 1vw;
   font-weight: bold;
-  padding-bottom: 0.8vw;
+  padding-bottom: 0.5vw;
+  margin-bottom: 1.0vw;
   border-bottom: 1px solid #ddd;
-  margin-bottom: 1.5vw;
   color: #333;
 }
 
@@ -57,7 +57,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.6vw;
-  margin-bottom: 2vw;
+  margin-bottom: 0.8vw;
 }
 
 .SettingModal-TabButton {

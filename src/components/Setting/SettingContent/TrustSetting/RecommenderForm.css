@@ -24,7 +24,7 @@
   padding: 0.5rem 0.9rem;
   font-size: 0.9rem;
   border: 1.5px solid #ccc;
-  border-radius: 2rem;
+  border-radius: 0.6rem;
   flex: 1 1 40%;
   box-sizing: border-box;
 }
@@ -34,9 +34,9 @@
 }
 
 .RecommenderForm-remove-btn {
-  width: 2rem;
-  height: 2rem;
-  font-size: 1.1rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.8rem;
   color: white;
   background-color: #ff4d4f;
   border: none;

@@ -9,7 +9,7 @@ const Star = () => {
       crop: "배",
       date: "2025-07-19",
       status: "대기 중",
-      profit: "모름",
+      profit: "500만 원",
     },
     {
       image: "/images/farm2.jpg",
@@ -25,11 +25,11 @@ const Star = () => {
       crop: "사과",
       date: "2025-05-07",
       status: "매칭 성공",
-      profit: "모름",
+      profit: "800만 원",
     },
   ];
 
-  const itemsPerPage = 3;
+  const itemsPerPage = 2;
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(users.length / itemsPerPage);
@@ -50,26 +50,31 @@ const Star = () => {
         {currentUsers.map((user, index) => (
           <div key={index} className="Star-card">
             <img src={user.image} alt="farm" className="Star-farm-image" />
-            <div className="Star-info-row">
+            <div className="Star-info-row wide">
               <label>주소</label>
-              <input type="text" value={user.address} readOnly />
+              <span>{user.address}</span>
             </div>
-            <div className="Star-info-row">
-              <label>작물</label>
-              <input type="text" value={user.crop} readOnly />
+            <div className="Star-info-row horizontal">
+              <div>
+                <label>작물</label>
+                <span>{user.crop}</span>
+              </div>
+              <div>
+                <label>등록일</label>
+                <span>{user.date}</span>
+              </div>
             </div>
-            <div className="Star-info-row">
-              <label>등록일</label>
-              <input type="text" value={user.date} readOnly />
+            <div className="Star-info-row horizontal">
+              <div>
+                <label>매칭 상태</label>
+                <span>{user.status}</span>
+              </div>
+              <div>
+                <label>예상 수익</label>
+                <span>{user.profit}</span>
+              </div>
             </div>
-            <div className="Star-info-row">
-              <label>매칭 상태</label>
-              <input type="text" value={user.status} readOnly />
-            </div>
-            <div className="Star-info-row">
-              <label>예상 수익</label>
-              <input type="text" value={user.profit} readOnly />
-            </div>
+
             <div className="Star-btn-group">
               <button className="Star-btn detail">상세 보기</button>
               <button className="Star-btn match">수락</button>

@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import "./RecommenderForm.css";
 
 export default function RecommenderForm() {
-  const [rows, setRows] = useState([{ name: "", relation: "", phone: "" }]);
+  const [rows, setRows] = useState([{ name: "", relation: "", phone: "" , mail:""}]);
 
   const handleAddRow = () => {
-    setRows([...rows, { name: "", relation: "", phone: "" }]);
+    setRows([...rows, { name: "", relation: "", phone: "" , mail: ""}]);
   };
 
   const handleRemoveRow = (index) => {
@@ -37,10 +37,16 @@ export default function RecommenderForm() {
             onChange={(e) => handleChange(index, "relation", e.target.value)}
           />
           <input
-            className="RecommenderForm-input phone"
+            className="RecommenderForm-input"
             placeholder="전화번호"
             value={row.phone}
             onChange={(e) => handleChange(index, "phone", e.target.value)}
+          />
+          <input
+            className="RecommenderForm-input"
+            placeholder="메일"
+            value={row.phone}
+            onChange={(e) => handleChange(index, "mail", e.target.value)}
           />
           {index >= 1 && (
             <button

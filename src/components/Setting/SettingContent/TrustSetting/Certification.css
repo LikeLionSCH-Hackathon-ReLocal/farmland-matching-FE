@@ -1,68 +1,71 @@
-.Certification-container {
-  width: 90%;
-  max-width: 900px;
-  padding: 4% 3%;
-  margin: 0 auto;
-  box-sizing: border-box;
+.Certification-Container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  font-size: 16px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.2rem;
 }
 
-.Certification-row {
+.Certification-Section {
   display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.Certification-label {
-  width: 9rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding-top: 0.6rem;
-  flex-shrink: 0;
-  word-break: keep-all;
-}
-
-.Certification-label.Certification-large {
-  font-size: 1.05rem;
-}
-
-.Certification-input-wrapper {
-  flex: 1;
-  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 0.75rem;
-  min-width: 0;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
-.Certification-input,
-.Certification-select {
+.Certification-Section label {
+  font-weight: bold;
+  min-width: 130px;
+}
+
+.Certification-Input,
+.Certification-Textarea {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
   flex: 1;
-  padding: 0.65rem 1rem;
-  font-size: 0.9rem;
-  border: 1.5px solid #ccc;
-  border-radius: 0.6rem;
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
+  min-width: 250px;
 }
 
-.Certification-input:focus,
-.Certification-select:focus {
-  border-color: #3b82f6;
-  outline: none;
+.Certification-Textarea {
+  resize: vertical;
 }
 
-.Certification-select {
-  background-color: white;
+.Certification-TagContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.Certification-TagButton {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 6px 14px;
   cursor: pointer;
+  font-size: 14px;
 }
 
-.Certification-more {
-  font-size: 0.85rem;
-  color: #555;
+.Certification-TagButton.selected {
+  background-color: #5a914e;
+  color: white;
+  border-color: #5a914e;
+}
+
+.Certification-SubmitButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #5a914e;
+  color: white;
+  font-size: 17px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
+  margin-top: 1rem;
 }

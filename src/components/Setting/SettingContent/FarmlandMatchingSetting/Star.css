@@ -2,28 +2,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #474bb3;
-  min-height: 70vh;
-  padding: 3% 2%;
+  background-color: #fff;
+  height: 70vh;
+  padding: 1% 2%;
   box-sizing: border-box;
-  margin-top: 3%;
+  margin-top: 0.5%;
 }
 
 .Star-wrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: row;         /* 가로 정렬 */
   justify-content: center;
-  gap: 4%;
-  flex-wrap: wrap;
-  margin-bottom: 4%;
+  gap: 2rem;                   /* 카드 사이 간격 줄임 */
+  flex-wrap: nowrap;          /* 줄바꿈 없음 */
+  overflow-x: auto;           /* 가로 스크롤 허용 (옵션) */
+  scroll-behavior: smooth;
 }
 
 .Star-card {
-  background-color: white;
+  background-color: #f9fafb;
   border-radius: 0.6rem;
   padding: 1rem;
-  width: 100%;
-  max-width: 220px;
+flex: 0 0 45%;     /* shrink 방지 + 가로폭 45% */
+width: 45%;
+
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
@@ -34,7 +36,7 @@
 .Star-info-row {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.1rem;
 }
 
 .Star-info-row label {
@@ -86,25 +88,31 @@
 /* 상단 컨트롤 */
 .Star-controls {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 1rem;
+  margin-top: 1rem;
   font-size: 1rem;
   font-weight: bold;
-  color: white;
+  color: #333;
 }
 
 .Star-controls button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.3rem;
+  background: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
 .Star-controls button:disabled {
   color: #aaa;
+  border-color: #eee;
   cursor: not-allowed;
 }
+
 
 /* 농지 이미지 */
 .Star-farm-image {
@@ -114,3 +122,37 @@
   border-radius: 0.4rem;
   margin-bottom: 0.75rem;
 }
+
+.Star-info-row.wide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.Star-info-row.horizontal {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  flex-direction: row;
+
+}
+
+.Star-info-row.horizontal > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Star-info-row.horizontal label {
+  min-width: 70px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+.Star-info-row.horizontal span {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+

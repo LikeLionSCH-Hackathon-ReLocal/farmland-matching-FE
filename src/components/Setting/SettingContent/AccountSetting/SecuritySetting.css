@@ -1,12 +1,9 @@
 .Securitysettings-container {
-  width: 80%;
-  max-width: 480px;
+  width: 100%;
   margin: 2% auto;
   padding: 2%;
   color: #333;
-  background-color: #fff;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+  
   box-sizing: border-box;
 }
 
@@ -93,4 +90,10 @@
   vertical-align: middle;
   font-weight: 500;
   opacity: 0.7;
+}
+
+.SecuritySettings-mailtell{
+  display:flex;
+  gap: 1rem;                /* 요소 간 간격 */
+  align-items: center;  
 }

@@ -1,8 +1,7 @@
 .AlertSetting-container.full-width {
-  width: 85%;
-  max-width: 900px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2% 4%;
+  padding: 0% 1%;
   box-sizing: border-box;
   font-family: "Noto Sans KR", sans-serif;
   color: #333;
@@ -11,7 +10,7 @@
 .AlertSetting-section-title {
   font-size: 1.1rem; /* 약 17.6px */
   font-weight: 600;
-  margin: 2rem 0 1rem;
+  margin: 0.5rem 0 1rem;
 }
 
 .AlertSetting-alert-row {

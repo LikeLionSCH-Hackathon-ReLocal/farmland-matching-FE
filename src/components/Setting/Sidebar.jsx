@@ -9,7 +9,6 @@ function Sidebar({ selected, onMenuSelect }) {
     { label: "내 프로필", section: "계정" },
     { label: "로그인 및 보안", section: "계정" },
     { label: "알림 설정", section: "계정" },
-    { label: "농지 관리", section: "농지 및 매칭"},
     { label: "신청한 매칭 내역", section: "농지 및 매칭" },
     { label: "관심 농지 목록", section: "농지 및 매칭" },
     { label: "신뢰 프로필 관리", section: "신뢰 관리" },
