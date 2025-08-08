@@ -2,70 +2,112 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #474bb3;
-  min-height: 70vh;
-  padding: 3% 2%;
+  background-color: #ffffff;
+  height: 70vh;
+  padding: 1% 2%;
   box-sizing: border-box;
-  margin-top: 3%;
+  margin-top: 0.5%;
 }
 
 .Sell-wrapper {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  gap: 4%;
-  flex-wrap: wrap;
-  margin-bottom: 4%;
+  justify-content: flex-start;
+  gap: 2%;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  width: 96%;
+  height:100%;
 }
 
 .Sell-card {
-  background-color: white;
+  background-color: #f9fafb;
   border-radius: 0.6rem;
-  padding: 1rem;
-  width: 100%;
-  max-width: 220px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 2%;
+  flex: 0 0 45%;
+  width: 45%;
+  box-shadow: 0 0.8% 2% rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 2%;
   box-sizing: border-box;
+}
+
+.Sell-farm-image {
+  width: 100%;
+  height: 30%;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  margin-bottom: 2%;
 }
 
 .Sell-info-row {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.5%;
 }
 
 .Sell-info-row label {
   font-weight: bold;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
+.Sell-info-row span,
 .Sell-info-row input {
+  font-size: 0.9rem;
   padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 0.4rem;
-  font-size: 0.85rem;
   background-color: #f7f7f7;
+  border-radius: 0.4rem;
+  border: 1px solid #ccc;
   pointer-events: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* 버튼 그룹 */
+.Sell-info-row.wide {
+  gap: 1%;
+}
+
+.Sell-info-row.horizontal {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 4%;
+}
+
+.Sell-info-row.horizontal > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5%;
+  width: 48%;
+}
+
+.Sell-info-row.horizontal label {
+  min-width: 30%;
+}
+
+.Sell-info-row.horizontal span {
+  width: 70%;
+}
+
 .Sell-btn-group {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 2%;
+  margin-top: 3%;
 }
 
 .Sell-btn {
   flex: 1;
-  padding: 0.5rem 0;
+  padding: 2.5% 0;
   border: none;
   border-radius: 0.4rem;
   font-weight: bold;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  box-sizing: border-box;
 }
 
 .Sell-btn.match {
@@ -83,34 +125,29 @@
   color: white;
 }
 
-/* 상단 컨트롤 */
 .Sell-controls {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 2%;
+  margin-top: 2%;
   font-size: 1rem;
   font-weight: bold;
-  color: white;
+  color: #333;
 }
 
 .Sell-controls button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.3rem;
+  background: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
 .Sell-controls button:disabled {
   color: #aaa;
+  border-color: #eee;
   cursor: not-allowed;
-}
-
-/* 농지 이미지 */
-.Sell-farm-image {
-  width: 100%;
-  height: 9rem;
-  object-fit: cover;
-  border-radius: 0.4rem;
-  margin-bottom: 0.75rem;
 }

@@ -53,15 +53,15 @@
 }
 
 .Certification-TagButton.selected {
-  background-color: #5a914e;
+  background-color: #3b82f6;
   color: white;
-  border-color: #5a914e;
+  border-color: #3b82f6;
 }
 
 .Certification-SubmitButton {
   width: 100%;
   padding: 12px;
-  background-color: #5a914e;
+  background-color: #3b82f6;
   color: white;
   font-size: 17px;
   border: none;
@@ -111,7 +111,7 @@
 .Certification-AddButton {
   margin-top: 0.5rem;
   padding: 0.6rem 1.2rem;
-  background-color: #5a914e;
+  background-color: #3b82f6;
   color: white;
   border: none;
   cursor: pointer;
