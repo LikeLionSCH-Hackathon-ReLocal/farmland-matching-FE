@@ -20,8 +20,8 @@ function MapView({ farmlands, onSelect, onMapLoad, selectedFarm }) {
         if (!container) return;
 
         const map = new window.kakao.maps.Map(container, {
-          center: new window.kakao.maps.LatLng(36.7691, 126.9334),
-          level: 7,
+center: new window.kakao.maps.LatLng(36.768736444259694, 126.96255752759119),
+          level: 6,
         });
 
         mapRef.current = map;

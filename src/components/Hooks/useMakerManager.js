@@ -33,7 +33,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
       const elapsed = time - startTime;
 
       // opacity: 0.05 ~ 0.25 사이로 부드럽게 진동
-const opacity = 0.15 * Math.sin(elapsed / 400) + baseOpacity;
+      const opacity = 0.15 * Math.sin(elapsed / 400) + baseOpacity;
       circle.setOptions({ fillOpacity: opacity });
 
       circle.__animationId = requestAnimationFrame(animate);

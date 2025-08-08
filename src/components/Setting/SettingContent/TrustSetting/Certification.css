@@ -69,3 +69,52 @@
   cursor: pointer;
   margin-top: 1rem;
 }
+.Certification-Row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.Certification-RowGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.8rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.Certification-Input {
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.Certification-DeleteButton {
+  background-color: #ddd;
+  color: #333;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.Certification-DeleteButton:hover {
+  background-color: #c94e4e;
+  color: white;
+}
+
+.Certification-AddButton {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #5a914e;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}

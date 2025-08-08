@@ -12,7 +12,6 @@
   width: 70vw;              /* 💡 넓게 */
   max-height: 80vh;          /* 💡 좀 더 짧게 */
   overflow-y: auto;
-  z-index: 1000;
 }
 
 .FarmlandDetailPanel-CloseButton {
@@ -58,4 +57,77 @@
   padding-left: 16px;
   border-left: 4px solid #ccc;
   margin: 12px 0;
+}
+.FarmlandDetailPanel-Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.FarmlandDetailPanel-Container {
+  position: absolute;
+  background: #ffffff;
+  width: 90%;
+  max-width: 1100px;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+  cursor: move;
+}
+
+.FarmlandDetailPanel-Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.FarmlandDetailPanel-Buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.FarmlandDetailPanel-Button {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.FarmlandDetailPanel-CloseButton {
+  background-color: #ef4444;
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 0.4rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.FarmlandDetailPanel-Content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2%;
+}
+
+.FarmlandDetailPanel-Section {
+  flex: 1 1 48%;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.6rem;
+  padding: 1rem;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
 }
