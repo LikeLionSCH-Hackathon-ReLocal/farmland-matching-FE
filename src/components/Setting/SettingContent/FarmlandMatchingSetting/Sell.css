@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
-  gap: 2%;
+  gap: 5%;
   flex-wrap: nowrap;
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -129,7 +129,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2%;
+  gap: 10%;
   margin-top: 2%;
   font-size: 1rem;
   font-weight: bold;
@@ -151,3 +151,7 @@
   border-color: #eee;
   cursor: not-allowed;
 }
+.Sell-controls span {
+  white-space: nowrap; /* ✅ 1/10 줄바꿈 방지 */
+}
+

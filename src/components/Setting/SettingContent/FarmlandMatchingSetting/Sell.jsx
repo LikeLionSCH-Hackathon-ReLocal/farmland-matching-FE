@@ -1,13 +1,12 @@
-// Sell.jsx
 import React, { useEffect, useState } from "react";
 import "./Sell.css";
 import { getFarmlandData } from "../../../../api/farmland"; // 경로 확인
-import FarmlandDetailView from "./FarmlandDetailView"; // ✅ 추가
+import FarmlandDetailView from "./FarmlandDetailView"; 
 
 const Sell = () => {
   const [farmlands, setFarmlands] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedFarm, setSelectedFarm] = useState(null); // ✅ 추가
+  const [selectedFarm, setSelectedFarm] = useState(null); 
   const itemsPerPage = 2;
 
   useEffect(() => {

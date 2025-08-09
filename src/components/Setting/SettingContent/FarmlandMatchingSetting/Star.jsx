@@ -49,7 +49,11 @@ const Star = () => {
       <div className="Star-wrapper">
         {currentUsers.map((user, index) => (
           <div key={index} className="Star-card">
-            <img src={user.image} alt="farm" className="Star-farm-image" />
+            <img
+              src={user.image}
+              alt="farm"
+              className="Star-farm-image"
+            />
             <div className="Star-info-row wide">
               <label>주소</label>
               <span>{user.address}</span>
@@ -75,20 +79,29 @@ const Star = () => {
               </div>
             </div>
 
-            <div className="Star-btn-group">
-              <button className="Star-btn detail">상세 보기</button>
-              <button className="Star-btn match">수락</button>
-              <button className="Star-btn reject">삭제</button>
+            <div className="Star-btn-group" >
+              <button className="Star-btn detail">
+                상세 보기
+              </button>
+              <button className="Star-btn match">
+                수락
+              </button>
+              <button className="Star-btn reject">
+                삭제
+              </button>
             </div>
           </div>
         ))}
       </div>
-      <div className="Star-controls">
+      <div
+        className="Star-controls">
         <button onClick={handlePrev} disabled={currentPage === 1}>
           &lt;
         </button>
-        <span>{` ${currentPage} / ${totalPages} `}</span>
-        <button onClick={handleNext} disabled={currentPage === totalPages}>
+        <span>{`${currentPage} / ${totalPages}`}</span>
+        <button
+          onClick={handleNext}
+          disabled={currentPage === totalPages}>
           &gt;
         </button>
       </div>
