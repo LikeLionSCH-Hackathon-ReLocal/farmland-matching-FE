@@ -8,9 +8,11 @@ import Step6_Review from "./Step6_Review";
 import Step7_TradeDocs from "./Step7_TradeDocs";
 import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 import "./SeniorFlow.css";
+import { useNavigate } from "react-router-dom";
 
 function SeniorFlow({ onSubmit }) {
   const [step, setStep] = useState(1);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     address: "",
     roadAddress: "",
@@ -27,12 +29,18 @@ function SeniorFlow({ onSubmit }) {
     owner: "",
     ownerAge: "",
     home: "",
-    registerDate: "",
+    // registerDate: 제거
 
     hasWater: "",
     hasElectricity: "",
     machineAccess: "",
+    // 기존 facilities 배열은 더 이상 필요 없음(유지해도 무방)
     facilities: [],
+
+    // ✅ 새 드롭다운 3개
+    hasWarehouse: "",
+    hasGreenhouse: "",
+    hasFence: "",
 
     nearRoad: "",
     pavedRoad: "",
@@ -70,6 +78,7 @@ function SeniorFlow({ onSubmit }) {
   const handleSubmit = () => {
     if (onSubmit) onSubmit(formData);
     alert("등록이 완료되었습니다!");
+    navigate("/SeniorMain");
   };
 
   return (
@@ -77,7 +86,8 @@ function SeniorFlow({ onSubmit }) {
       <FloatingEmojis />
 
       <main className="FarmlandRegistration-FlowContainer">
-        <div className="FarmlandRegistration-Progress">Step {step} / 6</div>
+        {/* ✅ 총 스텝 7로 수정 */}
+        <div className="FarmlandRegistration-Progress">Step {step} / 7</div>
 
         {step === 1 && (
           <Step1_Location data={formData} updateData={updateData} onNext={next} />
@@ -92,7 +102,7 @@ function SeniorFlow({ onSubmit }) {
           <Step4_Facility
             data={formData}
             updateData={updateData}
-            updateArray={updateArray}
+            updateArray={updateArray}  // 사용 안 해도 무방
             onNext={next}
             onBack={back}
           />
@@ -114,7 +124,7 @@ function SeniorFlow({ onSubmit }) {
       </main>
 
       <aside className="FarmlandRegistration-Summary">
-        <div className ="FarmlandRegistration-inputSumTitle">입력 정보 요약</div>
+        <div className="FarmlandRegistration-inputSumTitle">입력 정보 요약</div>
         <ul>
           <li>📍 행정주소: {formData.address || "미입력"}</li>
           <li>🚏 도로명 주소: {formData.roadAddress || "미입력"}</li>
@@ -127,22 +137,30 @@ function SeniorFlow({ onSubmit }) {
           <li>💧 용수: {formData.waterSource || "미입력"}</li>
           <li>👤 소유자: {formData.owner || "미입력"} ({formData.ownerAge || "?"}세)</li>
           <li>🏠 거주지: {formData.home || "미입력"}</li>
-          <li>🗓️ 등록일: {formData.registerDate || "미입력"}</li>
+
           <li>🚿 농업용수: {formData.hasWater || "미입력"}</li>
           <li>⚡ 전기: {formData.hasElectricity || "미입력"}</li>
           <li>🚜 농기계 접근: {formData.machineAccess || "미입력"}</li>
-          <li>🏗️ 기타 시설: {(formData.facilities || []).join(", ") || "미입력"}</li>
+
+          {/* ✅ 시설 3종을 개별로 표시 */}
+          <li>🏚️ 창고: {formData.hasWarehouse || "미입력"}</li>
+          <li>🌿 비닐하우스: {formData.hasGreenhouse || "미입력"}</li>
+          <li>🚧 울타리: {formData.hasFence || "미입력"}</li>
+
           <li>🛣️ 도로 인접: {formData.nearRoad || "미입력"}</li>
           <li>🧱 포장도로: {formData.pavedRoad || "미입력"}</li>
           <li>🚌 대중교통: {formData.publicTransit || "미입력"}</li>
           <li>🚗 차량 진입: {formData.carAccess || "미입력"}</li>
+
           <li>📄 거래 형태: {formData.tradeType || "미입력"}</li>
           <li>🔍 우선 매칭: {formData.preferMatch || "미입력"}</li>
           <li>💰 희망 금액: {formData.wishPrice || "미입력"}</li>
           <li>📅 매도 희망 시기: {formData.wishWhen || "미입력"}</li>
           <li>📝 등록 사유: {formData.reason || "미입력"}</li>
           <li>💬 어르신 한마디: {formData.comment || "미입력"}</li>
-          <li>📎 첨부 서류:
+
+          <li>
+            📎 첨부 서류:
             <ul style={{ marginLeft: "1rem" }}>
               <li>등기부등본: {formData.docDeung ? "첨부됨" : "없음"}</li>
               <li>토지대장: {formData.docToji ? "첨부됨" : "없음"}</li>

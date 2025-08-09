@@ -32,7 +32,8 @@ function ProfileSettings({ user, onChange }) {
     return form.name.trim() && form.age.trim() && form.callNumber.trim();
   }, [form]);
 
-  const onField = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
+  const onField = (key) => (e) =>
+    setForm((p) => ({ ...p, [key]: e.target.value }));
 
   const handleSave = () => {
     if (!canSave) return;
@@ -50,20 +51,36 @@ function ProfileSettings({ user, onChange }) {
         <div className="ProfileSettings-left-top-section">
           <div className="ProfileSettings-input-row half-width">
             <label>이름</label>
-            <input value={form.name} onChange={onField("name")} disabled={!editMode} />
+            <input
+              value={form.name}
+              onChange={onField("name")}
+              disabled={!editMode}
+            />
           </div>
           <div className="ProfileSettings-input-row half-width">
             <label>나이</label>
-            <input value={form.age} onChange={onField("age")} disabled={!editMode} />
+            <input
+              value={form.age}
+              onChange={onField("age")}
+              disabled={!editMode}
+            />
           </div>
           <div className="ProfileSettings-input-row half-width">
             <label>성별</label>
-            <input value={form.sex} onChange={onField("sex")} disabled={!editMode} />
+            <input
+              value={form.sex}
+              onChange={onField("sex")}
+              disabled={!editMode}
+            />
           </div>
         </div>
 
         <div className="ProfileSettings-profile-photo">
-          <img src="/images/ptf.png" alt="프로필 사진" className="ProfileSettings-photo-img" />
+          <img
+            src={user?.profileImage || "/images/default_profile.png"}
+            alt="프로필 사진"
+            className="ProfileSettings-photo-img"
+          />
         </div>
       </div>
 
@@ -76,7 +93,9 @@ function ProfileSettings({ user, onChange }) {
             onChange={onField("callNumber")}
             disabled={!editMode}
           />
-          <span className="ProfileSettings-error-text">현재 전화번호 인증이 완료되지 않았습니다.</span>
+          <span className="ProfileSettings-error-text">
+            현재 전화번호 인증이 완료되지 않았습니다.
+          </span>
         </div>
 
         <div className="ProfileSettings-input-row">
@@ -87,32 +106,51 @@ function ProfileSettings({ user, onChange }) {
             onChange={onField("mail")}
             disabled={!editMode}
           />
-          <span className="ProfileSettings-error-text">현재 이메일 인증이 완료되지 않았습니다.</span>
+          <span className="ProfileSettings-error-text">
+            현재 이메일 인증이 완료되지 않았습니다.
+          </span>
         </div>
 
         <div className="ProfileSettings-input-row">
           <label>주소</label>
-          <input value={form.address} onChange={onField("address")} disabled={!editMode} />
+          <input
+            value={form.address}
+            onChange={onField("address")}
+            disabled={!editMode}
+          />
         </div>
       </div>
 
       {!editMode ? (
-        <button className="ProfileSettings-submit-button" onClick={() => setEditMode(true)}>
+        <button
+          className="ProfileSettings-submit-button"
+          onClick={() => setEditMode(true)}
+        >
           수정하기
         </button>
       ) : (
         <div style={{ display: "flex", gap: "0.6rem" }}>
-          <button className="ProfileSettings-submit-button" disabled={!canSave} onClick={handleSave}>
+          <button
+            className="ProfileSettings-submit-button"
+            disabled={!canSave}
+            onClick={handleSave}
+          >
             저장
           </button>
-          <button className="ProfileSettings-cancel-button" onClick={() => { setForm({
-              name: user?.name || "",
-              age: user?.age || "",
-              sex: user?.sex || "",
-              callNumber: user?.callNumber || "",
-              mail: user?.mail || "",
-              address: user?.address || "",
-            }); setEditMode(false); }}>
+          <button
+            className="ProfileSettings-cancel-button"
+            onClick={() => {
+              setForm({
+                name: user?.name || "",
+                age: user?.age || "",
+                sex: user?.sex || "",
+                callNumber: user?.callNumber || "",
+                mail: user?.mail || "",
+                address: user?.address || "",
+              });
+              setEditMode(false);
+            }}
+          >
             취소
           </button>
         </div>

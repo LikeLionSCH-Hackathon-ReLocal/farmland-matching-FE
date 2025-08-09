@@ -6,6 +6,7 @@ export const getYoungUserData = async () => {
       sex: "남성",
       mail:"asdf12345@naver.com",
       callNumber: "010-1234-5678", 
+      profileImage: "/images/youngfarmer_image.png", 
       address: "충청남도 아산시 신창면 읍내리 501-26 레자미 5 305호",
       detail: {
         certification: { //자격증

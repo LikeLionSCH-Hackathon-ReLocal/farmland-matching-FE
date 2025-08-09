@@ -39,7 +39,7 @@ export const getFarmlandData = async () => {
           netProfit: "2,806,600원 ± 12%",
         },
         trustMatch: {
-          status: "매칭 대기 중",
+          status: "매칭 성공",
           preferences: ["배 재배 경험 우대", "인근 거주자 선호"],
           waitingYouth: 2,
         },

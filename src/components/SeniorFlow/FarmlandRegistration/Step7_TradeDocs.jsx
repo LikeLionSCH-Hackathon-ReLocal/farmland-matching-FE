@@ -94,11 +94,6 @@ function Step7_TradeDocs({ data, updateData, onBack, onSubmit }) {
           </div>
         </div>
       </div>
-
-      <div className="FarmlandRegistration-ButtonGroup">
-        <button onClick={onBack}>이전</button>
-        <button disabled={!canSubmit} onClick={onSubmit}>등록 완료</button>
-      </div>
       <div className="FarmlandRegistration-ButtonGroup">
         <div className="FarmlandRegistration-Button" onClick={onBack}>
           이전
