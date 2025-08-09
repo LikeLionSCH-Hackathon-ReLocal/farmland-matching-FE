@@ -80,7 +80,8 @@
   margin-top: 4px;
 }
 
-.ProfileSettings-submit-button {
+.ProfileSettings-submit-button,
+.ProfileSettings-cancel-button {
   margin-top: 1em;
   align-self: flex-end;
   padding: 8px 16px;
@@ -92,9 +93,18 @@
   cursor: pointer;
 }
 
+.ProfileSettings-cancel-button{
+  background-color: rgb(231, 64, 64);
+}
+
 .ProfileSettings-submit-button:hover {
   background-color: #254eda;
 }
+
+.ProfileSettings-cancel-button:hover{
+  background-color: rgb(202, 45, 45);
+}
+
 
 .ProfileSettings-certificate-buttons,
 .ProfileSettings-multi-select {

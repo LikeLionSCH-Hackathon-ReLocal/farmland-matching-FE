@@ -1,71 +1,101 @@
-.IntroductionForm-container {
-  width: 90%;
-  max-width: 1200px;
-  padding: 4% 5%;
-  margin: 0 auto;
+/* 전체 루트: 가로 폭 꽉 채우기 + 중앙 정렬 여백 */
+.IntroForm-root {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* 폭 수축 가능 */
+  padding: 0.5rem;
   box-sizing: border-box;
 }
 
-.IntroductionForm-row {
+/* 카드 컨테이너 */
+.IntroForm-card {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.05);
+  padding: 1.2rem;
+  box-sizing: border-box;
+  min-width: 0; /* 핵심: 자식이 100%로 늘어나도록 */
+}
+
+/* 한 줄(라벨 + 인풋) */
+.IntroForm-row {
   display: flex;
   align-items: flex-start;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
   flex-wrap: wrap;
+  min-width: 0; /* 핵심 */
 }
 
-.IntroductionForm-label {
-  width: 8.75rem; /* 140px */
-  font-size: 1rem;
-  font-weight: bold;
-  padding-top: 0.75rem;
+.IntroForm-label {
+  width: 8.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding-top: 0.6rem;
   flex-shrink: 0;
+  color: #111827;
 }
 
-.IntroductionForm-input-wrapper {
-  flex: 1;
+/* 인풋 래퍼: 가로 꽉 차게 */
+.IntroForm-inputWrap {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  min-width: 0; /* 핵심 */
 }
 
-.IntroductionForm-input {
+/* 입력 요소 공통 */
+.IntroForm-input,
+.IntroForm-textarea {
   width: 100%;
-  padding: 0.75rem 1.1rem;
+  padding: 0.78rem 1rem;
   font-size: 0.95rem;
-  border: 1.5px solid #ccc;
-  border-radius: 0.6rem;
-  transition: border-color 0.2s ease;
+  border: 1.5px solid #d6d6d6;
+  border-radius: 10px;
+  transition: border-color .2s, box-shadow .2s, background .2s;
   box-sizing: border-box;
+  background: #fafafa;
 }
-
-.IntroductionForm-input:focus {
+.IntroForm-input:focus,
+.IntroForm-textarea:focus {
   border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
   outline: none;
+  background: #fff;
 }
 
-.IntroductionForm-textarea {
-  width: 100%;
-  padding: 0.9rem 1.1rem;
-  font-size: 0.95rem;
-  resize: vertical;
-  border: 1.5px solid #ccc;
-  border-radius: 0.6rem;
-  min-height: 12rem;
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
-}
-
-.IntroductionForm-textarea:focus {
-  border-color: #3b82f6;
-  outline: none;
-}
-
-.IntroductionForm-more {
-  font-size: 0.85rem;
-  color: #555;
-  cursor: pointer;
+/* 글자수 카운터 */
+.IntroForm-counter {
   align-self: flex-end;
-  margin-top: 0.3rem;
-  user-select: none;
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+/* 버튼 */
+.IntroForm-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+.IntroForm-save {
+  padding: 0.7rem 1.2rem;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform .12s ease, filter .15s ease;
+}
+.IntroForm-save:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.IntroForm-save:disabled { opacity: .6; cursor: not-allowed; }
+
+/* 반응형 */
+@media (max-width: 720px) {
+  .IntroForm-label { width: 100%; padding-top: 0; }
 }

@@ -1,120 +1,170 @@
 .Certification-Container {
-  max-width: 1000px;
+  max-width: 980px;
   margin: 2rem auto;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 12px;
-  font-size: 16px;
+  padding: 1.2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
-.Certification-Section {
+.Certification-Header h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.Certification-Header p {
+  margin: 0 0 0.25rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* 카드 섹션 */
+.Certification-Card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border: 1px solid #eee;
+}
+
+.Certification-Card h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.15rem;
+}
+
+.Certification-CardHeader {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.8rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.Certification-Empty {
+  padding: 0.75rem 0.5rem;
+  color: #666;
+  font-size: 0.95rem;
 }
 
-.Certification-Section label {
-  font-weight: bold;
-  min-width: 130px;
+/* 행/그리드 */
+.Certification-RowGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.7rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
 }
 
 .Certification-Input,
 .Certification-Textarea {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  flex: 1;
-  min-width: 250px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #d8d8d8;
+  font-size: 0.96rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color .2s, box-shadow .2s;
+  background: #fafafa;
 }
-
-.Certification-Textarea {
-  resize: vertical;
+.Certification-Input:focus,
+.Certification-Textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  background: #fff;
 }
+.Certification-Textarea { resize: vertical; }
 
+/* 태그 버튼 */
 .Certification-TagContainer {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin: 0.25rem 0 0.5rem;
 }
-
 .Certification-TagButton {
-  background-color: #eee;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 6px 14px;
+  background-color: #f1f3f5;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
+  transition: all .15s ease;
 }
-
+.Certification-TagButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
 .Certification-TagButton.selected {
   background-color: #3b82f6;
   color: white;
   border-color: #3b82f6;
 }
 
-.Certification-SubmitButton {
-  width: 100%;
-  padding: 12px;
-  background-color: #3b82f6;
-  color: white;
-  font-size: 17px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 1rem;
-}
-.Certification-Row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.Certification-RowGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 0.8rem;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-
-.Certification-Input {
-  padding: 0.6rem;
-  font-size: 0.95rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.Certification-DeleteButton {
-  background-color: #ddd;
-  color: #333;
-  border: none;
-  padding: 0.4rem 0.6rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-
-.Certification-DeleteButton:hover {
-  background-color: #c94e4e;
-  color: white;
-}
-
+/* 버튼 */
 .Certification-AddButton {
-  margin-top: 0.5rem;
-  padding: 0.6rem 1.2rem;
+  padding: 0.45rem 0.9rem;
   background-color: #3b82f6;
   color: white;
   border: none;
   cursor: pointer;
   font-size: 0.9rem;
-  border-radius: 4px;
+  border-radius: 8px;
+  transition: filter .15s ease;
+}
+.Certification-AddButton:hover { filter: brightness(0.95); }
+
+.Certification-DeleteButton {
+  background-color: #f3f4f6;
+  color: #333;
+  border: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: background-color .15s ease;
+}
+.Certification-DeleteButton:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* 하단 액션 */
+.Certification-ActionRow {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+.Certification-PrimaryButton {
+  padding: 0.7rem 1.2rem;
+  background-color: #111827;
+  color: #fff;
+  font-size: 0.98rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform .12s ease, filter .15s ease;
+}
+.Certification-PrimaryButton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* 유틸 */
+.mt-8 { margin-top: 0.6rem; }
+
+/* 반응형 */
+@media (max-width: 720px) {
+  .Certification-RowGrid {
+    grid-template-columns: 1fr;
+  }
+}
+/* awards용 컬럼 확장 */
+.Certification-RowGrid.awards {
+  grid-template-columns: 1.2fr 1fr 0.6fr auto; /* title, org, year, 삭제버튼 */
+}
+
+/* 작은 화면에서 한 줄로 쌓이도록 */
+@media (max-width: 720px) {
+  .Certification-RowGrid.awards {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,32 +1,58 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Certification.css";
 
-export default function Certification({ data, updateData, onSubmit }) {
-  const [certificates, setCertificates] = useState([]);
-  const [crops, setCrops] = useState([]);
-  const [tools, setTools] = useState([]);
-  const [otherTrade, setOtherTrade] = useState(""); // 기타 거래 형태
-  const [leasePeriod, setLeasePeriod] = useState(""); // 임대 기간
+/**
+ * props
+ * - user: YoungUser 객체(SettingModal에서 내려줌)
+ * - onUserChange(updatedUser): YoungUser 저장 콜백
+ * - data, updateData, onSubmit: 기존 Certification 폼(유지)
+ */
+export default function Certification({ user, onUserChange, data, updateData, onSubmit }) {
+  // 자격증/작물/장비/거래/한마디
+  const [certificates, setCertificates] = useState([]); // [{ name, file }]
+  const [crops, setCrops] = useState([]);               // [string]
+  const [tools, setTools] = useState([]);               // [string]
+  const [trades, setTrades] = useState([]);             // [string]
+  const [leasePeriod, setLeasePeriod] = useState("");
+  const [otherTrade, setOtherTrade] = useState("");
+  const [comment, setComment] = useState("");
+
+  // ✅ 수상 경력
+  const [awards, setAwards] = useState([]);             // [{ title, org, year }]
 
   const tradeOptions = ["토지 매입", "임대", "공유농", "기타"];
 
-  const toggleArrayValue = (key, value) => {
-    const arr = new Set(data[key] || []);
-    if (arr.has(value)) arr.delete(value);
-    else arr.add(value);
-    updateData(key, Array.from(arr));
-  };
+  // YoungUser → 초기값 주입
+  useEffect(() => {
+    if (!user) return;
 
-  const handleCertChange = (index, field, value) => {
-    const updated = [...certificates];
-    updated[index][field] = value;
-    setCertificates(updated);
-  };
+    // 자격증(object → list)
+    const certObj = user.detail?.certification || {};
+    const certNames = Object.values(certObj).filter(Boolean);
+    setCertificates(certNames.map((n) => ({ name: n, file: null })));
 
-  const addCertificate = () => {
-    setCertificates([...certificates, { name: "", file: null }]);
-  };
+    // 관심 작물/장비(object → list)
+    setCrops(Object.values(user.detail?.interest || {}).filter(Boolean));
+    setTools(Object.values(user.detail?.equipment || {}).filter(Boolean));
 
+    // 거래(object → list)
+    setTrades(Object.values(user.detail?.trade || {}).filter(Boolean));
+
+    // 소개
+    setComment(user.detail?.intro?.OneWord || "");
+
+    // 확장 필드
+    setLeasePeriod(user.detail?.leasePeriod || "");
+    setOtherTrade(user.detail?.otherTrade || "");
+
+    // ✅ 수상 경력: detail.win(object) → awards list
+    const winObj = user.detail?.win || {};
+    const winList = Object.values(winObj).filter(Boolean);
+    // 기본적으로 title에 문자열을 넣고 org/year는 빈칸으로 시작
+    setAwards(winList.map((title) => ({ title, org: "", year: "" })));
+  }, [user]);
+
+  // 공용 유틸
   const handleDynamicChange = (setter, index, value) => {
     setter((prev) => {
       const updated = [...prev];
@@ -34,27 +60,101 @@ export default function Certification({ data, updateData, onSubmit }) {
       return updated;
     });
   };
+  const addDynamicField = (setter, initial = "") => setter((prev) => [...prev, initial]);
+  const removeAt = (setter, index) => setter((prev) => prev.filter((_, i) => i !== index));
 
-  const addDynamicField = (setter) => {
-    setter((prev) => [...prev, ""]);
+  const handleCertChange = (idx, field, value) => {
+    setCertificates((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], [field]: value };
+      return next;
+    });
   };
 
-  const handleFinalSubmit = () => {
-    updateData("certificates", certificates);
-    updateData("crops", crops.filter(Boolean));
-    updateData("tools", tools.filter(Boolean));
-    updateData("leasePeriod", leasePeriod);   // 임대 기간 저장
-    updateData("otherTrade", otherTrade);     // 기타 거래 형태 저장
-    onSubmit();
+  // ✅ awards 필드 변경
+  const handleAwardChange = (idx, field, value) => {
+    setAwards((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], [field]: value };
+      return next;
+    });
+  };
+
+  const toggleTrade = (type) => {
+    setTrades((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
+  };
+
+  const canSave = useMemo(() => {
+    return (
+      certificates.some((c) => c.name?.trim()) ||
+      crops.some((c) => c?.trim()) ||
+      tools.some((t) => t?.trim()) ||
+      trades.length > 0 ||
+      comment.trim() ||
+      awards.some((a) => a.title?.trim() || a.org?.trim() || a.year?.trim())
+    );
+  }, [certificates, crops, tools, trades, comment, awards]);
+
+  // 저장
+  const handleSaveAll = () => {
+    if (!user) return;
+
+    const updated = {
+      ...user,
+      detail: {
+        ...user.detail,
+        intro: { ...user.detail?.intro, OneWord: comment },
+        // list 필드(다른 화면에서 쓰기 편함)
+        certificationList: certificates.map((c) => c.name).filter(Boolean),
+        interestList: crops.filter(Boolean),
+        equipmentList: tools.filter(Boolean),
+        tradesList: trades,
+        leasePeriod,
+        otherTrade,
+        // ✅ 수상 경력 리스트 저장
+        awardsList: awards
+          .filter((a) => a.title?.trim() || a.org?.trim() || a.year?.trim())
+          .map((a) => ({ title: a.title?.trim() || "", org: a.org?.trim() || "", year: a.year?.trim() || "" })),
+      },
+    };
+
+    onUserChange?.(updated);
+
+    // 기존 상위 폼도 동기화(있으면)
+    if (typeof updateData === "function") {
+      updateData("certificates", certificates);
+      updateData("crops", crops.filter(Boolean));
+      updateData("tools", tools.filter(Boolean));
+      updateData("trades", trades);
+      updateData("leasePeriod", leasePeriod);
+      updateData("otherTrade", otherTrade);
+      updateData("comment", comment);
+      // ✅ awards도 함께
+      updateData("awards", updated.detail.awardsList);
+    }
+
+    if (typeof onSubmit === "function") onSubmit();
+
+    alert("신뢰 프로필이 저장되었습니다.");
+    console.log("✅ Saved(user):", updated);
   };
 
   return (
     <div className="Certification-Container">
-      <label>자격증, 관심 작물, 사용할 장비에 대해 입력해보세요.</label>
+      <div className="Certification-Header">
+        <h2>신뢰 프로필 관리</h2>
+        <p>자격증 / 관심 작물 / 사용 장비 / 거래 형태 / 수상 경력 / 한마디 소개</p>
+      </div>
 
       {/* 자격증 */}
-      <div className="Certification-Section">
-        <label>자격증</label>
+      <section className="Certification-Card">
+        <div className="Certification-CardHeader">
+          <h3>자격증</h3>
+          <button className="Certification-AddButton" onClick={() => addDynamicField(setCertificates, { name: "", file: null })}>
+            + 추가
+          </button>
+        </div>
+        {certificates.length === 0 && <div className="Certification-Empty">자격증을 추가해 주세요.</div>}
         {certificates.map((cert, index) => (
           <div className="Certification-RowGrid" key={index}>
             <input
@@ -67,150 +167,165 @@ export default function Certification({ data, updateData, onSubmit }) {
             <input
               type="file"
               accept=".pdf"
-              onChange={(e) =>
-                handleCertChange(index, "file", e.target.files[0])
-              }
+              onChange={(e) => handleCertChange(index, "file", e.target.files?.[0] || null)}
               className="Certification-Input"
             />
-            <button
-              className="Certification-DeleteButton"
-              onClick={() =>
-                setCertificates((prev) => prev.filter((_, i) => i !== index))
-              }
-            >
+            <button className="Certification-DeleteButton" onClick={() => removeAt(setCertificates, index)}>
               삭제
             </button>
           </div>
         ))}
-        <button onClick={addCertificate} className="Certification-AddButton">
-          + 자격증 추가
-        </button>
-      </div>
+      </section>
 
       {/* 관심 작물 */}
-      <div className="Certification-Section">
-        <label>관심 작물</label>
+      <section className="Certification-Card">
+        <div className="Certification-CardHeader">
+          <h3>관심 작물</h3>
+          <button className="Certification-AddButton" onClick={() => addDynamicField(setCrops)}>
+            + 추가
+          </button>
+        </div>
+        {crops.length === 0 && <div className="Certification-Empty">관심 작물을 추가해 주세요.</div>}
         {crops.map((crop, index) => (
           <div className="Certification-RowGrid" key={index}>
             <input
               type="text"
-              placeholder="관심 작물"
+              placeholder="예: 사과"
               value={crop}
-              onChange={(e) =>
-                handleDynamicChange(setCrops, index, e.target.value)
-              }
+              onChange={(e) => handleDynamicChange(setCrops, index, e.target.value)}
               className="Certification-Input"
             />
             <div></div>
-            <button
-              className="Certification-DeleteButton"
-              onClick={() =>
-                setCrops((prev) => prev.filter((_, i) => i !== index))
-              }
-            >
+            <button className="Certification-DeleteButton" onClick={() => removeAt(setCrops, index)}>
               삭제
             </button>
           </div>
         ))}
-        <button
-          onClick={() => addDynamicField(setCrops)}
-          className="Certification-AddButton"
-        >
-          + 작물 추가
-        </button>
-      </div>
+      </section>
 
       {/* 사용 장비 */}
-      <div className="Certification-Section">
-        <label>사용 장비</label>
+      <section className="Certification-Card">
+        <div className="Certification-CardHeader">
+          <h3>사용 장비</h3>
+          <button className="Certification-AddButton" onClick={() => addDynamicField(setTools)}>
+            + 추가
+          </button>
+        </div>
+        {tools.length === 0 && <div className="Certification-Empty">사용 장비를 추가해 주세요.</div>}
         {tools.map((tool, index) => (
           <div className="Certification-RowGrid" key={index}>
             <input
               type="text"
               placeholder="예: 트랙터"
               value={tool}
-              onChange={(e) =>
-                handleDynamicChange(setTools, index, e.target.value)
-              }
+              onChange={(e) => handleDynamicChange(setTools, index, e.target.value)}
               className="Certification-Input"
             />
             <div></div>
-            <button
-              className="Certification-DeleteButton"
-              onClick={() =>
-                setTools((prev) => prev.filter((_, i) => i !== index))
-              }
-            >
+            <button className="Certification-DeleteButton" onClick={() => removeAt(setTools, index)}>
               삭제
             </button>
           </div>
         ))}
-        <button
-          onClick={() => addDynamicField(setTools)}
-          className="Certification-AddButton"
-        >
-          + 장비 추가
-        </button>
-      </div>
+      </section>
 
-      {/* 거래 형태 + 확장 입력 */}
-      <div className="Certification-Section">
-        <label>거래 형태</label>
+      {/* 거래 형태 */}
+      <section className="Certification-Card">
+        <h3>거래 형태</h3>
         <div className="Certification-TagContainer">
           {tradeOptions.map((type) => (
             <button
               key={type}
               type="button"
-              className={`Certification-TagButton ${
-                data.trades?.includes(type) ? "selected" : ""
-              }`}
-              onClick={() => toggleArrayValue("trades", type)}
+              className={`Certification-TagButton ${trades.includes(type) ? "selected" : ""}`}
+              onClick={() => toggleTrade(type)}
             >
               {type}
             </button>
           ))}
         </div>
 
-        {/* 조건부 입력 필드 */}
-        {data.trades?.includes("임대") && (
+        {trades.includes("임대") && (
           <input
             type="text"
             placeholder="임대 기간 (예: 2년)"
             value={leasePeriod}
             onChange={(e) => setLeasePeriod(e.target.value)}
-            className="Certification-Input"
+            className="Certification-Input mt-8"
           />
         )}
-        {data.trades?.includes("기타") && (
+        {trades.includes("기타") && (
           <input
             type="text"
             placeholder="기타 거래 형태를 입력해주세요"
             value={otherTrade}
             onChange={(e) => setOtherTrade(e.target.value)}
-            className="Certification-Input"
+            className="Certification-Input mt-8"
           />
         )}
-      </div>
+      </section>
+
+      {/* ✅ 수상 경력 */}
+      <section className="Certification-Card">
+        <div className="Certification-CardHeader">
+          <h3>수상 경력</h3>
+          <button
+            className="Certification-AddButton"
+            onClick={() => setAwards((prev) => [...prev, { title: "", org: "", year: "" }])}
+          >
+            + 추가
+          </button>
+        </div>
+
+        {awards.length === 0 && <div className="Certification-Empty">수상 경력을 추가해 주세요.</div>}
+
+        {awards.map((a, idx) => (
+          <div className="Certification-RowGrid awards" key={idx}>
+            <input
+              className="Certification-Input"
+              type="text"
+              placeholder="수상명 (예: 귀농 창업 경진대회 최우수)"
+              value={a.title}
+              onChange={(e) => handleAwardChange(idx, "title", e.target.value)}
+            />
+            <input
+              className="Certification-Input"
+              type="text"
+              placeholder="수여기관 (예: 농림축산식품부)"
+              value={a.org}
+              onChange={(e) => handleAwardChange(idx, "org", e.target.value)}
+            />
+            <input
+              className="Certification-Input"
+              type="text"
+              placeholder="연도 (예: 2024)"
+              value={a.year}
+              onChange={(e) => handleAwardChange(idx, "year", e.target.value)}
+            />
+            <button className="Certification-DeleteButton" onClick={() => removeAt(setAwards, idx)}>
+              삭제
+            </button>
+          </div>
+        ))}
+      </section>
 
       {/* 한마디 소개 */}
-      <div className="Certification-Section">
-        <label>한마디 소개</label>
+      <section className="Certification-Card">
+        <h3>한마디 소개</h3>
         <textarea
           className="Certification-Textarea"
-          rows={2}
+          rows={3}
           placeholder="예: 도시 농업에서 시작해 귀농을 준비 중입니다."
-          value={data.comment || ""}
-          onChange={(e) => updateData("comment", e.target.value)}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
         />
-      </div>
+      </section>
 
-      {/* 제출 */}
-      <button
-        className="Certification-SubmitButton"
-        onClick={handleFinalSubmit}
-      >
-        제출하기
-      </button>
+      <div className="Certification-ActionRow">
+        <button className="Certification-PrimaryButton" disabled={!canSave} onClick={handleSaveAll}>
+          저장
+        </button>
+      </div>
     </div>
   );
 }

@@ -22,19 +22,20 @@
 }
 
 .RecommenderForm-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: 0.8fr 1fr 1fr 1.2fr auto; /* name | relation | phone | mail | delete */
+  gap: 0.6rem;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
 }
 
 .RecommenderForm-input {
-  padding: 0.5rem 0.9rem;
+  padding: 0.45rem 0.7rem;
   font-size: 0.9rem;
   border: 1.5px solid #ccc;
-  border-radius: 0.6rem;
-  flex: 1 1 40%;
+  border-radius: 0.5rem;
+  width: 100%;
+  min-width: 0; /* grid 안에서 overflow 방지 */
   box-sizing: border-box;
 }
 
@@ -71,4 +72,18 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+}
+
+/* 저장 버튼 보완 (선택 사항) */
+.RecommenderForm-actions .primary {
+  background-color: #111827;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  border: none;
+  cursor: pointer;
+}
+.RecommenderForm-actions .primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

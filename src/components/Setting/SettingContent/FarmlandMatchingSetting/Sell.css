@@ -19,50 +19,54 @@
   scroll-behavior: smooth;
   width: 96%;
   height:100%;
+  padding-bottom:0.5em;
+
 }
 
 .Sell-card {
-  background-color: #f9fafb;
-  border-radius: 0.6rem;
-  padding: 2%;
-  flex: 0 0 45%;
-  width: 45%;
-  box-shadow: 0 0.8% 2% rgba(0, 0, 0, 0.15);
+  background-color: #ffffff; /* 더 깔끔한 흰색 배경 */
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+  flex: 0 0 47%;
+  width: 47%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 부드러운 그림자 */
   display: flex;
   flex-direction: column;
-  gap: 2%;
+  gap: 1rem; /* 요소 간격 넓힘 */
   box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.Sell-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); /* hover 시 살짝 띄움 */
 }
 
 .Sell-farm-image {
   width: 100%;
-  height: 30%;
+  height: 180px; /* 일정한 높이 */
   object-fit: cover;
-  border-radius: 0.4rem;
-  margin-bottom: 2%;
+  border-radius: 0.5rem;
 }
 
 .Sell-info-row {
   display: flex;
   flex-direction: column;
-  gap: 0.5%;
+  gap: 0.4rem;
 }
 
 .Sell-info-row label {
-  font-weight: bold;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #555;
 }
 
-.Sell-info-row span,
-.Sell-info-row input {
-  font-size: 0.9rem;
-  padding: 0.5rem;
-  background-color: #f7f7f7;
+.Sell-info-row span {
+  font-size: 0.95rem;
+  padding: 0.6rem;
+  background-color: #f5f7fa;
   border-radius: 0.4rem;
-  border: 1px solid #ccc;
-  pointer-events: none;
-  width: 100%;
-  box-sizing: border-box;
+  border: 1px solid #e3e6ea;
 }
 
 .Sell-info-row.wide {
@@ -73,7 +77,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 4%;
+gap: 0.8rem;
 }
 
 .Sell-info-row.horizontal > div {

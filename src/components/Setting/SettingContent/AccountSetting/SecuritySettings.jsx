@@ -1,49 +1,141 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./SecuritySetting.css";
 
-export default function ProfileSetting() {
+export default function SecuritySettings({ user, onChange }) {
+  // youngUser에서 초기값을 받아서 로컬 상태로 편집
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
+  // 필드별 편집 모드
+  const [editingEmail, setEditingEmail] = useState(false);
+  const [editingPhone, setEditingPhone] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setEmail(user.mail || "");
+      setPhone(user.callNumber || "");
+    }
+  }, [user]);
+
+  const sendEmailVerification = () => {
+    console.log("📧 인증 메일 전송:", email);
+    alert("인증 메일을 전송했어요.");
+  };
+
+  const sendSmsVerification = () => {
+    console.log("📱 인증 문자 전송:", phone);
+    alert("인증 문자를 전송했어요.");
+  };
+
+  const saveEmail = () => {
+    const updated = { ...user, mail: email };
+    onChange?.(updated);
+    setEditingEmail(false);
+    alert("메일 주소가 저장되었습니다.");
+  };
+
+  const cancelEmail = () => {
+    setEmail(user?.mail || "");
+    setEditingEmail(false);
+  };
+
+  const savePhone = () => {
+    const updated = { ...user, callNumber: phone };
+    onChange?.(updated);
+    setEditingPhone(false);
+    alert("전화번호가 저장되었습니다.");
+  };
+
+  const cancelPhone = () => {
+    setPhone(user?.callNumber || "");
+    setEditingPhone(false);
+  };
+
   return (
     <div className="Securitysettings-container">
       <div className="SecuritySettings-mailtell">
+        {/* 메일 */}
         <div className="Securitysettings-section">
           <label className="Securitysettings-label" htmlFor="email">
             메일 확인
           </label>
+
           <input
             id="email"
             type="email"
-            defaultValue="asdf12345@naver.com"
             className="Securitysettings-input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={!editingEmail}
           />
-          <div className="Securitysettings-button-group">
-            <button className="Securitysettings-btn">메일 전송</button>
-            <button className="Securitysettings-btn">메일 변경</button>
-          </div>
+
+          {!editingEmail ? (
+            <div className="Securitysettings-button-group">
+              <button className="Securitysettings-btn" onClick={sendEmailVerification}>
+                메일 전송
+              </button>
+              <button className="Securitysettings-btn" onClick={() => setEditingEmail(true)}>
+                메일 변경
+              </button>
+            </div>
+          ) : (
+            <div className="Securitysettings-button-group">
+              <button className="Securitysettings-btn" onClick={saveEmail}>
+                저장
+              </button>
+              <button className="Securitysettings-btn" onClick={cancelEmail}>
+                취소
+              </button>
+            </div>
+          )}
+
           <p className="Securitysettings-error-text">
-            현재 이메일 인증이 완료 되지 않았습니다.
+            현재 이메일 인증이 완료되지 않았습니다.
           </p>
         </div>
 
+        {/* 전화번호 */}
         <div className="Securitysettings-section">
           <label className="Securitysettings-label" htmlFor="phone">
             전화번호 확인
           </label>
+
           <input
             id="phone"
             type="text"
-            defaultValue="010-1234-5678"
             className="Securitysettings-input"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            disabled={!editingPhone}
           />
-          <div className="Securitysettings-button-group">
-            <button className="Securitysettings-btn">메시지 전송</button>
-            <button className="Securitysettings-btn">전화번호 변경</button>
-          </div>
+
+          {!editingPhone ? (
+            <div className="Securitysettings-button-group">
+              <button className="Securitysettings-btn" onClick={sendSmsVerification}>
+                메시지 전송
+              </button>
+              <button className="Securitysettings-btn" onClick={() => setEditingPhone(true)}>
+                전화번호 변경
+              </button>
+            </div>
+          ) : (
+            <div className="Securitysettings-button-group">
+              <button className="Securitysettings-btn" onClick={savePhone}>
+                저장
+              </button>
+              <button className="Securitysettings-btn" onClick={cancelPhone}>
+                취소
+              </button>
+            </div>
+          )}
+
           <p className="Securitysettings-error-text">
-            현재 전화번호 인증이 완료 되지 않았습니다.
+            현재 전화번호 인증이 완료되지 않았습니다.
           </p>
         </div>
       </div>
 
+      {/* 비밀번호 변경 (나중에 API 연동 지점) */}
       <div className="Securitysettings-section">
         <label className="Securitysettings-label" htmlFor="old-password">
           비밀번호 변경
@@ -65,6 +157,7 @@ export default function ProfileSetting() {
         </p>
       </div>
 
+      {/* 최근 로그인 기록 (더미 그대로) */}
       <div className="Securitysettings-login-record">
         <label className="Securitysettings-label">최근 로그인 기록</label>
         <table>

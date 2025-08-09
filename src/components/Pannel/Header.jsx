@@ -1,22 +1,22 @@
+// Header.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ⬅ 추가
+import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import SettingsModal from "../Setting/SettingModal.jsx";
 
-function Header() {
+function Header({ onOpenProfile }) {   // ⬅ 추가
   const [showSettings, setShowSettings] = useState(false);
-  const navigate = useNavigate(); // ⬅ 추가
+  const navigate = useNavigate();
 
   return (
     <>
       <div className="HeaderContainer">
         <div className="Header-left-section">
-          {/* 로고 클릭 시 IntroPage로 이동 */}
           <img
             src="/LOGO1.png"
             alt="Logo"
             className="HeaderLogo"
-            onClick={() => navigate("/")} // ⬅ IntroPage 경로로 이동
+            onClick={() => navigate("/")}
           />
           <div className="HeaderTitleContainer">
             <span className="HeaderTitle">밭 볼텨유?</span>
@@ -25,12 +25,8 @@ function Header() {
         </div>
 
         <div className="Header-right-section">
-          <button
-            className="SettingsButton"
-            onClick={() => setShowSettings(true)}
-          >
-            ⚙ 설정
-          </button>
+          <button className="SettingsButton" onClick={onOpenProfile}>🙍 프로필</button> {/* ⬅ 추가 */}
+          <button className="SettingsButton" onClick={() => setShowSettings(true)}>⚙ 설정</button>
         </div>
       </div>
 

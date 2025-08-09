@@ -98,3 +98,45 @@
 .TrustScore-cell.avg {
   color: #666;
 }
+.TrustScore-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.2rem;
+  font-size: 0.95rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.TrustScore-table thead {
+  background: #f3f4f6;
+}
+
+.TrustScore-table th,
+.TrustScore-table td {
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.TrustScore-table th {
+  font-weight: 700;
+}
+
+.TrustScore-table td.label {
+  text-align: left;
+  font-weight: 600;
+}
+
+.TrustScore-table .icon {
+  margin-right: 0.4rem;
+}
+
+.TrustScore-table td.score {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.TrustScore-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
