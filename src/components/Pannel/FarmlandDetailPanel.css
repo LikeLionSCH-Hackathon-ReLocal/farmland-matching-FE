@@ -91,7 +91,8 @@
 
 .FarmlandDetailPanel-Buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
+  margin-right: 3rem;
 }
 
 .FarmlandDetailPanel-Button {

@@ -44,7 +44,7 @@ function FarmlandDetailPanel({ data, onClose }) {
           <h2>농지 상세 정보</h2>
           <div className="FarmlandDetailPanel-Buttons">
             <button className="FarmlandDetailPanel-Button">⭐ 즐겨찾기</button>
-            <button className="FarmlandDetailPanel-Button">📞 연락하기</button>
+            <button className="FarmlandDetailPanel-Button">📃 신청하기</button>
             <button className="FarmlandDetailPanel-CloseButton" onClick={onClose}>✕</button>
           </div>
         </div>

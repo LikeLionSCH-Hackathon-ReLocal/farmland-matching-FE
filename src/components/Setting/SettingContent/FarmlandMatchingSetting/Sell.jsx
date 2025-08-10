@@ -103,7 +103,15 @@ export default function Sell() {
                   채팅
                 </button>
 
-                <button className="Sell-btn reject">삭제</button>
+                <button
+                className="Sell-btn reject"
+                onClick={() => {
+                  if (window.confirm("정말 삭제하시겠습니까?")) {
+                  setFarmlands((prev) => prev.filter((f) => f.id !== farm.id));
+                    }
+                  }} >
+                삭제
+              </button>
               </div>
             </div>
           );

@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import "./SecuritySetting.css";
 
 export default function SecuritySettings({ user, onChange }) {
-  // youngUser에서 초기값을 받아서 로컬 상태로 편집
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
-  // 필드별 편집 모드
   const [editingEmail, setEditingEmail] = useState(false);
   const [editingPhone, setEditingPhone] = useState(false);
+
+  // 비밀번호 관련 상태
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -50,6 +53,15 @@ export default function SecuritySettings({ user, onChange }) {
     setPhone(user?.callNumber || "");
     setEditingPhone(false);
   };
+
+  const handlePasswordChange = () => {
+    alert("비밀번호가 변경되었습니다.");
+    setOldPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const isPasswordMatch = newPassword && confirmPassword && newPassword === confirmPassword;
 
   return (
     <div className="Securitysettings-container">
@@ -135,29 +147,62 @@ export default function SecuritySettings({ user, onChange }) {
         </div>
       </div>
 
-      {/* 비밀번호 변경 (나중에 API 연동 지점) */}
+      {/* 비밀번호 변경 */}
       <div className="Securitysettings-section">
         <label className="Securitysettings-label" htmlFor="old-password">
           비밀번호 변경
         </label>
-        <input
-          id="old-password"
-          type="password"
-          placeholder="기존 비밀번호 입력"
-          className="Securitysettings-input"
-        />
-        <input
-          id="new-password"
-          type="password"
-          placeholder="새 비밀번호 입력"
-          className="Securitysettings-input"
-        />
-        <p className="Securitysettings-password-info">
-          변경할 비밀번호를 다시 한번 입력해 주세요.
-        </p>
+        <div className="Securitysettings-password-row">
+          <input
+            id="old-password"
+            type="password"
+            placeholder="기존 비밀번호 입력"
+            className="Securitysettings-input half"
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+          />
+          <input
+            id="new-password"
+            type="password"
+            placeholder="새 비밀번호 입력"
+            className="Securitysettings-input half"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        <div className="Securitysettings-password-row">
+          <input
+            id="confirm-password"
+            type="password"
+            placeholder="새 비밀번호 확인"
+            className="Securitysettings-input half"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <button
+            className="Securitysettings-changebtn"
+            disabled={!isPasswordMatch}
+            onClick={handlePasswordChange}
+          >
+            비밀번호 변경
+          </button>
+        </div>
+        {confirmPassword && (
+          <p
+            className={
+              isPasswordMatch
+                ? "Securitysettings-password-match success"
+                : "Securitysettings-password-match error"
+            }
+          >
+            {isPasswordMatch
+              ? "비밀번호가 동일합니다."
+              : "비밀번호가 틀립니다."}
+          </p>
+        )}
       </div>
 
-      {/* 최근 로그인 기록 (더미 그대로) */}
+      {/* 최근 로그인 기록 */}
       <div className="Securitysettings-login-record">
         <label className="Securitysettings-label">최근 로그인 기록</label>
         <table>

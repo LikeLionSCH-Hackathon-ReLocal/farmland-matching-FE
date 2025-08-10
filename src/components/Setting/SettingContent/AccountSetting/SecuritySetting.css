@@ -21,7 +21,7 @@
 .Securitysettings-input {
   width: 100%;
   font-size: 0.85rem;
-  padding: 0.5rem 0.75rem;
+  padding: 0.8rem 0.9rem;
   border: 1.4px solid #ccc;
   border-radius: 0.4rem;
   box-sizing: border-box;
@@ -36,7 +36,7 @@
 
 .Securitysettings-button-group {
   display: flex;
-  gap: 1%;
+  gap: 5%;
   margin-bottom: 0.5rem;
   flex-wrap: wrap;
 }
@@ -65,11 +65,46 @@
   margin-bottom: 0.3rem;
 }
 
-.Securitysettings-password-info {
-  font-size: 0.75rem;
-  color: #777;
-  margin-top: -0.4rem;
+/* 비밀번호 입력칸 절반 크기 */
+.Securitysettings-password-row {
+  display: flex;
+  gap: 1%;
+  margin-bottom: 0.5rem;
 }
+
+.Securitysettings-half {
+  flex: 1;
+  
+}
+.Securitysettings-changebtn {
+padding: 0.01rem 1rem;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+
+}
+
+
+/* 비밀번호 일치/불일치 표시 */
+.Securitysettings-password-match {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: -0.3rem;
+}
+
+.Securitysettings-password-match.success {
+  color: #2563eb; /* 파란색 */
+}
+
+.Securitysettings-password-match.error {
+  color: #e02424; /* 빨간색 */
+}
+
 
 .Securitysettings-login-record {
   background-color: #f0f0f0;
