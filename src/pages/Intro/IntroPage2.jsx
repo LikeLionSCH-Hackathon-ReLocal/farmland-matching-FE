@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-
 import "./IntroPage2.css";
 import FloatingEmojis from "../Effect/FloatingEmojis.jsx";
 import BgmController from "../Effect/BgmController.jsx";
@@ -27,6 +26,11 @@ const DIALECTS = {
     title: "밭 내놨당가요? 팔라구요?",
     main: "농지 찾는 이랑, 맡기고픈 이랑 이어불랑께요.",
     typing: "[내 손으로 가꾼 밭이제 누군가한테 넘겨불랑께.]",
+  },
+  강원도: {
+    title: "밭 내놨수다? 팔라구 허요?",
+    main: "논밭 찾는 사람하고 맡기고픈 사람 이어주는 거여.",
+    typing: "[내가 고생허구 가꾼 밭, 이제는 다른 사람한테 넘길라구 허요.]",
   },
   제주도: {
     title: "밭 내놨수과? 팔암쥬?",
@@ -273,12 +277,16 @@ function IntroPage2() {
               <h2 className="FeatureTitle2">농지를 찾고 있는 청년 농부</h2>
               <p className="FeatureExplain2">
                 땅을 구하기 어려운 청년 농부를 위해, AI가 예상 수익을 분석하고
-                적합한 땅을 추천해드립니다.<br /> 이제, 안전하게 내 농업의 첫 걸음을
-                시작해보세요. 경험은 부족하지만 열정은 가득한 당신을 위해,<br />
+                적합한 땅을 추천해드립니다.
+                <br /> 이제, 안전하게 내 농업의 첫 걸음을 시작해보세요. 경험은
+                부족하지만 열정은 가득한 당신을 위해,
+                <br />
                 복잡한 서류 절차도 간편하게, 신뢰할 수 있는 농지 소유자와 직접
-                연결해드립니다.<br /> 단순한 귀농이 아닌, 지속 가능한 농업의 시작을
-                돕는 플랫폼.<br /> 꿈꿔왔던 귀농의 시작, 합리적이고 신뢰 가능한
-                방식으로 연결됩니다.
+                연결해드립니다.
+                <br /> 단순한 귀농이 아닌, 지속 가능한 농업의 시작을 돕는
+                플랫폼.
+                <br /> 꿈꿔왔던 귀농의 시작, 합리적이고 신뢰 가능한 방식으로
+                연결됩니다.
               </p>
             </div>
             <img

@@ -19,7 +19,7 @@ export default function ProfileModal({ user, loading, onClose }) {
             {/* ✅ 상단 기본 정보: 전체 폭 사용 */}
             <section className="ProfileModal-Section full">
               <div className="ProfileModal-Avatar">
-                <img src="/images/ptf.png" alt="프로필" />
+                <img src="/images/youngfarmer_image.png" alt="프로필" />
               </div>
               <div className="ProfileModal-Grid">
                 <Field label="이름" value={user.name} />

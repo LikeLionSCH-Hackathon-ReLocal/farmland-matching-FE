@@ -49,7 +49,7 @@
 
 /* 프로필 상단(아바타+기본정보) */
 .ProfileModal-Avatar img {
-  width: 84px; height: 84px; border-radius: 999px; object-fit: cover;
+  width: 84px; height: 84px; border-radius: 10px; object-fit: cover;
 }
 .ProfileModal-Grid {
   display: grid;
