@@ -17,10 +17,81 @@
   line-height: 1.5;
 }
 
+/* 상단 버튼 묶음 */
+.RightPanel-TopButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.6vw;
+  position: sticky;
+  top: 0;
+  background: #ffffffee;
+  padding-bottom: 0.6vw;
+  z-index: 2;
+}
+
+.RightPanel-ActionGroup {
+  display: flex;
+  gap: 0.4vw;
+  margin-left: auto; /* 상세보기 버튼과 닫기 사이 공간 채우기 */
+}
+
+.RightPanel-DetailButton {
+  background: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 0.4vw;
+  padding: 0.45vw 0.9vw;
+  font-size: 0.8vw;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.RightPanel-DetailButton:hover {
+  background: #f2f2f2;
+}
+
+.RightPanel-PrimaryButton {
+  background: #2e7d32; /* 녹색: 액션 */
+  color: #fff;
+  border: none;
+  border-radius: 0.4vw;
+  padding: 0.45vw 0.9vw;
+  font-size: 0.8vw;
+  cursor: pointer;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.RightPanel-PrimaryButton:hover {
+  filter: brightness(0.95);
+}
+
+.RightPanel-PrimaryButton.is-disabled,
+.RightPanel-PrimaryButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.RightPanel-SecondaryButton {
+  background: #ffffff;
+  color: #333;
+  border: 1px solid #d0d0d0;
+  border-radius: 0.4vw;
+  padding: 0.45vw 0.9vw;
+  font-size: 0.8vw;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.RightPanel-SecondaryButton:hover {
+  background: #f7f7f7;
+}
+
+.RightPanel-SecondaryButton.active {
+  border-color: #ffb300; /* 즐겨찾기 활성 색 */
+  background: #fff8e1;
+}
+
 .RightPanel-CloseButton {
-  position: absolute;
-  top: 1vw;
-  right: 1vw;
+  margin-left: 0.4vw;
   border: none;
   background: transparent;
   font-size: 1.2vw;
@@ -32,7 +103,7 @@
   height: 10vw;
   background-color: #ddd;
   border-radius: 0.6vw;
-  margin-top: 2vw;
+  margin-top: 1vw;
   margin-bottom: 1.2vw;
   display: flex;
   align-items: center;
@@ -93,4 +164,15 @@
 .RightPanel-InfoRow strong {
   min-width: 6vw;
   color: #0077cc;
+}
+
+/* 중앙 상세 모달 오버레이 (이미 사용 중이었으나 스타일이 없으면 추가) */
+.RightPanel-ModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
 }

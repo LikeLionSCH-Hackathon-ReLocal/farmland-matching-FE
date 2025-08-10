@@ -3,17 +3,31 @@ import { useState, useEffect } from "react";
 import "./RightPanel.css";
 import FarmlandDetailPanel from "./FarmlandDetailPanel";
 
-function RightPanel({ selected, onClose }) {
+function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
   const [pageIndex, setPageIndex] = useState(0);
   const [showDetail, setShowDetail] = useState(false);
+  const [applied, setApplied] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const maxPage = 3;
 
   useEffect(() => {
     setPageIndex(0);
     setShowDetail(false);
+    setApplied(false);
+    setIsFavorite(false);
   }, [selected]);
 
   if (!selected) return null;
+
+  const handleApply = () => {
+    setApplied(true);
+    onApply && onApply(selected); // 선택 사항: 외부로 이벤트 전달
+  };
+
+  const handleToggleFavorite = () => {
+    setIsFavorite((v) => !v);
+    onToggleFavorite && onToggleFavorite(selected);
+  };
 
   return (
     <div className="RightPanel-RightContainer">
@@ -24,6 +38,26 @@ function RightPanel({ selected, onClose }) {
         >
           상세 보기
         </button>
+
+        <div className="RightPanel-ActionGroup">
+          <button
+            className={`RightPanel-PrimaryButton ${applied ? "is-disabled" : ""}`}
+            onClick={handleApply}
+            disabled={applied}
+            title={applied ? "이미 신청 완료" : "이 농지에 매칭을 신청합니다"}
+          >
+            {applied ? "신청 완료" : "신청하기"}
+          </button>
+
+          <button
+            className={`RightPanel-SecondaryButton ${isFavorite ? "active" : ""}`}
+            onClick={handleToggleFavorite}
+            title="즐겨찾기에 추가/제거"
+          >
+            {isFavorite ? "즐겨찾기 ✓" : "즐겨찾기 추가"}
+          </button>
+        </div>
+
         <button className="RightPanel-CloseButton" onClick={onClose}>
           ✕
         </button>
