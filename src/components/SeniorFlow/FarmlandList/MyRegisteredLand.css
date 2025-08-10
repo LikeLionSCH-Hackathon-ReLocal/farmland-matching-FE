@@ -1,19 +1,29 @@
-.MyRegisteredLand-MyLandContainer {
-  padding: 2rem;
-  height: 100%;
-  width: 100%;
-  margin: auto;
-  font-size: 18px;
+/* 레이아웃 래퍼 */
+.MyRegisteredLand-Wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
   background-color: #f9f6f1;
+  padding: 5rem 2rem;          /* 좌우 패딩은 조금 줄여 가시성 ↑ */
+  min-height: 100vh;           /* 화면 높이 꽉 채우기 */
+  box-sizing: border-box;      /* 패딩 포함 계산 */
 }
 
+/* 좌측 목록 패널 */
+.MyRegisteredLand-LeftPanel {
+  flex: 1;
+  max-width: 420px;
+}
+
+/* 목록 카드 */
 .MyRegisteredLand-LandCard {
   background-color: #f8f3eb;
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1rem;
-  width : 80%;
+  width: 100%;                 /* 80% → 100%로 자연스러운 폭 */
+  box-sizing: border-box;
 }
 
 .MyRegisteredLand-LandTitle {
@@ -32,6 +42,8 @@
   font-size: 16px;
   color: #333;
 }
+
+/* 버튼 그룹 & 버튼 */
 .MyRegisteredLand-ButtonGroup {
   display: flex;
   justify-content: flex-end;
@@ -46,7 +58,8 @@
   cursor: pointer;
   background-color: #5a914e;
   color: white;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
+  user-select: none;
 }
 
 .MyRegisteredLand-Button:hover {
@@ -60,32 +73,6 @@
 .MyRegisteredLand-Button.danger:hover {
   background-color: #a93838;
 }
-.MyRegisteredLand-Wrapper {
-  display: flex;
-  gap: 2rem;
-  background-color: #f9f6f1;
-  padding: 2rem;
-}
-
-.MyRegisteredLand-LeftPanel {
-  flex: 1;
-  max-width: 420px;
-}
-
-.MyRegisteredLand-DetailPanel {
-  flex: 2;
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  border: 1px solid #ddd;
-  min-height: 300px;
-  font-size: 16px;
-}
-
-.MyRegisteredLand-EmptyDetail {
-  color: #999;
-  font-style: italic;
-}
 
 .MyRegisteredLand-Button.gray {
   background-color: #999;
@@ -94,6 +81,25 @@
 .MyRegisteredLand-Button.gray:hover {
   background-color: #777;
 }
+
+/* 우측 상세 패널 */
+.MyRegisteredLand-DetailPanel {
+  flex: 2;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  min-height: 300px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.MyRegisteredLand-EmptyDetail {
+  color: #999;
+  font-style: italic;
+}
+
+/* 입력 필드 */
 .MyRegisteredLand-Input {
   width: 100%;
   padding: 8px 10px;
@@ -101,4 +107,21 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 15px;
+  box-sizing: border-box;
+}
+
+/* 상단 홈 버튼 (JSX에서 사용 중) */
+.SeniorProfile-BackButton {
+  position: sticky;      /* 스크롤해도 보이게 하려면 sticky, 아니면 relative로 */
+  top: 1rem;
+  margin-bottom: 1rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+.SeniorProfile-BackButton:hover {
+  background: #f2f2f2;
 }

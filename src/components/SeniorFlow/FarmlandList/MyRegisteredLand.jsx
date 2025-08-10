@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./MyRegisteredLand.css";
 import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
+import { useNavigate } from "react-router-dom";
 
 const initialDummyLands = [
   {
@@ -22,6 +23,8 @@ const initialDummyLands = [
 ];
 
 function MyRegisteredLand() {
+  const navigate = useNavigate();
+
   const [lands, setLands] = useState(initialDummyLands);
   const [selectedLand, setSelectedLand] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -31,7 +34,7 @@ function MyRegisteredLand() {
     const confirmed = window.confirm("정말 삭제하시겠습니까?");
     if (!confirmed) return;
     setLands((prev) => prev.filter((land) => land.id !== id));
-    setSelectedLand(null);
+    setSelectedLand((prev) => (prev?.id === id ? null : prev));
     setEditMode(false);
   };
 
@@ -45,16 +48,38 @@ function MyRegisteredLand() {
   };
 
   const handleEditSave = () => {
-    setLands((prev) =>
-      prev.map((land) => (land.id === editForm.id ? editForm : land))
-    );
-    setSelectedLand(editForm);
+    if (!editForm) return;
+    const next = {
+      ...editForm,
+      // 숫자 필드 안전하게 파싱
+      area:
+        editForm.area === "" || editForm.area === null
+          ? 0
+          : Number(editForm.area),
+    };
+    setLands((prev) => prev.map((land) => (land.id === next.id ? next : land)));
+    setSelectedLand(next);
     setEditMode(false);
   };
+
+  // 방어: editMode인데 editForm이 없으면 selectedLand로 초기화
+  useEffect(() => {
+    if (editMode && !editForm && selectedLand) {
+      setEditForm({ ...selectedLand });
+    }
+  }, [editMode, editForm, selectedLand]);
 
   return (
     <div className="MyRegisteredLand-Wrapper">
       <FloatingEmojis />
+
+      <button
+        className="SeniorProfile-BackButton"
+        onClick={() => navigate("/SeniorMain")}
+        type="button"
+      >
+        ⬅ 홈으로
+      </button>
 
       <section className="MyRegisteredLand-LeftPanel">
         <h2>📋 내가 등록한 농지 목록</h2>
@@ -96,42 +121,52 @@ function MyRegisteredLand() {
         {selectedLand ? (
           <>
             <h3>📄 상세 정보</h3>
+
             {editMode ? (
               <>
                 <label>농지 이름</label>
                 <input
                   className="MyRegisteredLand-Input"
-                  value={editForm.name}
+                  value={editForm?.name ?? ""}
                   onChange={(e) => handleEditChange("name", e.target.value)}
                 />
+
                 <label>위치</label>
                 <input
                   className="MyRegisteredLand-Input"
-                  value={editForm.location}
-                  onChange={(e) => handleEditChange("location", e.target.value)}
+                  value={editForm?.location ?? ""}
+                  onChange={(e) =>
+                    handleEditChange("location", e.target.value)
+                  }
                 />
+
                 <label>작물</label>
                 <input
                   className="MyRegisteredLand-Input"
-                  value={editForm.crop}
+                  value={editForm?.crop ?? ""}
                   onChange={(e) => handleEditChange("crop", e.target.value)}
                 />
+
                 <label>면적(㎡)</label>
                 <input
                   className="MyRegisteredLand-Input"
                   type="number"
-                  value={editForm.area}
+                  value={editForm?.area ?? 0}
                   onChange={(e) => handleEditChange("area", e.target.value)}
                 />
+
                 <label>상태</label>
                 <input
                   className="MyRegisteredLand-Input"
-                  value={editForm.status}
+                  value={editForm?.status ?? ""}
                   onChange={(e) => handleEditChange("status", e.target.value)}
                 />
 
                 <div className="MyRegisteredLand-ButtonGroup">
-                  <div className="MyRegisteredLand-Button" onClick={handleEditSave}>
+                  <div
+                    className="MyRegisteredLand-Button"
+                    onClick={handleEditSave}
+                  >
                     💾 저장
                   </div>
                   <div

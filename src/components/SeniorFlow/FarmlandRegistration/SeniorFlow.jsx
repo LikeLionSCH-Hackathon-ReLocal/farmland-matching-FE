@@ -84,7 +84,12 @@ function SeniorFlow({ onSubmit }) {
   return (
     <div className="FarmlandRegistration-Wrapper">
       <FloatingEmojis />
-
+     <button
+        className="SeniorProfile-BackButton"
+        onClick={() => navigate("/SeniorMain")}
+      >
+        ⬅ 홈으로
+      </button>
       <main className="FarmlandRegistration-FlowContainer">
         {/* ✅ 총 스텝 7로 수정 */}
         <div className="FarmlandRegistration-Progress">Step {step} / 7</div>
