@@ -2,24 +2,11 @@ import { useState, useEffect } from "react";
 import "./MyRegisteredLand.css";
 import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 import { useNavigate } from "react-router-dom";
+import { getMatchingPersonData } from "../../../api/Perchaser"; // 경로 조정
 
 const initialDummyLands = [
-  {
-    id: 1,
-    name: "아산 🥔 농지 1",
-    location: "충남 아산시 도고면",
-    crop: "감자",
-    area: 800,
-    status: "매칭 대기",
-  },
-  {
-    id: 2,
-    name: "아산 🍅 농지 2",
-    location: "충남 아산시 배방읍",
-    crop: "토마토",
-    area: 1200,
-    status: "매칭 중",
-  },
+  { id: 1, name: "아산 🥔 농지 1", location: "충남 아산시 도고면", crop: "감자", area: 800, status: "매칭 대기" },
+  { id: 2, name: "아산 🍅 농지 2", location: "충남 아산시 배방읍", crop: "토마토", area: 1200, status: "매칭 중" },
 ];
 
 function MyRegisteredLand() {
@@ -27,8 +14,23 @@ function MyRegisteredLand() {
 
   const [lands, setLands] = useState(initialDummyLands);
   const [selectedLand, setSelectedLand] = useState(null);
+
   const [editMode, setEditMode] = useState(false);
   const [editForm, setEditForm] = useState(null);
+
+  // 신규: 신청자 상태
+  const [applicants, setApplicants] = useState([]);            // 목록
+  const [selectedApplicant, setSelectedApplicant] = useState(null); // 선택된 신청자
+
+  // 상세 보기 클릭 시 해당 농지 선택 + 신청자 로딩
+  const openDetail = async (land) => {
+    setSelectedLand(land);
+    setEditMode(false);
+    setSelectedApplicant(null);
+    const data = await getMatchingPersonData();
+    // 기본 상태: 대기
+    setApplicants(data.map((d) => ({ ...d, status: "대기" })));
+  };
 
   const handleDelete = (id) => {
     const confirmed = window.confirm("정말 삭제하시겠습니까?");
@@ -36,6 +38,8 @@ function MyRegisteredLand() {
     setLands((prev) => prev.filter((land) => land.id !== id));
     setSelectedLand((prev) => (prev?.id === id ? null : prev));
     setEditMode(false);
+    setApplicants([]);
+    setSelectedApplicant(null);
   };
 
   const handleEditStart = (land) => {
@@ -51,15 +55,37 @@ function MyRegisteredLand() {
     if (!editForm) return;
     const next = {
       ...editForm,
-      // 숫자 필드 안전하게 파싱
-      area:
-        editForm.area === "" || editForm.area === null
-          ? 0
-          : Number(editForm.area),
+      area: editForm.area === "" || editForm.area === null ? 0 : Number(editForm.area),
     };
     setLands((prev) => prev.map((land) => (land.id === next.id ? next : land)));
     setSelectedLand(next);
     setEditMode(false);
+  };
+
+  // 신청자 수락/거부
+  const handleAccept = (id) => {
+    setApplicants((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: "수락" } : a))
+    );
+    // 선택 카드도 즉시 반영
+    if (selectedApplicant?.id === id) {
+      setSelectedApplicant({ ...selectedApplicant, status: "수락" });
+    }
+    // 원하면 첫 수락 시 해당 농지 상태를 "매칭 중"으로 변경
+    // if (selectedLand && selectedLand.status !== "매칭 중") {
+    //   const updatedLand = { ...selectedLand, status: "매칭 중" };
+    //   setLands((prev) => prev.map((l) => (l.id === updatedLand.id ? updatedLand : l)));
+    //   setSelectedLand(updatedLand);
+    // }
+  };
+
+  const handleReject = (id) => {
+    setApplicants((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: "거부" } : a))
+    );
+    if (selectedApplicant?.id === id) {
+      setSelectedApplicant({ ...selectedApplicant, status: "거부" });
+    }
   };
 
   // 방어: editMode인데 editForm이 없으면 selectedLand로 초기화
@@ -81,6 +107,7 @@ function MyRegisteredLand() {
         ⬅ 홈으로
       </button>
 
+      {/* 좌측: 내 농지 목록 */}
       <section className="MyRegisteredLand-LeftPanel">
         <h2>📋 내가 등록한 농지 목록</h2>
         {lands.length === 0 ? (
@@ -92,23 +119,12 @@ function MyRegisteredLand() {
               <div className="MyRegisteredLand-LandDetails">
                 📍 {land.location} | 🌱 {land.crop} | 📐 {land.area}㎡
               </div>
-              <div className="MyRegisteredLand-LandStatus">
-                상태: {land.status}
-              </div>
+              <div className="MyRegisteredLand-LandStatus">상태: {land.status}</div>
               <div className="MyRegisteredLand-ButtonGroup">
-                <div
-                  className="MyRegisteredLand-Button"
-                  onClick={() => {
-                    setSelectedLand(land);
-                    setEditMode(false);
-                  }}
-                >
+                <div className="MyRegisteredLand-Button" onClick={() => openDetail(land)}>
                   자세히 보기
                 </div>
-                <div
-                  className="MyRegisteredLand-Button danger"
-                  onClick={() => handleDelete(land.id)}
-                >
+                <div className="MyRegisteredLand-Button danger" onClick={() => handleDelete(land.id)}>
                   삭제
                 </div>
               </div>
@@ -117,6 +133,7 @@ function MyRegisteredLand() {
         )}
       </section>
 
+      {/* 우측: 상세 + 신청자 */}
       <aside className="MyRegisteredLand-DetailPanel">
         {selectedLand ? (
           <>
@@ -135,9 +152,7 @@ function MyRegisteredLand() {
                 <input
                   className="MyRegisteredLand-Input"
                   value={editForm?.location ?? ""}
-                  onChange={(e) =>
-                    handleEditChange("location", e.target.value)
-                  }
+                  onChange={(e) => handleEditChange("location", e.target.value)}
                 />
 
                 <label>작물</label>
@@ -163,16 +178,10 @@ function MyRegisteredLand() {
                 />
 
                 <div className="MyRegisteredLand-ButtonGroup">
-                  <div
-                    className="MyRegisteredLand-Button"
-                    onClick={handleEditSave}
-                  >
+                  <div className="MyRegisteredLand-Button" onClick={handleEditSave}>
                     💾 저장
                   </div>
-                  <div
-                    className="MyRegisteredLand-Button gray"
-                    onClick={() => setEditMode(false)}
-                  >
+                  <div className="MyRegisteredLand-Button gray" onClick={() => setEditMode(false)}>
                     ❌ 취소
                   </div>
                 </div>
@@ -186,27 +195,101 @@ function MyRegisteredLand() {
                 <p>상태: {selectedLand.status}</p>
 
                 <div className="MyRegisteredLand-ButtonGroup">
-                  <div
-                    className="MyRegisteredLand-Button"
-                    onClick={() => handleEditStart(selectedLand)}
-                  >
+                  <div className="MyRegisteredLand-Button" onClick={() => handleEditStart(selectedLand)}>
                     ✏️ 수정
                   </div>
-                  <div
-                    className="MyRegisteredLand-Button danger"
-                    onClick={() => handleDelete(selectedLand.id)}
-                  >
+                  <div className="MyRegisteredLand-Button danger" onClick={() => handleDelete(selectedLand.id)}>
                     🗑 삭제
                   </div>
-                  <div
-                    className="MyRegisteredLand-Button gray"
-                    onClick={() => setSelectedLand(null)}
-                  >
+                  <div className="MyRegisteredLand-Button gray" onClick={() => setSelectedLand(null)}>
                     닫기
                   </div>
                 </div>
               </>
             )}
+
+            {/* --- 신청자 영역 --- */}
+            <div className="MyRegisteredLand-Applicants">
+              <h4>👥 신청자 목록</h4>
+              {applicants.length === 0 ? (
+                <p className="MyRegisteredLand-EmptyApplicants">신청자가 없습니다.</p>
+              ) : (
+                <div className="MyRegisteredLand-ApplicantsLayout">
+                  <div className="MyRegisteredLand-ApplicantsList">
+                    {applicants.map((a) => (
+                      <div
+                        key={a.id}
+                        className={`ApplicantItem ${selectedApplicant?.id === a.id ? "active" : ""}`}
+                        onClick={() => setSelectedApplicant(a)}
+                      >
+                        <div className="ApplicantNameRow">
+                          <span className="ApplicantName">{a.name}</span>
+                          <span className={`ApplicantBadge ${a.status}`}>
+                            {a.status}
+                          </span>
+                        </div>
+                        <div className="ApplicantMeta">
+                          {a.age}세 · {a.sex} · {a.address}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="MyRegisteredLand-ApplicantDetail">
+                    {selectedApplicant ? (
+                      <>
+                        <div className="ApplicantDetail-Header">
+                          <div className="ApplicantDetail-Name">{selectedApplicant.name}</div>
+                          <div className={`ApplicantBadge ${selectedApplicant.status}`}>
+                            {selectedApplicant.status}
+                          </div>
+                        </div>
+                        <div className="ApplicantDetail-Body">
+                          <div>📞 {selectedApplicant.callNumber}</div>
+                          <div>🧾 {selectedApplicant.presentation}</div>
+                          <div>🌱 {selectedApplicant.interest}</div>
+                          <div>🤝 {selectedApplicant.suggest}</div>
+                          <div>🎬 {selectedApplicant.video}</div>
+                          <div>🧑‍🌾 {selectedApplicant.expereince}</div>
+                          <div>🛠️ {selectedApplicant.skill}</div>
+                          <div>💼 {selectedApplicant.want}</div>
+
+                          {/* 자격/수료/활동 요약 */}
+                          <div className="ApplicantDetail-Tags">
+                            {Object.values(selectedApplicant.detail?.yellow || {}).map((t, i) => (
+                              <span key={`y-${i}`} className="Tag yellow">{t}</span>
+                            ))}
+                            {Object.values(selectedApplicant.detail?.green || {}).map((t, i) => (
+                              <span key={`g-${i}`} className="Tag green">{t}</span>
+                            ))}
+                            {Object.values(selectedApplicant.detail?.grey || {}).map((t, i) => (
+                              <span key={`gr-${i}`} className="Tag grey">{t}</span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="MyRegisteredLand-ButtonGroup">
+                          <div
+                            className="MyRegisteredLand-Button accept"
+                            onClick={() => handleAccept(selectedApplicant.id)}
+                          >
+                            ✅ 신청 수락
+                          </div>
+                          <div
+                            className="MyRegisteredLand-Button reject"
+                            onClick={() => handleReject(selectedApplicant.id)}
+                          >
+                            🚫 신청 거부
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="MyRegisteredLand-EmptyDetail">좌측에서 신청자를 선택하세요.</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <p className="MyRegisteredLand-EmptyDetail">농지를 선택해주세요.</p>

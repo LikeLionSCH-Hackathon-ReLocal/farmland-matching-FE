@@ -84,7 +84,7 @@ function SeniorFlow({ onSubmit }) {
   return (
     <div className="FarmlandRegistration-Wrapper">
       <FloatingEmojis />
-     <button
+      <button
         className="SeniorProfile-BackButton"
         onClick={() => navigate("/SeniorMain")}
       >
@@ -95,28 +95,51 @@ function SeniorFlow({ onSubmit }) {
         <div className="FarmlandRegistration-Progress">Step {step} / 7</div>
 
         {step === 1 && (
-          <Step1_Location data={formData} updateData={updateData} onNext={next} />
+          <Step1_Location
+            data={formData}
+            updateData={updateData}
+            onNext={next}
+          />
         )}
         {step === 2 && (
-          <Step2_Crop data={formData} updateData={updateData} onNext={next} onBack={back} />
+          <Step2_Crop
+            data={formData}
+            updateData={updateData}
+            onNext={next}
+            onBack={back}
+          />
         )}
         {step === 3 && (
-          <Step3_LandDetail data={formData} updateData={updateData} onNext={next} onBack={back} />
+          <Step3_LandDetail
+            data={formData}
+            updateData={updateData}
+            onNext={next}
+            onBack={back}
+          />
         )}
         {step === 4 && (
           <Step4_Facility
             data={formData}
             updateData={updateData}
-            updateArray={updateArray}  // 사용 안 해도 무방
+            updateArray={updateArray} // 사용 안 해도 무방
             onNext={next}
             onBack={back}
           />
         )}
         {step === 5 && (
-          <Step5_Access data={formData} updateData={updateData} onNext={next} onBack={back} />
+          <Step5_Access
+            data={formData}
+            updateData={updateData}
+            onNext={next}
+            onBack={back}
+          />
         )}
         {step === 6 && (
-          <Step6_Review data={formData} onNext={() => setStep(7)} onBack={back} />
+          <Step6_Review
+            data={formData}
+            onNext={() => setStep(7)}
+            onBack={back}
+          />
         )}
         {step === 7 && (
           <Step7_TradeDocs
@@ -130,50 +153,58 @@ function SeniorFlow({ onSubmit }) {
 
       <aside className="FarmlandRegistration-Summary">
         <div className="FarmlandRegistration-inputSumTitle">입력 정보 요약</div>
-        <ul>
-          <li>📍 행정주소: {formData.address || "미입력"}</li>
-          <li>🚏 도로명 주소: {formData.roadAddress || "미입력"}</li>
-          <li>🏷️ 지번: {formData.landNumber || "미입력"}</li>
-          <li>📍 위도/경도: {formData.lat || "?"}, {formData.lng || "?"}</li>
-          <hr/>
-          <li>🌾 작물: {formData.crop || "미입력"}</li>
-          <li>📐 면적: {formData.areaSquare || "?"}㎡ / {formData.areaHectare || "?"}ha</li>
-          <li>🧱 토양: {formData.soilType || "미입력"}</li>
-          <li>💧 용수: {formData.waterSource || "미입력"}</li>
-          <li>👤 소유자: {formData.owner || "미입력"} ({formData.ownerAge || "?"}세)</li>
-          <li>🏠 거주지: {formData.home || "미입력"}</li>
 
-          <li>🚿 농업용수: {formData.hasWater || "미입력"}</li>
-          <li>⚡ 전기: {formData.hasElectricity || "미입력"}</li>
-          <li>🚜 농기계 접근: {formData.machineAccess || "미입력"}</li>
+        <div className="FarmlandRegistration-SummaryGrid">
+          <div>📍 행정주소: {formData.address || "미입력"}</div>
+          <div>🚏 도로명 주소: {formData.roadAddress || "미입력"}</div>
+          <div>🏷️ 지번: {formData.landNumber || "미입력"}</div>
+          <div>
+            📍 위도/경도: {formData.lat || "?"}, {formData.lng || "?"}
+          </div>
 
-          {/* ✅ 시설 3종을 개별로 표시 */}
-          <li>🏚️ 창고: {formData.hasWarehouse || "미입력"}</li>
-          <li>🌿 비닐하우스: {formData.hasGreenhouse || "미입력"}</li>
-          <li>🚧 울타리: {formData.hasFence || "미입력"}</li>
+          <div className="divider"></div>
 
-          <li>🛣️ 도로 인접: {formData.nearRoad || "미입력"}</li>
-          <li>🧱 포장도로: {formData.pavedRoad || "미입력"}</li>
-          <li>🚌 대중교통: {formData.publicTransit || "미입력"}</li>
-          <li>🚗 차량 진입: {formData.carAccess || "미입력"}</li>
+          <div>🌾 작물: {formData.crop || "미입력"}</div>
+          <div>
+            📐 면적: {formData.areaSquare || "?"}㎡ /{" "}
+            {formData.areaHectare || "?"}ha
+          </div>
 
-          <li>📄 거래 형태: {formData.tradeType || "미입력"}</li>
-          <li>🔍 우선 매칭: {formData.preferMatch || "미입력"}</li>
-          <li>💰 희망 금액: {formData.wishPrice || "미입력"}</li>
-          <li>📅 매도 희망 시기: {formData.wishWhen || "미입력"}</li>
-          <li>📝 등록 사유: {formData.reason || "미입력"}</li>
-          <li>💬 어르신 한마디: {formData.comment || "미입력"}</li>
+          <div className="divider"></div>
 
-          <li>
-            📎 첨부 서류:
-            <ul style={{ marginLeft: "1rem" }}>
-              <li>등기부등본: {formData.docDeung ? "첨부됨" : "없음"}</li>
-              <li>토지대장: {formData.docToji ? "첨부됨" : "없음"}</li>
-              <li>농지원부: {formData.docNong ? "첨부됨" : "없음"}</li>
-            </ul>
-          </li>
-          <li>🖼️ 사진: {formData.photos?.length || 0}장</li>
-        </ul>
+          <div>🧱 토양: {formData.soilType || "미입력"}</div>
+          <div>💧 용수: {formData.waterSource || "미입력"}</div>
+          <div>
+            👤 소유자: {formData.owner || "미입력"} ({formData.ownerAge || "?"}
+            세)
+          </div>
+          <div>🏠 거주지: {formData.home || "미입력"}</div>
+
+          <div className="divider"></div>
+
+          <div>🚿 농업용수: {formData.hasWater || "미입력"}</div>
+          <div>⚡ 전기: {formData.hasElectricity || "미입력"}</div>
+          <div>🚜 농기계 접근: {formData.machineAccess || "미입력"}</div>
+          <div>🏚️ 창고: {formData.hasWarehouse || "미입력"}</div>
+          <div>🌿 비닐하우스: {formData.hasGreenhouse || "미입력"}</div>
+          <div>🚧 울타리: {formData.hasFence || "미입력"}</div>
+
+          <div className="divider"></div>
+
+          <div>🛣️ 도로 인접: {formData.nearRoad || "미입력"}</div>
+          <div>🧱 포장도로: {formData.pavedRoad || "미입력"}</div>
+          <div>🚌 대중교통: {formData.publicTransit || "미입력"}</div>
+          <div>🚗 차량 진입: {formData.carAccess || "미입력"}</div>
+
+          <div className="divider"></div>
+
+          <div>📄 거래 형태: {formData.tradeType || "미입력"}</div>
+          <div>🔍 우선 매칭: {formData.preferMatch || "미입력"}</div>
+          <div>💰 희망 금액: {formData.wishPrice || "미입력"}</div>
+          <div>📅 매도 희망 시기: {formData.wishWhen || "미입력"}</div>
+          <div>📝 등록 사유: {formData.reason || "미입력"}</div>
+          <div>💬 어르신 한마디: {formData.comment || "미입력"}</div>
+        </div>
       </aside>
     </div>
   );

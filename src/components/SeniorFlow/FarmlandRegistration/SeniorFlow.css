@@ -145,3 +145,16 @@
   font-weight: bold;
   margin-bottom: 1rem;
 }
+
+.FarmlandRegistration-SummaryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2열 */
+  gap: 0.75rem 1.5rem;           /* 세로/가로 간격 */
+}
+
+.FarmlandRegistration-SummaryGrid .divider {
+  grid-column: 1 / -1; /* 가로 전체 차지 */
+  height: 1px;
+  background-color: #ddd;
+  margin: 0.5rem 0;
+}

@@ -1,7 +1,7 @@
 function Step6_Review({ data, onNext, onBack }) {
   return (
     <div className="FarmlandRegistration-Step">
-      <h2>지금까지 입력한 내용을 확인해주세요</h2>
+      <h2>지금까지 입력한 농지 정보를 확인해주세요</h2>
 
       <div className="FarmlandRegistration-ReviewGroup">
         <h3>📍 위치</h3>
