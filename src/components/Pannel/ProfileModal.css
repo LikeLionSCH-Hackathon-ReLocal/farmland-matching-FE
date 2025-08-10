@@ -27,7 +27,7 @@
   border: none; background: transparent; font-size: 1.6rem; cursor: pointer; line-height: 1;
 }
 
-/* ✅ 본문을 2열 그리드로 변경 */
+/* 본문을 2열 그리드로 변경 */
 .ProfileModal-Body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

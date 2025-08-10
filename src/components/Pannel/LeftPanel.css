@@ -36,8 +36,8 @@
 .LeftPanel-FilterBar {
   display: flex;
   gap: 0;
-  border: 0.08vw solid #ccc;       /* 기존 0.1vw → 더 얇게 */
-  border-radius: 0.6vw;             /* 기존 1vw → 조금 작게 */
+  border: 0.08vw solid #ccc;      
+  border-radius: 0.6vw;             
   overflow: hidden;
   margin-bottom: 0.8vw;
   width: fit-content;
@@ -45,11 +45,11 @@
 
 .LeftPanel-FilterButton {
   flex: 1;
-  padding: 0.5vw 1.2vw;             /* 기존 0.8vw 1.8vw → 작게 */
+  padding: 0.5vw 1.2vw;             
   white-space: nowrap;
   background-color: white;
   border: none;
-  font-size: 0.75vw;                /* 기존 0.8vw → 조금 더 줄임 */
+  font-size: 0.75vw;               
   color: #555;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
@@ -122,7 +122,7 @@
   color: #888;
 }
 .LeftPanel-FarmlandMetaText {
-  font-size: 0.7vw;  /* 작고 균형 있게 */
+  font-size: 0.7vw; 
   color: #666;
   margin-top: 0.3vw;
   line-height: 1.4;

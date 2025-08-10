@@ -21,7 +21,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
         )
       : null;
 
-  // ✅ 부드럽게 fillOpacity만 진동하는 pulse 애니메이션
+  // 부드럽게 fillOpacity만 진동하는 pulse 애니메이션
   function animateCirclePulseInfinite(circle) {
     if (!circle || typeof circle.setOptions !== "function") return;
 
@@ -46,7 +46,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
     animate();
   }
 
-  // ✅ 애니메이션 정지 및 원상 복구
+  // 애니메이션 정지 및 원상 복구
   function stopCircleAnimation(circle) {
     if (circle && circle.__animationId) {
       cancelAnimationFrame(circle.__animationId);
@@ -122,7 +122,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
     });
   }, [map, farmlands]);
 
-  // ✅ 마커 색상 업데이트
+  // 마커 색상 업데이트
   useEffect(() => {
     if (!map) return;
     markerMap.current.forEach((marker, id) => {
@@ -130,7 +130,7 @@ export function useMarkerManager(map, farmlands, onSelect) {
     });
   }, [activeId]);
 
-  // ✅ 외부에서 농지 선택 → 포커싱
+  // 외부에서 농지 선택 → 포커싱
   const focusOnFarm = (farm) => {
     if (!map || !farm) return;
     const marker = markerMap.current.get(farm.id);

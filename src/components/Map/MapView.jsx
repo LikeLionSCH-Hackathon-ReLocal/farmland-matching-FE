@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useMarkerManager } from "../Hooks/useMakerManager"; // 경로 조정 필요
+import { useMarkerManager } from "../Hooks/useMakerManager";
 
 function MapView({ farmlands, onSelect, onMapLoad, selectedFarm }) {
   const mapRef = useRef(null);

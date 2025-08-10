@@ -29,7 +29,7 @@
   cursor: pointer;
   user-select: none;
   font-weight: 500;
-  font-size: 0.75vw;   /* 기존 14px → 반응형 축소 */
+  font-size: 0.75vw;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
