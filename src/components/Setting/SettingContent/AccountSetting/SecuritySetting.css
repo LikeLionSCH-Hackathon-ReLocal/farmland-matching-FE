@@ -3,12 +3,21 @@
   margin: 2% auto;
   padding: 2%;
   color: #333;
-  
   box-sizing: border-box;
+}
+
+.SecuritySettings-mailtell {
+  display: flex;
+  gap: 1rem; /* 메일과 전화번호 간격 */
+  align-items: flex-start;
 }
 
 .Securitysettings-section {
   margin-bottom: 1.5rem;
+}
+
+.Securitysettings-section.half-width {
+  flex: 1;
 }
 
 .Securitysettings-label {
@@ -36,16 +45,16 @@
 
 .Securitysettings-button-group {
   display: flex;
-  gap: 5%;
+  gap: 0.5rem; /* 버튼 간 간격 */
   margin-bottom: 0.5rem;
-  flex-wrap: wrap;
 }
 
 .Securitysettings-btn {
+  flex: 1; /* 버튼 폭 균등 분배 */
   background-color: #2563eb;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem;
   border-radius: 0.4rem;
   font-size: 0.85rem;
   cursor: pointer;
@@ -65,30 +74,33 @@
   margin-bottom: 0.3rem;
 }
 
-/* 비밀번호 입력칸 절반 크기 */
+/* 비밀번호 변경 영역 */
 .Securitysettings-password-row {
   display: flex;
   gap: 1%;
   margin-bottom: 0.5rem;
 }
 
-.Securitysettings-half {
+.Securitysettings-input.half {
   flex: 1;
-  
 }
+
 .Securitysettings-changebtn {
-padding: 0.01rem 1rem;
+  padding: 0.01rem 1rem;
   border-radius: 0.4rem;
   font-size: 0.85rem;
   box-sizing: border-box;
   margin-bottom: 0.75rem;
-  transition: border-color 0.2s;
   background-color: #2563eb;
   color: white;
   border: none;
-
+  cursor: pointer;
 }
 
+.Securitysettings-changebtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 
 /* 비밀번호 일치/불일치 표시 */
 .Securitysettings-password-match {
@@ -98,14 +110,14 @@ padding: 0.01rem 1rem;
 }
 
 .Securitysettings-password-match.success {
-  color: #2563eb; /* 파란색 */
+  color: #2563eb;
 }
 
 .Securitysettings-password-match.error {
-  color: #e02424; /* 빨간색 */
+  color: #e02424;
 }
 
-
+/* 최근 로그인 기록 */
 .Securitysettings-login-record {
   background-color: #f0f0f0;
   padding: 1rem;
@@ -125,10 +137,4 @@ padding: 0.01rem 1rem;
   vertical-align: middle;
   font-weight: 500;
   opacity: 0.7;
-}
-
-.SecuritySettings-mailtell{
-  display:flex;
-  gap: 1rem;                /* 요소 간 간격 */
-  align-items: center;  
 }

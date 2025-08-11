@@ -8,7 +8,6 @@ export default function SecuritySettings({ user, onChange }) {
   const [editingEmail, setEditingEmail] = useState(false);
   const [editingPhone, setEditingPhone] = useState(false);
 
-  // 비밀번호 관련 상태
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,17 +60,18 @@ export default function SecuritySettings({ user, onChange }) {
     setConfirmPassword("");
   };
 
-  const isPasswordMatch = newPassword && confirmPassword && newPassword === confirmPassword;
+  const isPasswordMatch =
+    newPassword && confirmPassword && newPassword === confirmPassword;
 
   return (
     <div className="Securitysettings-container">
+      {/* 메일 + 전화번호 나란히 */}
       <div className="SecuritySettings-mailtell">
         {/* 메일 */}
-        <div className="Securitysettings-section">
+        <div className="Securitysettings-section half-width">
           <label className="Securitysettings-label" htmlFor="email">
             메일 확인
           </label>
-
           <input
             id="email"
             type="email"
@@ -80,7 +80,6 @@ export default function SecuritySettings({ user, onChange }) {
             onChange={(e) => setEmail(e.target.value)}
             disabled={!editingEmail}
           />
-
           {!editingEmail ? (
             <div className="Securitysettings-button-group">
               <button className="Securitysettings-btn" onClick={sendEmailVerification}>
@@ -100,18 +99,16 @@ export default function SecuritySettings({ user, onChange }) {
               </button>
             </div>
           )}
-
           <p className="Securitysettings-error-text">
             현재 이메일 인증이 완료되지 않았습니다.
           </p>
         </div>
 
         {/* 전화번호 */}
-        <div className="Securitysettings-section">
+        <div className="Securitysettings-section half-width">
           <label className="Securitysettings-label" htmlFor="phone">
             전화번호 확인
           </label>
-
           <input
             id="phone"
             type="text"
@@ -120,7 +117,6 @@ export default function SecuritySettings({ user, onChange }) {
             onChange={(e) => setPhone(e.target.value)}
             disabled={!editingPhone}
           />
-
           {!editingPhone ? (
             <div className="Securitysettings-button-group">
               <button className="Securitysettings-btn" onClick={sendSmsVerification}>
@@ -140,7 +136,6 @@ export default function SecuritySettings({ user, onChange }) {
               </button>
             </div>
           )}
-
           <p className="Securitysettings-error-text">
             현재 전화번호 인증이 완료되지 않았습니다.
           </p>
