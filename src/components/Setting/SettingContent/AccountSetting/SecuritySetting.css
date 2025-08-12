@@ -67,7 +67,7 @@
 }
 
 .Securitysettings-error-text {
-  color: #e02424;
+  color: rgb(33, 156, 33);
   font-size: 0.75rem;
   font-weight: 500;
   margin-top: -0.3rem;

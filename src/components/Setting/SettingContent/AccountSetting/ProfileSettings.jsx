@@ -94,7 +94,7 @@ function ProfileSettings({ user, onChange }) {
             disabled={!editMode}
           />
           <span className="ProfileSettings-error-text">
-            현재 전화번호 인증이 완료되지 않았습니다.
+            전화번호 인증 완료.
           </span>
         </div>
 
@@ -107,7 +107,7 @@ function ProfileSettings({ user, onChange }) {
             disabled={!editMode}
           />
           <span className="ProfileSettings-error-text">
-            현재 이메일 인증이 완료되지 않았습니다.
+            메일 인증 완료.
           </span>
         </div>
 

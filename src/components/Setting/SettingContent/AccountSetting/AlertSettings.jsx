@@ -98,8 +98,8 @@ export default function AlertSettings() {
       </div>
 
       <div className="AlertSetting-error-messages">
-        <p>현재 이메일 인증이 완료 되지 않았습니다.</p>
-        <p>현재 전화번호 인증이 완료 되지 않았습니다.</p>
+        <p>메일 인증 완료.</p>
+        <p>전화번호 인증 완료.</p>
       </div>
     </div>
   );

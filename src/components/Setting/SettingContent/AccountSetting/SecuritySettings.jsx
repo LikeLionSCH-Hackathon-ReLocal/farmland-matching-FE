@@ -100,7 +100,7 @@ export default function SecuritySettings({ user, onChange }) {
             </div>
           )}
           <p className="Securitysettings-error-text">
-            현재 이메일 인증이 완료되지 않았습니다.
+            이메일 인증 완료.
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default function SecuritySettings({ user, onChange }) {
             </div>
           )}
           <p className="Securitysettings-error-text">
-            현재 전화번호 인증이 완료되지 않았습니다.
+            전화번호 인증 완료.
           </p>
         </div>
       </div>
