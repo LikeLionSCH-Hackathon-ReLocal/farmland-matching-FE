@@ -58,6 +58,8 @@ export default function Sell() {
               />
 
               <div className="Sell-info-row wide">
+                <label>농장명</label>
+                <span>{farm.name}</span>
                 <label>주소</label>
                 <span>{farm.address}</span>
               </div>
