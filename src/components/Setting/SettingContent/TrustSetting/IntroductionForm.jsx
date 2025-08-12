@@ -49,7 +49,7 @@ export default function IntroductionForm({ user, onUserChange }) {
   return (
     <div className="IntroForm-root">
       <div className="IntroForm-card">
-        <FormRow label="대표 한마디">
+        <FormRow label="한마디 소개">
           <div className="IntroForm-inputWrap">
             <input
               className="IntroForm-input"

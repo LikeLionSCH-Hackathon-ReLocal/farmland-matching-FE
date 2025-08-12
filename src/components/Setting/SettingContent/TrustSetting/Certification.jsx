@@ -309,17 +309,6 @@ export default function Certification({ user, onUserChange, data, updateData, on
         ))}
       </section>
 
-      {/* 한마디 소개 */}
-      <section className="Certification-Card">
-        <h3>한마디 소개</h3>
-        <textarea
-          className="Certification-Textarea"
-          rows={3}
-          placeholder="예: 도시 농업에서 시작해 귀농을 준비 중입니다."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-      </section>
 
       <div className="Certification-ActionRow">
         <button className="Certification-PrimaryButton" disabled={!canSave} onClick={handleSaveAll}>
