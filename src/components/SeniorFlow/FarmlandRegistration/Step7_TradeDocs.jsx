@@ -1,8 +1,11 @@
-
 function Step7_TradeDocs({ data, updateData, onBack, onSubmit }) {
   const handlePhotos = (e) => {
-    const files = Array.from(e.target.files).slice(0, 5);
-    updateData("photos", files);
+    const file = e.target.files?.[0]; // 첫 번째 파일만
+    if (file) {
+      updateData("photos", [file]); // 배열 형태로 1개만 저장
+    } else {
+      updateData("photos", []);
+    }
   };
 
   const handleFile = (key) => (e) => {
@@ -54,8 +57,8 @@ function Step7_TradeDocs({ data, updateData, onBack, onSubmit }) {
 
       <div className="FarmlandRegistration-Divider" />
 
-      <label>사진 첨부 (최대 5장)</label>
-      <input type="file" accept="image/*" multiple onChange={handlePhotos} />
+      <label>사진 첨부 (1장)</label>
+      <input type="file" accept="image/*" onChange={handlePhotos} />
 
       <label>등록 사유 (선택)</label>
       <textarea
@@ -78,7 +81,9 @@ function Step7_TradeDocs({ data, updateData, onBack, onSubmit }) {
       <div className="FarmlandRegistration-Divider" />
 
       <div className="FarmlandRegistration-FieldGroup">
-        <div className="FarmlandRegistration-FieldLabel">서류 업로드 (선택)</div>
+        <div className="FarmlandRegistration-FieldLabel">
+          서류 업로드 (선택)
+        </div>
         <div className="FarmlandRegistration-Row">
           <div className="FarmlandRegistration-Col">
             <div>등기부등본</div>
@@ -100,7 +105,10 @@ function Step7_TradeDocs({ data, updateData, onBack, onSubmit }) {
         </div>
         <div
           className="FarmlandRegistration-Button"
-          disabled={!canSubmit} onClick={onSubmit}>등록 완료
+          disabled={!canSubmit}
+          onClick={onSubmit}
+        >
+          등록 완료
         </div>
       </div>
     </div>
