@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3000; /* 지도/패널 위 */
+  z-index: 3000;
 }
 
 .ProfileModal-Card {
@@ -27,41 +27,61 @@
   border: none; background: transparent; font-size: 1.6rem; cursor: pointer; line-height: 1;
 }
 
-/* 본문을 2열 그리드로 변경 */
 .ProfileModal-Body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
-
-/* 각 섹션 카드 */
 .ProfileModal-Section {
   background: #fff;
   border: 1px solid #eee;
   border-radius: 12px;
   padding: .9rem;
 }
+.ProfileModal-Section.full { grid-column: 1 / -1; }
 
-/* 긴 섹션은 전체 폭 사용 */
-.ProfileModal-Section.full {
-  grid-column: 1 / -1;
+/* ⎯⎯⎯ 상단 레이아웃(사진 + 기본정보) ⎯⎯⎯ */
+.ProfileModal-Top {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
 }
-
-/* 프로필 상단(아바타+기본정보) */
 .ProfileModal-Avatar img {
-  width: 84px; height: 84px; border-radius: 10px; object-fit: cover;
+  width: 92px; height: 92px; border-radius: 12px; object-fit: cover;
 }
-.ProfileModal-Grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .6rem .8rem;
-  margin-top: .6rem;
-}
-.ProfileModal-Field.full { grid-column: 1 / -1; }
-.ProfileModal-Label { font-size: .85rem; color: #6b7280; margin-bottom: .2rem; }
-.ProfileModal-Value { font-size: 1rem; color: #111827; }
+.ProfileModal-TopInfo { flex: 1; min-width: 0; }
 
-/* 타이포/칩/링크 */
+.ProfileModal-Identity {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: .8rem; margin-bottom: .5rem;
+}
+.ProfileModal-Name {
+  font-size: 1.25rem; font-weight: 800; color: #111827;
+}
+.ProfileModal-Tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+.tag {
+  background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 999px;
+  padding: .22rem .6rem; font-size: .85rem; color: #374151;
+}
+
+/* 연락/주소 요약 카드 */
+.ProfileModal-QuickGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: .8rem;
+}
+.ProfileModal-QuickCard {
+  border: 1px dashed #e5e7eb;
+  border-radius: 10px;
+  padding: .7rem .8rem;
+  background: #fafafa;
+}
+.quick-title { font-weight: 700; font-size: .92rem; margin-bottom: .4rem; color: #374151; }
+.quick-row { display: flex; align-items: center; gap: .5rem; line-height: 1.4; }
+.quick-ico { width: 1.2rem; text-align: center; }
+.quick-address { word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 공통 타이포/칩 */
 .ProfileModal-Section h4 { margin: 0 0 .5rem; font-size: 1rem; font-weight: 700; }
 .ProfileModal-Quote { font-weight: 700; margin-bottom: .4rem; }
 .ProfileModal-Paragraph { white-space: pre-wrap; line-height: 1.6; }
@@ -70,14 +90,15 @@
   border: 1px solid #e5e7eb; background: #f9fafb; padding: .25rem .6rem;
   border-radius: 999px; font-size: .85rem;
 }
+
 .ProfileModal-Meta { color: #374151; font-size: .9rem; margin-top: .25rem; }
 .ProfileModal-Link { color: #2563eb; text-decoration: none; }
-
-.ProfileModal-Loading, .ProfileModal-Empty { padding: 1rem; color: #374151; }
 .ProfileModal-Recommenders .recomm-row { margin-bottom: .35rem; }
 
-/* 반응형: 모바일에서는 1열 */
+.ProfileModal-Loading, .ProfileModal-Empty { padding: 1rem; color: #374151; }
+
+/* 반응형 */
 @media (max-width: 720px) {
   .ProfileModal-Body { grid-template-columns: 1fr; }
-  .ProfileModal-Grid { grid-template-columns: 1fr; }
+  .ProfileModal-QuickGrid { grid-template-columns: 1fr; }
 }

@@ -155,7 +155,7 @@ function SeniorFlow({ onSubmit }) {
   const uploadToServer = async (data) => {
     const fd = buildMultipart(data);
 
-    const uploadUrl = "http://localhost:8080/farmland-upload";
+    const uploadUrl = "http://localhost:8080/farmland-upload";/*아마 id까지 추가 되서 url재구성될 듯 */
     console.log("🚀 업로드 요청 URL:", uploadUrl);
 
     console.group("📦 업로드 데이터(FormData entries)");
