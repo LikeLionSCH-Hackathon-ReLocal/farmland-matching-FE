@@ -14,7 +14,7 @@ import TrustScore from "./SettingContent/TrustSetting/TrustScore";
 import TrustProfile from "./SettingContent/TrustSetting/TrustProfile";
 import Certification from "./SettingContent/TrustSetting/Certification";
 
-import { getYoungUserData } from "../../api/YoungUser";
+import { getYoungUserData, saveYoungUserData } from "../../api/YoungUser";
 
 function SettingsModal({ onClose }) {
   const [selectedMenu, setSelectedMenu] = useState("내 프로필");
@@ -47,24 +47,36 @@ function SettingsModal({ onClose }) {
   const handleOverlayClick = (e) => {
     if (e.target === overlayRef.current) onClose();
   };
-
+  // 공용 저장 핸들러 (상태 반영 + 영속화)
+  const handleUserChange = async (updated) => {
+    setYoungUser(updated);
+    try {
+      await saveYoungUserData(updated);
+      console.log("[SettingsModal] user saved");
+    } catch (e) {
+      console.error("[SettingsModal] save failed", e);
+    }
+  };
   // 메뉴 정의
   const sections = {
     계정: ["내 프로필", "로그인 및 보안", "알림 설정"],
     "농지 및 매칭": ["신청한 매칭 내역", "관심 농지 목록"],
     "신뢰 관리": [
       "신뢰 프로필 관리", // 관심작물/장비/거래/수상/한마디/자기소개/영상/SNS
-      "자격증 업로드",     // 자격증만
+      "자격증 업로드", // 자격증만
       "추천인/보증인 등록",
       "나의 신뢰 레벨 확인",
     ],
   };
 
   const currentSection =
-    Object.entries(sections).find(([_, items]) => items.includes(selectedMenu))?.[0] ?? "계정";
+    Object.entries(sections).find(([_, items]) =>
+      items.includes(selectedMenu)
+    )?.[0] ?? "계정";
 
   const renderContent = () => {
-    if (userLoading) return <div style={{ padding: "1rem" }}>사용자 불러오는 중…</div>;
+    if (userLoading)
+      return <div style={{ padding: "1rem" }}>사용자 불러오는 중…</div>;
 
     switch (selectedMenu) {
       case "내 프로필":
@@ -78,11 +90,11 @@ function SettingsModal({ onClose }) {
       case "관심 농지 목록":
         return <Star user={youngUser} />;
       case "신뢰 프로필 관리":
-        return <TrustProfile user={youngUser} onUserChange={setYoungUser} />;
+        return <TrustProfile user={youngUser} onUserChange={handleUserChange} />;
       case "자격증 업로드":
-        return <Certification user={youngUser} onUserChange={setYoungUser} />;
+        return <Certification user={youngUser} onUserChange={handleUserChange} />;
       case "추천인/보증인 등록":
-        return <RecommenderForm user={youngUser} onUserChange={setYoungUser} />;
+        return <RecommenderForm user={youngUser} onUserChange={handleUserChange} />;
       case "나의 신뢰 레벨 확인":
         return <TrustScore user={youngUser} />;
       default:
@@ -103,13 +115,17 @@ function SettingsModal({ onClose }) {
         <Sidebar selected={selectedMenu} onMenuSelect={setSelectedMenu} />
 
         <div className="SettingModal-MainSettingsArea">
-          <div className="SettingModal-SettingsSectionTitle">{currentSection}</div>
+          <div className="SettingModal-SettingsSectionTitle">
+            {currentSection}
+          </div>
 
           <div className="SettingModal-SettingsTabs">
             {sections[currentSection]?.map((item) => (
               <button
                 key={item}
-                className={`SettingModal-TabButton ${selectedMenu === item ? "active" : ""}`}
+                className={`SettingModal-TabButton ${
+                  selectedMenu === item ? "active" : ""
+                }`}
                 onClick={() => setSelectedMenu(item)}
               >
                 {item}
@@ -117,7 +133,9 @@ function SettingsModal({ onClose }) {
             ))}
           </div>
 
-          <div className="SettingModal-SettingsDetailArea">{renderContent()}</div>
+          <div className="SettingModal-SettingsDetailArea">
+            {renderContent()}
+          </div>
         </div>
 
         <button

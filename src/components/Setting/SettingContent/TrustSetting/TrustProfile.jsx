@@ -4,9 +4,9 @@ import "./TrustProfile.css";
 
 export default function TrustProfile({ user, onUserChange }) {
   // 관심작물/장비/거래
-  const [crops, setCrops] = useState([]); // [string]
-  const [tools, setTools] = useState([]); // [string]
-  const [trades, setTrades] = useState([]); // [string]
+  const [crops, setCrops] = useState([]);
+  const [tools, setTools] = useState([]);
+  const [trades, setTrades] = useState([]);
   const [leasePeriod, setLeasePeriod] = useState("");
   const [otherTrade, setOtherTrade] = useState("");
 
@@ -20,6 +20,11 @@ export default function TrustProfile({ user, onUserChange }) {
   const [sns, setSns] = useState("");
   const [personal, setPersonal] = useState("");
 
+  // ✅ 농업 경험
+  const [hasExp, setHasExp] = useState(false);
+  const [expYears, setExpYears] = useState("");
+  const [expDesc, setExpDesc] = useState("");
+
   const tradeOptions = ["토지 매입", "임대", "공유농", "기타"];
   const ONE_LINE_MAX = 80;
 
@@ -27,18 +32,10 @@ export default function TrustProfile({ user, onUserChange }) {
     if (!user) return;
 
     // 관심작물/장비: object 또는 list 호환
-    const interestList = Object.values(user.detail?.interest || {}).filter(
-      Boolean
-    );
-    const equipmentList = Object.values(user.detail?.equipment || {}).filter(
-      Boolean
-    );
-    setCrops(
-      interestList.length ? interestList : user.detail?.interestList || []
-    );
-    setTools(
-      equipmentList.length ? equipmentList : user.detail?.equipmentList || []
-    );
+    const interestList = Object.values(user.detail?.interest || {}).filter(Boolean);
+    const equipmentList = Object.values(user.detail?.equipment || {}).filter(Boolean);
+    setCrops(interestList.length ? interestList : user.detail?.interestList || []);
+    setTools(equipmentList.length ? equipmentList : user.detail?.equipmentList || []);
 
     // 거래: object 또는 list 호환
     const tradeList = Object.values(user.detail?.trade || {}).filter(Boolean);
@@ -46,11 +43,9 @@ export default function TrustProfile({ user, onUserChange }) {
     setLeasePeriod(user.detail?.leasePeriod || "");
     setOtherTrade(user.detail?.otherTrade || "");
 
-    // 수상경력: object(win) 또는 list(awardsList) 호환
+    // 수상경력
     const winObj = user.detail?.win || {};
-    const fromObj = Object.values(winObj)
-      .filter(Boolean)
-      .map((title) => ({ title, org: "", year: "" }));
+    const fromObj = Object.values(winObj).filter(Boolean).map((title) => ({ title, org: "", year: "" }));
     const fromList = user.detail?.awardsList || [];
     setAwards(fromList.length ? fromList : fromObj);
 
@@ -61,13 +56,17 @@ export default function TrustProfile({ user, onUserChange }) {
     setVideoUrl(i.video || "");
     setSns(i.sns || "");
     setPersonal(i.personal || "");
+
+    // ✅ 경험 로드
+    const exp = user.detail?.experience || {};
+    setHasExp(!!exp.has);
+    setExpYears(exp.years || "");
+    setExpDesc(exp.desc || "");
   }, [user]);
 
   // 유틸
-  const addField = (setter, initial = "") =>
-    setter((prev) => [...prev, initial]);
-  const removeAt = (setter, idx) =>
-    setter((prev) => prev.filter((_, i) => i !== idx));
+  const addField = (setter, initial = "") => setter((prev) => [...prev, initial]);
+  const removeAt = (setter, idx) => setter((prev) => prev.filter((_, i) => i !== idx));
   const changeAt = (setter, idx, val) =>
     setter((prev) => {
       const next = [...prev];
@@ -76,9 +75,7 @@ export default function TrustProfile({ user, onUserChange }) {
     });
 
   const toggleTrade = (type) =>
-    setTrades((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+    setTrades((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
 
   const changeAward = (idx, field, value) =>
     setAwards((prev) => {
@@ -97,9 +94,12 @@ export default function TrustProfile({ user, onUserChange }) {
       intro.trim() ||
       videoUrl.trim() ||
       sns.trim() ||
-      personal.trim()
+      personal.trim() ||
+      hasExp ||                      // ✅ 경험 토글 자체도 저장 요건
+      (!!expYears?.trim()) ||
+      (!!expDesc?.trim())
     );
-  }, [crops, tools, trades, awards, oneLine, intro, videoUrl, sns, personal]);
+  }, [crops, tools, trades, awards, oneLine, intro, videoUrl, sns, personal, hasExp, expYears, expDesc]);
 
   const onSave = () => {
     if (!user) return;
@@ -130,6 +130,12 @@ export default function TrustProfile({ user, onUserChange }) {
           sns: sns.trim(),
           personal: personal.trim(),
         },
+        // ✅ 경험 저장
+        experience: {
+          has: !!hasExp,
+          years: (hasExp ? expYears : "").trim(),
+          desc: (hasExp ? expDesc : "").trim(),
+        },
       },
     };
 
@@ -142,10 +148,7 @@ export default function TrustProfile({ user, onUserChange }) {
     <div className="TrustProfile-Container">
       <div className="TrustProfile-Header">
         <h2>신뢰 프로필</h2>
-        <p>
-          관심 작물 / 사용 장비 / 거래 형태 / 수상 경력 / 소개 · 영상 · SNS ·
-          성향
-        </p>
+        <p>관심 작물 / 사용 장비 / 거래 형태 / 수상 경력 / 소개 · 영상 · SNS · 성향 / 농업 경험</p>
       </div>
 
       {/* 가로 2열 그리드 */}
@@ -154,16 +157,11 @@ export default function TrustProfile({ user, onUserChange }) {
         <section className="TrustProfile-Card">
           <div className="TrustProfile-CardHeader">
             <h3>관심 작물</h3>
-            <button
-              className="TrustProfile-AddButton"
-              onClick={() => addField(setCrops)}
-            >
+            <button className="TrustProfile-AddButton" onClick={() => addField(setCrops)}>
               + 추가
             </button>
           </div>
-          {crops.length === 0 && (
-            <div className="TrustProfile-Empty">관심 작물을 추가해 주세요.</div>
-          )}
+          {crops.length === 0 && <div className="TrustProfile-Empty">관심 작물을 추가해 주세요.</div>}
           {crops.map((crop, idx) => (
             <div className="TrustProfile-RowGrid" key={idx}>
               <input
@@ -174,10 +172,7 @@ export default function TrustProfile({ user, onUserChange }) {
                 onChange={(e) => changeAt(setCrops, idx, e.target.value)}
               />
               <div></div>
-              <button
-                className="TrustProfile-DeleteButton"
-                onClick={() => removeAt(setCrops, idx)}
-              >
+              <button className="TrustProfile-DeleteButton" onClick={() => removeAt(setCrops, idx)}>
                 삭제
               </button>
             </div>
@@ -188,16 +183,11 @@ export default function TrustProfile({ user, onUserChange }) {
         <section className="TrustProfile-Card">
           <div className="TrustProfile-CardHeader">
             <h3>사용 장비</h3>
-            <button
-              className="TrustProfile-AddButton"
-              onClick={() => addField(setTools)}
-            >
+            <button className="TrustProfile-AddButton" onClick={() => addField(setTools)}>
               + 추가
             </button>
           </div>
-          {tools.length === 0 && (
-            <div className="TrustProfile-Empty">사용 장비를 추가해 주세요.</div>
-          )}
+          {tools.length === 0 && <div className="TrustProfile-Empty">사용 장비를 추가해 주세요.</div>}
           {tools.map((tool, idx) => (
             <div className="TrustProfile-RowGrid" key={idx}>
               <input
@@ -208,10 +198,7 @@ export default function TrustProfile({ user, onUserChange }) {
                 onChange={(e) => changeAt(setTools, idx, e.target.value)}
               />
               <div></div>
-              <button
-                className="TrustProfile-DeleteButton"
-                onClick={() => removeAt(setTools, idx)}
-              >
+              <button className="TrustProfile-DeleteButton" onClick={() => removeAt(setTools, idx)}>
                 삭제
               </button>
             </div>
@@ -226,9 +213,7 @@ export default function TrustProfile({ user, onUserChange }) {
               <button
                 key={type}
                 type="button"
-                className={`TrustProfile-TagButton ${
-                  trades.includes(type) ? "selected" : ""
-                }`}
+                className={`TrustProfile-TagButton ${trades.includes(type) ? "selected" : ""}`}
                 onClick={() => toggleTrade(type)}
               >
                 {type}
@@ -242,7 +227,7 @@ export default function TrustProfile({ user, onUserChange }) {
               placeholder="임대 기간 (예: 2년)"
               value={leasePeriod}
               onChange={(e) => setLeasePeriod(e.target.value)}
-              className="TrustProfile-Input mt-8"
+              className="TrustProfile-Input TrustProfile-mt8"
             />
           )}
           {trades.includes("기타") && (
@@ -251,7 +236,7 @@ export default function TrustProfile({ user, onUserChange }) {
               placeholder="기타 거래 형태를 입력해주세요"
               value={otherTrade}
               onChange={(e) => setOtherTrade(e.target.value)}
-              className="TrustProfile-Input mt-8"
+              className="TrustProfile-Input TrustProfile-mt8"
             />
           )}
         </section>
@@ -260,17 +245,12 @@ export default function TrustProfile({ user, onUserChange }) {
         <section className="TrustProfile-Card">
           <div className="TrustProfile-CardHeader">
             <h3>수상 경력</h3>
-            <button
-              className="TrustProfile-AddButton"
-              onClick={() => setAwards((prev) => [...prev, { title: "" }])}
-            >
+            <button className="TrustProfile-AddButton" onClick={() => setAwards((prev) => [...prev, { title: "" }])}>
               + 추가
             </button>
           </div>
 
-          {awards.length === 0 && (
-            <div className="TrustProfile-Empty">수상 경력을 추가해 주세요.</div>
-          )}
+          {awards.length === 0 && <div className="TrustProfile-Empty">수상 경력을 추가해 주세요.</div>}
 
           {awards.map((a, idx) => (
             <div className="TrustProfile-RowGrid awards" key={idx}>
@@ -281,90 +261,103 @@ export default function TrustProfile({ user, onUserChange }) {
                 value={a.title}
                 onChange={(e) => changeAward(idx, "title", e.target.value)}
               />
-              <button
-                className="TrustProfile-DeleteButton"
-                onClick={() =>
-                  setAwards((prev) => prev.filter((_, i) => i !== idx))
-                }
-              >
+              <button className="TrustProfile-DeleteButton" onClick={() => setAwards((prev) => prev.filter((_, i) => i !== idx))}>
                 삭제
               </button>
             </div>
           ))}
         </section>
+
+        {/* ✅ 농업 경험 */}
+        <section className="TrustProfile-Card">
+          <div className="TrustProfile-CardHeader">
+            <h3>농업 경험</h3>
+          </div>
+          {hasExp && (
+            <>
+              <div className="TrustProfile-Row">
+                <label className="TrustProfile-Label">경력 연차</label>
+                <div className="TrustProfile-InputWrap">
+                  <input
+                    className="TrustProfile-Input"
+                    placeholder="예: 2년"
+                    value={expYears}
+                    onChange={(e) => setExpYears(e.target.value)}
+                  />
+                </div>
+              </div>
+
+            </>
+          )}
+          {!hasExp && <div className="TrustProfile-Empty">농업 경험이 없다고 선택하셨습니다.</div>}
+        </section>
       </div>
 
       {/* 소개 묶음 (한마디/자기소개/영상/SNS/성향) — 전체 폭 */}
-      <section className="IntroForm-root">
-        <div className="IntroForm-card">
-          <FormRow label="한마디 소개">
-            <div className="IntroForm-inputWrap">
+      <section className="TrustProfile-IntroRoot">
+        <div className="TrustProfile-IntroCard">
+          <TrustRow label="한마디 소개">
+            <div className="TrustProfile-InputWrap">
               <input
-                className="IntroForm-input"
+                className="TrustProfile-Input"
                 placeholder={`예) ${ONE_LINE_MAX}자 이내로 핵심만 적어주세요`}
                 value={oneLine}
                 maxLength={ONE_LINE_MAX}
                 onChange={(e) => setOneLine(e.target.value)}
                 aria-label="대표 한마디"
               />
-              <div className="IntroForm-counter">
-                {oneLine.length} / {ONE_LINE_MAX}
-              </div>
+              <div className="TrustProfile-Counter">{oneLine.length} / {ONE_LINE_MAX}</div>
             </div>
-          </FormRow>
+          </TrustRow>
 
-          <FormRow label="자기 소개">
+          <TrustRow label="자기 소개">
             <textarea
-              className="IntroForm-textarea"
+              className="TrustProfile-Textarea"
               placeholder="자기소개(필수) — 동기, 경험, 목표 등을 자세히 적어주세요."
               rows={8}
               value={intro}
               onChange={(e) => setIntro(e.target.value)}
               aria-label="자기 소개"
             />
-          </FormRow>
+          </TrustRow>
 
-          <FormRow label="자기소개 영상">
+          <TrustRow label="자기소개 영상">
             <input
               type="text"
-              className="IntroForm-input"
+              className="TrustProfile-Input"
               placeholder="YouTube 등 영상 URL (선택)"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               aria-label="자기소개 영상 URL"
             />
-          </FormRow>
+          </TrustRow>
 
-          <FormRow label="SNS">
+          <TrustRow label="SNS">
             <input
               type="text"
-              className="IntroForm-input"
+              className="TrustProfile-Input"
               placeholder="SNS 아이디 또는 링크 (선택)"
               value={sns}
               onChange={(e) => setSns(e.target.value)}
               aria-label="SNS"
             />
-          </FormRow>
+          </TrustRow>
 
-          <FormRow label="개인 성향">
+          <TrustRow label="개인 성향">
             <input
               type="text"
-              className="IntroForm-input"
+              className="TrustProfile-Input"
               placeholder="예: 단체생활, 성실, 관계중시 (쉼표로 구분 가능)"
               value={personal}
               onChange={(e) => setPersonal(e.target.value)}
               aria-label="개인 성향"
             />
-          </FormRow>
+          </TrustRow>
         </div>
       </section>
 
       <div className="TrustProfile-ActionRow">
-        <button
-          className="TrustProfile-PrimaryButton"
-          disabled={!canSave}
-          onClick={onSave}
-        >
+        <button className="TrustProfile-PrimaryButton" disabled={!canSave} onClick={onSave}>
           저장
         </button>
       </div>
@@ -372,11 +365,11 @@ export default function TrustProfile({ user, onUserChange }) {
   );
 }
 
-function FormRow({ label, children }) {
+function TrustRow({ label, children }) {
   return (
-    <div className="IntroForm-row">
-      <label className="IntroForm-label">{label}</label>
-      <div className="IntroForm-inputWrap">{children}</div>
+    <div className="TrustProfile-Row">
+      <label className="TrustProfile-Label">{label}</label>
+      <div className="TrustProfile-InputWrap">{children}</div>
     </div>
   );
 }

@@ -36,6 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: .75rem;
   margin-bottom: 0.75rem;
 }
 .TrustProfile-Empty {
@@ -59,16 +60,13 @@
   align-items: center;
   margin-bottom: 0.6rem;
 }
-/* awards: 첫 컬럼 크게 → 수상명 입력 더 넓게 */
 .TrustProfile-RowGrid.awards {
-grid-template-columns: 1fr auto; /* title, 삭제버튼 */
+  grid-template-columns: 1fr auto; /* title, 삭제버튼 */
 }
 
 /* 입력 공통 */
 .TrustProfile-Input,
-.TrustProfile-Textarea,
-.IntroForm-input,
-.IntroForm-textarea {
+.TrustProfile-Textarea {
   width: 100%;
   padding: 0.78rem 1rem;
   font-size: 0.95rem;
@@ -79,16 +77,13 @@ grid-template-columns: 1fr auto; /* title, 삭제버튼 */
   background: #fafafa;
 }
 .TrustProfile-Input:focus,
-.TrustProfile-Textarea:focus,
-.IntroForm-input:focus,
-.IntroForm-textarea:focus {
+.TrustProfile-Textarea:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59,130,246,.15);
   outline: none;
   background: #fff;
 }
-.TrustProfile-Textarea,
-.IntroForm-textarea { resize: vertical; }
+.TrustProfile-Textarea { resize: vertical; }
 
 /* 태그 버튼(거래 형태) */
 .TrustProfile-TagContainer {
@@ -165,8 +160,60 @@ grid-template-columns: 1fr auto; /* title, 삭제버튼 */
   filter: brightness(1.05);
 }
 
+/* ✅ IntroForm-* 제거 → TrustProfile-* 로 통일 (행/레이블/카운터/래퍼) */
+.TrustProfile-IntroRoot { margin-top: 1rem; }
+.TrustProfile-IntroCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border: 1px solid #eee;
+}
+.TrustProfile-Row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.8rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+.TrustProfile-Label {
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.TrustProfile-InputWrap {
+  position: relative;
+}
+.TrustProfile-Counter {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.55rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* ✅ 경험 토글 */
+.TrustProfile-ToggleWrap {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+.TrustProfile-Toggle {
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  padding: .45rem .9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: .9rem;
+}
+.TrustProfile-Toggle.active {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
 /* 유틸 */
-.mt-8 { margin-top: 0.6rem; }
+.TrustProfile-mt8 { margin-top: 0.6rem; }
 
 /* 반응형 */
 @media (max-width: 900px) {
@@ -175,4 +222,5 @@ grid-template-columns: 1fr auto; /* title, 삭제버튼 */
 @media (max-width: 720px) {
   .TrustProfile-RowGrid { grid-template-columns: 1fr; }
   .TrustProfile-RowGrid.awards { grid-template-columns: 1fr; }
+  .TrustProfile-Row { grid-template-columns: 1fr; }
 }
