@@ -1,3 +1,5 @@
+/* src/components/Setting/SettingContent/TrustSetting/Certification.css */
+
 .Certification-Container {
   max-width: 980px;
   margin: 2rem auto;
@@ -44,7 +46,7 @@
   font-size: 0.95rem;
 }
 
-/* 행/그리드 */
+/* 행/그리드 (자격증: 이름, 파일, 삭제) */
 .Certification-RowGrid {
   display: grid;
   grid-template-columns: 1fr 1fr auto;
@@ -53,6 +55,7 @@
   margin-bottom: 0.6rem;
 }
 
+/* 입력 공통 */
 .Certification-Input,
 .Certification-Textarea {
   padding: 0.65rem 0.75rem;
@@ -61,7 +64,7 @@
   font-size: 0.96rem;
   width: 100%;
   box-sizing: border-box;
-  transition: border-color .2s, box-shadow .2s;
+  transition: border-color .2s, box-shadow .2s, background .2s;
   background: #fafafa;
 }
 .Certification-Input:focus,
@@ -72,32 +75,6 @@
   background: #fff;
 }
 .Certification-Textarea { resize: vertical; }
-
-/* 태그 버튼 */
-.Certification-TagContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.25rem 0 0.5rem;
-}
-.Certification-TagButton {
-  background-color: #f1f3f5;
-  border: 1px solid #e5e7eb;
-  border-radius: 999px;
-  padding: 0.45rem 0.9rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all .15s ease;
-}
-.Certification-TagButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-.Certification-TagButton.selected {
-  background-color: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
 
 /* 버튼 */
 .Certification-AddButton {
@@ -148,23 +125,9 @@
   filter: brightness(1.05);
 }
 
-/* 유틸 */
-.mt-8 { margin-top: 0.6rem; }
-
 /* 반응형 */
 @media (max-width: 720px) {
   .Certification-RowGrid {
-    grid-template-columns: 1fr;
-  }
-}
-/* awards용 컬럼 확장 */
-.Certification-RowGrid.awards {
-  grid-template-columns: 1.2fr 1fr 0.6fr auto; /* title, org, year, 삭제버튼 */
-}
-
-/* 작은 화면에서 한 줄로 쌓이도록 */
-@media (max-width: 720px) {
-  .Certification-RowGrid.awards {
     grid-template-columns: 1fr;
   }
 }

@@ -15,7 +15,7 @@ function SeniorFlow({ onSubmit }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    Name: "",                 // -> landName
+    landName: "",                 // -> landName
     address: "",              // -> landAddress
     roadAddress: "",          // -> landLoadAddress (서비스에서 이 철자 사용)
     landNumber: "",
@@ -81,7 +81,7 @@ function SeniorFlow({ onSubmit }) {
 
     // 프론트 상태값 -> 서버 DTO 필드명 매핑
     const keyMap = {
-      Name: "landName",
+      landName: "landName",
       address: "landAddress",
       roadAddress: "landLoadAddress", // 서비스에서 getLandLoadAddress() 사용
       landNumber: "landNumber",
@@ -282,6 +282,7 @@ function SeniorFlow({ onSubmit }) {
         <div className="FarmlandRegistration-inputSumTitle">입력 정보 요약</div>
 
         <div className="FarmlandRegistration-SummaryGrid">
+          <div>🌾 농지명: {formData.landName || "미입력"}</div>
           <div>📍 행정주소: {formData.address || "미입력"}</div>
           <div>🚏 도로명 주소: {formData.roadAddress || "미입력"}</div>
           <div>🏷️ 지번: {formData.landNumber || "미입력"}</div>

@@ -58,9 +58,16 @@ function Step1_Location({ data, updateData, onNext }) {
 
   return (
     <div className="FarmlandRegistration-Step">
-      <h2>Step 1. 농지 위치를 알려주세요</h2>
+      <h2>Step 1. 농지 정보를 알려주세요</h2>
+      <label>농지명</label>
+      <input
+        className="FarmlandRegistration-InputField"
+        placeholder="예: 충남 1구 농지"
+        value={data.landName}
+        onChange={(e) => updateData("landName", e.target.value)}
+      />
 
-      <label>행정주소</label>
+
       <label>행정주소</label>
       <input
         className="FarmlandRegistration-InputField"

@@ -12,7 +12,7 @@ function Sidebar({ selected, onMenuSelect }) {
     { label: "신청한 매칭 내역", section: "농지 및 매칭" },
     { label: "관심 농지 목록", section: "농지 및 매칭" },
     { label: "신뢰 프로필 관리", section: "신뢰 관리" },
-    { label: "자기소개 영상/음성 업로드", section: "신뢰 관리" },
+    { label: "자격증 업로드", section: "신뢰 관리" },
     { label: "추천인/보증인 등록", section: "신뢰 관리" },
     { label: "나의 신뢰 레벨 확인", section: "신뢰 관리" },
     // 여기에 다른 항목들도 필요시 추가
