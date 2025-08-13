@@ -9,7 +9,7 @@ const initialDummyLands = [
   { id: 2, name: "아산 🍅 농지 2", location: "충남 아산시 배방읍", crop: "토마토", area: 1200, status: "매칭 중" },
 ];
 
-function MyRegisteredLand() {
+function MyRegisteredLand({sellerId = 1}) {
   const navigate = useNavigate();
 
   const [lands, setLands] = useState(initialDummyLands);
@@ -21,6 +21,21 @@ function MyRegisteredLand() {
   // 신규: 신청자 상태
   const [applicants, setApplicants] = useState([]);            // 목록
   const [selectedApplicant, setSelectedApplicant] = useState(null); // 선택된 신청자
+
+  // // ✅ 컴포넌트 로드 시 DB에서 농지 목록 가져오기
+  // useEffect(() => {
+  //   fetch(`http://localhost:8080/${sellerId}/farmland`)
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error("서버 응답 오류");
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       setLands(data);
+  //     })
+  //     .catch((err) => {
+  //       console.error("농지 데이터 불러오기 실패:", err);
+  //     });
+  // }, [sellerId]);
 
   // 상세 보기 클릭 시 해당 농지 선택 + 신청자 로딩
   const openDetail = async (land) => {
@@ -300,3 +315,4 @@ function MyRegisteredLand() {
 }
 
 export default MyRegisteredLand;
+
