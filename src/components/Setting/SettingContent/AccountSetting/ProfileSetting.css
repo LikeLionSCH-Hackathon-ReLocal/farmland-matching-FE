@@ -139,3 +139,57 @@
   width: 100%;
   box-sizing: border-box;
 }
+.ProfileSettings-privacy {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 1em;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.ProfileSettings-privacy input[type="checkbox"] {
+  width: 1em;
+  height: 1em;
+  accent-color: #3366ff; /* 체크 색상 */
+  cursor: pointer;
+}
+
+.ProfileSettings-privacy label {
+  cursor: pointer;
+  user-select: none;
+}
+.ProfileSettings-agreements {
+  border-top: 1px solid #ccc;
+  margin-top: 1em;
+  padding-top: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  font-size: 0.875rem;
+}
+
+.ProfileSettings-agreements input[type="checkbox"] {
+  width: 1em;
+  height: 1em;
+  accent-color: #3366ff;
+  cursor: pointer;
+}
+
+.ProfileSettings-agreements label {
+  cursor: pointer;
+}
+
+.ProfileSettings-agreements .agree-all {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.ProfileSettings-agreements .agree-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding-left: 1em;
+}

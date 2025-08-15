@@ -4,6 +4,13 @@ import "./ProfileSetting.css";
 
 function ProfileSettings({ user, onChange }) {
   const [editMode, setEditMode] = useState(false);
+  const [agreements, setAgreements] = useState({
+    all: true,
+    privacy: true,
+    marketing: true,
+    thirdParty: true,
+  });
+
   const [form, setForm] = useState({
     name: "",
     age: "",
@@ -35,9 +42,33 @@ function ProfileSettings({ user, onChange }) {
   const onField = (key) => (e) =>
     setForm((p) => ({ ...p, [key]: e.target.value }));
 
+  // 전체 선택/해제
+  const toggleAll = () => {
+    const newValue = !agreements.all;
+    setAgreements({
+      all: newValue,
+      privacy: newValue,
+      marketing: newValue,
+      thirdParty: newValue,
+    });
+  };
+
+  // 개별 선택
+  const toggleOne = (key) => {
+    setAgreements((prev) => {
+      const updated = { ...prev, [key]: !prev[key] };
+      updated.all = updated.privacy && updated.marketing && updated.thirdParty;
+      return updated;
+    });
+  };
+
+  // 저장 시 필수 확인
   const handleSave = () => {
     if (!canSave) return;
-    // 상위 youngUser 업데이트
+    if (!agreements.privacy) {
+      alert("개인정보 수집·이용에 동의해 주세요. (필수)");
+      return;
+    }
     const updated = { ...user, ...form };
     onChange?.(updated);
     setEditMode(false);
@@ -73,6 +104,18 @@ function ProfileSettings({ user, onChange }) {
               disabled={!editMode}
             />
           </div>
+          <div className="ProfileSettings-input-row half-width">
+            <label>전화번호</label>
+            <input
+              className="ProfileSettings-num"
+              value={form.callNumber}
+              onChange={onField("callNumber")}
+              disabled={!editMode}
+            />
+            <span className="ProfileSettings-error-text">
+              전화번호 인증 완료.
+            </span>
+          </div>
         </div>
 
         <div className="ProfileSettings-profile-photo">
@@ -86,19 +129,6 @@ function ProfileSettings({ user, onChange }) {
 
       <div className="ProfileSettings-left-section">
         <div className="ProfileSettings-input-row">
-          <label>전화번호</label>
-          <input
-            className="ProfileSettings-num"
-            value={form.callNumber}
-            onChange={onField("callNumber")}
-            disabled={!editMode}
-          />
-          <span className="ProfileSettings-error-text">
-            전화번호 인증 완료.
-          </span>
-        </div>
-
-        <div className="ProfileSettings-input-row">
           <label>메일</label>
           <input
             className="ProfileSettings-num"
@@ -106,9 +136,7 @@ function ProfileSettings({ user, onChange }) {
             onChange={onField("mail")}
             disabled={!editMode}
           />
-          <span className="ProfileSettings-error-text">
-            메일 인증 완료.
-          </span>
+          <span className="ProfileSettings-error-text">메일 인증 완료.</span>
         </div>
 
         <div className="ProfileSettings-input-row">
@@ -118,6 +146,52 @@ function ProfileSettings({ user, onChange }) {
             onChange={onField("address")}
             disabled={!editMode}
           />
+        </div>
+      </div>
+      {/* 동의 항목 */}
+      <div className="ProfileSettings-agreements">
+        <div className="agree-all">
+          <input
+            type="checkbox"
+            id="agreeAll"
+            checked={agreements.all}
+            onChange={toggleAll}
+            disabled={!editMode}
+          />
+          <label htmlFor="agreeAll">전체 동의</label>
+        </div>
+
+        <div className="agree-item">
+          <input
+            type="checkbox"
+            id="privacy"
+            checked={agreements.privacy}
+            onChange={() => toggleOne("privacy")}
+            disabled={!editMode}
+          />
+          <label htmlFor="privacy">[필수] 개인정보 수집·이용 동의</label>
+        </div>
+
+        <div className="agree-item">
+          <input
+            type="checkbox"
+            id="marketing"
+            checked={agreements.marketing}
+            onChange={() => toggleOne("marketing")}
+            disabled={!editMode}
+          />
+          <label htmlFor="marketing">[선택] 마케팅 정보 수신 동의</label>
+        </div>
+
+        <div className="agree-item">
+          <input
+            type="checkbox"
+            id="thirdParty"
+            checked={agreements.thirdParty}
+            onChange={() => toggleOne("thirdParty")}
+            disabled={!editMode}
+          />
+          <label htmlFor="thirdParty">[선택] 제3자 제공 동의</label>
         </div>
       </div>
 
