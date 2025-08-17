@@ -651,8 +651,8 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
           <LabeledRow label="행정주소" value={r.landAddress} />
           <LabeledRow label="도로명 주소" value={r.landLoadAddress} />
           <LabeledRow label="지번" value={r.landNumber} />
-          <LabeledRow label="위도" value={r.lat} />
-          <LabeledRow label="경도" value={r.lng} />
+          <LabeledRow label="위도" value={r.landLat} />
+          <LabeledRow label="경도" value={r.landLng} />
           <LabeledRow label="작물" value={r.landCrop} />
           <LabeledRow label="면적(㎡/ha)" value={r.landArea} />
           <LabeledRow label="토양" value={r.soiltype} />
