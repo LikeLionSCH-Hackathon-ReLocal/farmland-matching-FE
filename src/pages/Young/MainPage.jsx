@@ -5,9 +5,9 @@ import LeftPanel from "../../components/Pannel/LeftPanel";
 import RightPanel from "../../components/Pannel/RightPanel";
 import BottomPanel from "../../components/Pannel/BottomPanel";
 import MapView from "../../components/Map/MapView";
-import { getFarmlandData } from "../../api/farmland";
-import { getYoungUserData } from "../../api/YoungUser"          // ⬅ 추가
-import ProfileModal from "../../components/Pannel/ProfileModal";  // ⬅ 새 컴포넌트
+import { fetchFarmlands } from "../../api/farmland";
+import { getYoungUserData } from "../../api/YoungUser"; // ⬅ 추가
+import ProfileModal from "../../components/Pannel/ProfileModal"; // ⬅ 새 컴포넌트
 
 function MainPage() {
   const [farmlands, setFarmlands] = useState([]);
@@ -15,11 +15,19 @@ function MainPage() {
   const [map, setMap] = useState(null);
 
   const [showProfile, setShowProfile] = useState(false); // ⬅ 추가
-  const [youngUser, setYoungUser] = useState(null);      // ⬅ 추가
-  const [userLoading, setUserLoading] = useState(true);  // ⬅ 추가
+  const [youngUser, setYoungUser] = useState(null); // ⬅ 추가
+  const [userLoading, setUserLoading] = useState(true); // ⬅ 추가
 
   useEffect(() => {
-    getFarmlandData().then(setFarmlands);
+    (async () => {
+      try {
+        const rows = await fetchFarmlands();
+        setFarmlands(rows);
+      } catch (e) {
+        console.error("[farmlands] load error:", e);
+        setFarmlands([]); // 실패 시 빈 배열
+      }
+    })();
   }, []);
 
   useEffect(() => {

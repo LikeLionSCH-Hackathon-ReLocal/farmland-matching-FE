@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Sell.css";
-import { getFarmlandData } from "../../../../api/farmland"; // 경로 확인
+import { getFarmlandData1 } from "../../../../api/farmland"; // 경로 확인
 import FarmlandDetailView from "./FarmlandDetailView";
 
 export default function Sell() {
@@ -11,7 +11,7 @@ export default function Sell() {
 
   useEffect(() => {
     (async () => {
-      const data = await getFarmlandData();
+      const data = await getFarmlandData1();
       setFarmlands(data || []);
     })();
   }, []);
