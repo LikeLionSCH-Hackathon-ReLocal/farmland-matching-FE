@@ -15,9 +15,15 @@ import { useNavigate, useParams } from "react-router-dom";
    🔎 디버깅 토글/유틸
 ======================== */
 const DEBUG = true;
-function dlog(...args) { if (DEBUG) console.log("[SeniorFlow]", ...args); }
-function dwarn(...args) { if (DEBUG) console.warn("[SeniorFlow]", ...args); }
-function derr(...args) { if (DEBUG) console.error("[SeniorFlow]", ...args); }
+function dlog(...args) {
+  if (DEBUG) console.log("[SeniorFlow]", ...args);
+}
+function dwarn(...args) {
+  if (DEBUG) console.warn("[SeniorFlow]", ...args);
+}
+function derr(...args) {
+  if (DEBUG) console.error("[SeniorFlow]", ...args);
+}
 
 const MAX_FILE_SIZE_MB = 25; // 서버 제한과 맞추기
 const ALLOWED_MIMES = ["image/jpeg", "image/png", "application/pdf"];
@@ -152,19 +158,25 @@ function SeniorFlow({ onSubmit }) {
     wishWhen: "landWhen",
     reason: "landWhy",
     comment: "landComent",
+    lat: "landLat",
+    lng: "landLng",
   };
 
-  const REQUIRED_FIELDS = [
-    "landName",
-    "address",
-    "landNumber",
-    "crop",
-  ];
+  const REQUIRED_FIELDS = ["landName", "address", "landNumber", "crop"];
 
   function normalizeValueForServer(k, v) {
     // 숫자/불린을 문자열로만 보내면 서버에서 파싱 못하는 경우 대비
     // 필요시 숫자/불린 캐스팅
-    if (["ownerAge", "wishPrice", "areaSquare", "areaHectare", "lat", "lng"].includes(k)) {
+    if (
+      [
+        "ownerAge",
+        "wishPrice",
+        "areaSquare",
+        "areaHectare",
+        "lat",
+        "lng",
+      ].includes(k)
+    ) {
       const num = String(v ?? "").trim();
       if (num && !isNaN(Number(num))) return String(Number(num));
       if (num === "") return "";
@@ -187,7 +199,11 @@ function SeniorFlow({ onSubmit }) {
     console.group("🧪 사전 검증(필수/타입/좌표)");
     if (missing.length) {
       console.table(
-        missing.map((f) => ({ field: f, value: String(data[f] ?? ""), status: "MISSING" }))
+        missing.map((f) => ({
+          field: f,
+          value: String(data[f] ?? ""),
+          status: "MISSING",
+        }))
       );
       dwarn("⚠️ 필수 입력값 누락:", missing);
     } else {
@@ -196,9 +212,11 @@ function SeniorFlow({ onSubmit }) {
 
     // 좌표 유효성 체크(선택)
     const latOk =
-      String(data.lat ?? "") === "" || (Number(data.lat) >= -90 && Number(data.lat) <= 90);
+      String(data.lat ?? "") === "" ||
+      (Number(data.lat) >= -90 && Number(data.lat) <= 90);
     const lngOk =
-      String(data.lng ?? "") === "" || (Number(data.lng) >= -180 && Number(data.lng) <= 180);
+      String(data.lng ?? "") === "" ||
+      (Number(data.lng) >= -180 && Number(data.lng) <= 180);
     if (!latOk || !lngOk) {
       dwarn("🗺️ 좌표 값 의심:", { lat: data.lat, lng: data.lng });
     } else {
@@ -207,7 +225,16 @@ function SeniorFlow({ onSubmit }) {
 
     // DTO 매핑 확인
     const notMapped = Object.keys(data).filter(
-      (k) => !["photos", "docDeung", "docToji", "docNong", "facilities", "areaSquare", "areaHectare"].includes(k) && !keyMap[k]
+      (k) =>
+        ![
+          "photos",
+          "docDeung",
+          "docToji",
+          "docNong",
+          "facilities",
+          "areaSquare",
+          "areaHectare",
+        ].includes(k) && !keyMap[k]
     );
     if (notMapped.length) {
       dwarn("🧩 서버 DTO에 매핑되지 않는 키(전송 누락 예상):", notMapped);
@@ -228,8 +255,10 @@ function SeniorFlow({ onSubmit }) {
         return;
       }
       const sizeMB = (f.size || 0) / (1024 * 1024);
-      if (sizeMB > MAX_FILE_SIZE_MB) problems.push(`${label}: 용량 초과 ${sizeMB.toFixed(2)}MB`);
-      if (f.type && !ALLOWED_MIMES.includes(f.type)) problems.push(`${label}: MIME ${f.type} 허용 안됨`);
+      if (sizeMB > MAX_FILE_SIZE_MB)
+        problems.push(`${label}: 용량 초과 ${sizeMB.toFixed(2)}MB`);
+      if (f.type && !ALLOWED_MIMES.includes(f.type))
+        problems.push(`${label}: MIME ${f.type} 허용 안됨`);
     };
 
     pushIfBad("등기부등본", data.docDeung);
@@ -237,7 +266,9 @@ function SeniorFlow({ onSubmit }) {
     pushIfBad("농지원부", data.docNong);
 
     if (Array.isArray(data.photos)) {
-      const first = data.photos.find((x) => x instanceof File || x instanceof Blob);
+      const first = data.photos.find(
+        (x) => x instanceof File || x instanceof Blob
+      );
       pushIfBad("대표이미지(photos[0])", first);
     }
 
@@ -283,23 +314,37 @@ function SeniorFlow({ onSubmit }) {
     const landArea =
       data.areaSquare && String(data.areaSquare).trim().length > 0
         ? data.areaSquare
-        : (data.areaHectare || "");
+        : data.areaHectare || "";
     if (String(landArea).trim().length > 0) {
       fd.append("landArea", normalizeValueForServer("landArea", landArea));
     }
 
     // 3) 파일
     if (data.docDeung instanceof File || data.docDeung instanceof Blob) {
-      fd.append("landRegister", data.docDeung, data.docDeung.name ?? "landRegister");
+      fd.append(
+        "landRegister",
+        data.docDeung,
+        data.docDeung.name ?? "landRegister"
+      );
     }
     if (data.docToji instanceof File || data.docToji instanceof Blob) {
-      fd.append("landCadastre", data.docToji, data.docToji.name ?? "landCadastre");
+      fd.append(
+        "landCadastre",
+        data.docToji,
+        data.docToji.name ?? "landCadastre"
+      );
     }
     if (data.docNong instanceof File || data.docNong instanceof Blob) {
-      fd.append("landCertification", data.docNong, data.docNong.name ?? "landCertification");
+      fd.append(
+        "landCertification",
+        data.docNong,
+        data.docNong.name ?? "landCertification"
+      );
     }
     if (Array.isArray(data.photos)) {
-      const first = data.photos.find((f) => f instanceof File || f instanceof Blob);
+      const first = data.photos.find(
+        (f) => f instanceof File || f instanceof Blob
+      );
       if (first) {
         fd.append("landImage", first, first.name ?? "landImage");
       }
@@ -309,7 +354,9 @@ function SeniorFlow({ onSubmit }) {
     console.group("📦 업로드 FormData entries");
     for (let [key, value] of fd.entries()) {
       if (value instanceof File) {
-        console.log(`${key}: [File] name=${value.name}, type=${value.type}, size=${value.size}B`);
+        console.log(
+          `${key}: [File] name=${value.name}, type=${value.type}, size=${value.size}B`
+        );
       } else {
         console.log(`${key}:`, value);
       }
@@ -339,8 +386,13 @@ function SeniorFlow({ onSubmit }) {
     dlog("URL:", uploadUrl);
     dlog("Method: POST (multipart/form-data)");
     dlog("Auth token 존재?", Boolean(token));
-    if (!token) dwarn("⚠️ Authorization 헤더 없음. 인증 필요한 엔드포인트면 401/403 발생 가능.");
-    dlog("CORS 주의: 백엔드에서 Access-Control-Allow-Origin 설정 필요(프론트 도메인/포트)");
+    if (!token)
+      dwarn(
+        "⚠️ Authorization 헤더 없음. 인증 필요한 엔드포인트면 401/403 발생 가능."
+      );
+    dlog(
+      "CORS 주의: 백엔드에서 Access-Control-Allow-Origin 설정 필요(프론트 도메인/포트)"
+    );
     console.groupEnd();
 
     // 1) 타임아웃/중단 컨트롤러
@@ -383,7 +435,11 @@ function SeniorFlow({ onSubmit }) {
         return json ?? {};
       } else {
         const text = await res.text().catch(() => "");
-        dwarn("서버가 JSON이 아닌 응답을 반환:", contentType, text?.slice(0, 200));
+        dwarn(
+          "서버가 JSON이 아닌 응답을 반환:",
+          contentType,
+          text?.slice(0, 200)
+        );
         return { raw: text };
       }
     } finally {
@@ -414,7 +470,9 @@ function SeniorFlow({ onSubmit }) {
       derr("❌ 업로드 중 오류:", err);
       // 흔한 오류 힌트 출력
       if (String(err?.message || "").includes("CORS")) {
-        dwarn("CORS 관련 오류처럼 보이면 백엔드의 CORS 설정(Origin/Methods/Headers) 확인 필요.");
+        dwarn(
+          "CORS 관련 오류처럼 보이면 백엔드의 CORS 설정(Origin/Methods/Headers) 확인 필요."
+        );
       }
       alert(err?.message || "업로드 중 오류가 발생했습니다.");
     } finally {
@@ -424,7 +482,8 @@ function SeniorFlow({ onSubmit }) {
 
   // 전역 미처리 에러/리젝션 로그(디버그에 도움)
   useEffect(() => {
-    const onRejection = (e) => dwarn("💥 Unhandled promise rejection:", e.reason || e);
+    const onRejection = (e) =>
+      dwarn("💥 Unhandled promise rejection:", e.reason || e);
     const onError = (e) => dwarn("💥 Window error:", e.message || e);
     window.addEventListener("unhandledrejection", onRejection);
     window.addEventListener("error", onError);
@@ -449,7 +508,11 @@ function SeniorFlow({ onSubmit }) {
         <div className="FarmlandRegistration-Progress">Step {step} / 7</div>
 
         {step === 1 && (
-          <Step1_Location data={formData} updateData={updateData} onNext={next} />
+          <Step1_Location
+            data={formData}
+            updateData={updateData}
+            onNext={next}
+          />
         )}
         {step === 2 && (
           <Step2_Crop
@@ -510,13 +573,16 @@ function SeniorFlow({ onSubmit }) {
           <div>📍 행정주소: {formData.address || "미입력"}</div>
           <div>🚏 도로명 주소: {formData.roadAddress || "미입력"}</div>
           <div>🏷️ 지번: {formData.landNumber || "미입력"}</div>
-          <div>📍 위도/경도: {formData.lat || "?"}, {formData.lng || "?"}</div>
+          <div>
+            📍 위도/경도: {formData.lat || "?"}, {formData.lng || "?"}
+          </div>
 
           <div className="divider"></div>
 
           <div>🌾 작물: {formData.crop || "미입력"}</div>
           <div>
-            📐 면적: {formData.areaSquare || "?"}㎡ / {formData.areaHectare || "?"}ha
+            📐 면적: {formData.areaSquare || "?"}㎡ /{" "}
+            {formData.areaHectare || "?"}ha
           </div>
 
           <div className="divider"></div>
@@ -524,7 +590,8 @@ function SeniorFlow({ onSubmit }) {
           <div>🧱 토양: {formData.soilType || "미입력"}</div>
           <div>💧 용수: {formData.waterSource || "미입력"}</div>
           <div>
-            👤 소유자: {formData.owner || "미입력"} ({formData.ownerAge || "?"}세)
+            👤 소유자: {formData.owner || "미입력"} ({formData.ownerAge || "?"}
+            세)
           </div>
           <div>🏠 거주지: {formData.home || "미입력"}</div>
 
