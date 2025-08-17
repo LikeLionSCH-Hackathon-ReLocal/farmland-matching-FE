@@ -120,7 +120,7 @@ function ProfileSettings({ user, onChange }) {
 
         <div className="ProfileSettings-profile-photo">
           <img
-            src={user?.profileImage || "/images/default_profile.png"}
+            src={user?.profileImage }
             alt="프로필 사진"
             className="ProfileSettings-photo-img"
           />
