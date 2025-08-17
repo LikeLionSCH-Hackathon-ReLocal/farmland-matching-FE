@@ -64,12 +64,13 @@
 .MyRegisteredLand-Button.gray:hover { background-color: #777; }
 .MyRegisteredLand-Button.accept { background: #10b981; color: #fff; }
 .MyRegisteredLand-Button.reject { background: #ef4444; color: #fff; }
-
+.MyRegisteredLand-RightTitle { margin-top: 0.3rem; margin-bottom: 0.75rem; }
 /* 우측 상세 패널 */
 .MyRegisteredLand-DetailPanel {
   flex: 2;
   background-color: #ffffff;
   border-radius: 12px;
+
   padding: 1.5rem;
   border: 1px solid #ddd;
   min-height: 300px;

@@ -88,9 +88,13 @@ function SeniorProfileFlow() {
   return (
     <div className="SeniorProfile-Wrapper">
       <FloatingEmojis />
-      <div className="SeniorProfile-TopButtons">
-        <button onClick={() => navigate("/SeniorMain")} type="button">⬅ 홈으로</button>
-      </div>
+      <button
+        className="SeniorProfile-BackButton"
+        onClick={() => navigate("/SeniorMain")}
+        type="button"
+      >
+        ⬅ 홈으로
+      </button>
 
       <main className="SeniorProfile-FlowContainer">
         {/* 진행률 표시 */}

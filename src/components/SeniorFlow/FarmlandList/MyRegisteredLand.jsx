@@ -17,7 +17,9 @@ function dgroup(title, fn) {
   if (!DEBUG) return fn?.();
   // eslint-disable-next-line no-console
   console.groupCollapsed(`📦 ${title}`);
-  try { fn?.(); } finally {
+  try {
+    fn?.();
+  } finally {
     // eslint-disable-next-line no-console
     console.groupEnd();
   }
@@ -30,7 +32,11 @@ function dtime(label, start = true) {
 
 async function safeJson(res) {
   const text = await res.text();
-  try { return JSON.parse(text); } catch { return { __nonJSON: true, raw: text }; }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { __nonJSON: true, raw: text };
+  }
 }
 
 async function debugFetch(url, options = {}, note = "") {
@@ -75,7 +81,12 @@ async function updateLandOnServer({ baseHeaders, sellerId, landId, payload }) {
   const data = await safeJson(res);
   dgroup("🧾 업데이트 응답 JSON", () => dlog(data));
   if (!res.ok) {
-    throw new Error(`업데이트 실패 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`);
+    throw new Error(
+      `업데이트 실패 status=${res.status} body=${JSON.stringify(data).slice(
+        0,
+        500
+      )}`
+    );
   }
   return data;
 }
@@ -93,7 +104,12 @@ async function deleteLandOnServer({ baseHeaders, sellerId, landId }) {
   const data = await safeJson(res);
   dgroup("🧾 삭제 응답 JSON", () => dlog(data));
   if (!res.ok) {
-    throw new Error(`삭제 실패 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`);
+    throw new Error(
+      `삭제 실패 status=${res.status} body=${JSON.stringify(data).slice(
+        0,
+        500
+      )}`
+    );
   }
   return data;
 }
@@ -102,12 +118,16 @@ async function deleteLandOnServer({ baseHeaders, sellerId, landId }) {
    🔧 매핑 함수
 ======================= */
 function mapListItem(item, idx) {
-  const landId = item?.landId ?? item?.id ?? item?.farmlandId ?? `unknown-${idx}`;
+  const landId =
+    item?.landId ?? item?.id ?? item?.farmlandId ?? `unknown-${idx}`;
   const mapped = {
     id: landId,
     name: item?.landName ?? item?.name ?? "이름 미정",
     location:
-      item?.landAddress ?? item?.landLoadAddress ?? item?.ownerAddress ?? "주소 미입력",
+      item?.landAddress ??
+      item?.landLoadAddress ??
+      item?.ownerAddress ??
+      "주소 미입력",
     crop: item?.landCrop ?? item?.crop ?? "작물 미입력",
     area: item?.landArea ?? item?.areaSquare ?? item?.area ?? "?",
     status: item?.status ?? "등록 완료",
@@ -125,7 +145,10 @@ function mapDetailItem(item) {
     id: landId,
     name: item?.landName ?? item?.name ?? "이름 미정",
     location:
-      item?.landAddress ?? item?.landLoadAddress ?? item?.ownerAddress ?? "주소 미입력",
+      item?.landAddress ??
+      item?.landLoadAddress ??
+      item?.ownerAddress ??
+      "주소 미입력",
     crop: item?.landCrop ?? item?.crop ?? "작물 미입력",
     area: item?.landArea ?? item?.areaSquare ?? item?.area ?? "?",
     status: item?.status ?? "등록 완료",
@@ -165,7 +188,11 @@ function FileLinkOrText({ url, label }) {
       <span className="MyRegisteredLand-Label">{label}</span>
       <span className="MyRegisteredLand-Value">
         {isImage ? (
-          <img src={url} alt={label} className="MyRegisteredLand-PreviewImage" />
+          <img
+            src={url}
+            alt={label}
+            className="MyRegisteredLand-PreviewImage"
+          />
         ) : (
           <a href={url} target="_blank" rel="noreferrer">
             {url}
@@ -216,13 +243,26 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       setLoadingList(true);
       const url = `http://localhost:8080/${sellerId}/farmland`;
       try {
-        const res = await debugFetch(url, { headers: { ...baseHeaders } }, "LIST");
+        const res = await debugFetch(
+          url,
+          { headers: { ...baseHeaders } },
+          "LIST"
+        );
         const data = await safeJson(res);
         dgroup("🧾 목록 JSON", () => dlog(data));
         if (!res.ok) {
-          throw new Error(`목록 오류 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`);
+          throw new Error(
+            `목록 오류 status=${res.status} body=${JSON.stringify(data).slice(
+              0,
+              500
+            )}`
+          );
         }
-        const arr = Array.isArray(data) ? data : (Array.isArray(data?.content) ? data.content : []);
+        const arr = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.content)
+          ? data.content
+          : [];
         if (!Array.isArray(arr)) {
           dlog("⚠️ 예상치 못한 목록 응답 형태:", data);
         }
@@ -238,7 +278,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       }
     })();
 
-    return () => { mountedRef.current = false; };
+    return () => {
+      mountedRef.current = false;
+    };
   }, [sellerId]); // eslint-disable-line
 
   /* ========== 2) 상세 로드(+신청자 목록 포함): GET /${sellerId}/farmland/{landId} ========== */
@@ -262,12 +304,19 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
 
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}`;
     try {
-      const res = await debugFetch(url, { headers: { ...baseHeaders } }, "DETAIL");
+      const res = await debugFetch(
+        url,
+        { headers: { ...baseHeaders } },
+        "DETAIL"
+      );
       const data = await safeJson(res);
       dgroup("🧾 상세 JSON", () => dlog(data));
       if (!res.ok) {
         throw new Error(
-          `상세 오류 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`
+          `상세 오류 status=${res.status} body=${JSON.stringify(data).slice(
+            0,
+            500
+          )}`
         );
       }
       // 상세 본문
@@ -275,9 +324,10 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       setSelectedLand(mappedDetail);
 
       // ✅ 신청자 목록 포함되는 형식 가정: data.applicants 또는 data.buyers 등
-      const listFromDetail =
-        Array.isArray(data?.applicants) ? data.applicants
-        : Array.isArray(data?.buyers) ? data.buyers
+      const listFromDetail = Array.isArray(data?.applicants)
+        ? data.applicants
+        : Array.isArray(data?.buyers)
+        ? data.buyers
         : [];
 
       // 서버에서 주는 키 이름을 보정(buyerId/name/status 등)
@@ -285,7 +335,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
         const buyerId = a?.buyerId ?? a?.id ?? a?.applicantId ?? i;
         return {
           buyerId,
-          id: buyerId,             // 내부 편의상 id도 유지
+          id: buyerId, // 내부 편의상 id도 유지
           name: a?.name ?? a?.buyerName ?? `신청자#${buyerId}`,
           age: a?.age ?? a?.buyerAge ?? "-",
           sex: a?.sex ?? a?.gender ?? "-",
@@ -305,7 +355,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       });
 
       setApplicants(normalizedApplicants);
-      dgroup("👥 신청자 목록(상세 포함)", () => console.table?.(normalizedApplicants));
+      dgroup("👥 신청자 목록(상세 포함)", () =>
+        console.table?.(normalizedApplicants)
+      );
     } catch (e) {
       dgroup("❌ 상세 로드 실패", () => dlog(e?.message || e));
       alert("상세 정보를 불러오지 못했습니다. (콘솔 로그 참고)");
@@ -322,12 +374,18 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
     try {
       setLoadingApplicantDetail(true);
-      const res = await debugFetch(url, { headers: { ...baseHeaders } }, "APPLICANT_DETAIL");
+      const res = await debugFetch(
+        url,
+        { headers: { ...baseHeaders } },
+        "APPLICANT_DETAIL"
+      );
       const data = await safeJson(res);
       dgroup("🧾 신청자 상세 JSON", () => dlog(data));
       if (!res.ok) {
         throw new Error(
-          `신청자 상세 오류 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`
+          `신청자 상세 오류 status=${res.status} body=${JSON.stringify(
+            data
+          ).slice(0, 500)}`
         );
       }
       // 상세 구조에 맞게 주입
@@ -381,7 +439,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
 
     // 낙관적 업데이트
     const prevApplicants = applicants;
-    setApplicants((prev) => prev.map((a) => (a.id === buyerId ? { ...a, status: "수락" } : a)));
+    setApplicants((prev) =>
+      prev.map((a) => (a.id === buyerId ? { ...a, status: "수락" } : a))
+    );
     if (selectedApplicant?.id === buyerId) {
       setSelectedApplicant({ ...selectedApplicant, status: "수락" });
     }
@@ -389,13 +449,21 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     try {
       const res = await debugFetch(
         url,
-        { method: "POST", headers: { "Content-Type": "application/json", ...baseHeaders } },
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...baseHeaders },
+        },
         "APPLICANT_ACCEPT"
       );
       const data = await safeJson(res);
       dgroup("🧾 수락 응답 JSON", () => dlog(data));
       if (!res.ok) {
-        throw new Error(`수락 실패 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`);
+        throw new Error(
+          `수락 실패 status=${res.status} body=${JSON.stringify(data).slice(
+            0,
+            500
+          )}`
+        );
       }
       // 필요 시: 상세 재조회하여 상태 일치화
       // await openDetail({ id: landId });
@@ -403,7 +471,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       // 롤백
       setApplicants(prevApplicants);
       if (selectedApplicant?.id === buyerId) {
-        setSelectedApplicant(prevApplicants.find((a) => a.id === buyerId) || null);
+        setSelectedApplicant(
+          prevApplicants.find((a) => a.id === buyerId) || null
+        );
       }
       dgroup("❌ 수락 실패 → 롤백", () => dlog(e?.message || e));
       alert("수락 처리에 실패했습니다. (콘솔 로그 참고)");
@@ -416,7 +486,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}/reject`;
 
     const prevApplicants = applicants;
-    setApplicants((prev) => prev.map((a) => (a.id === buyerId ? { ...a, status: "거부" } : a)));
+    setApplicants((prev) =>
+      prev.map((a) => (a.id === buyerId ? { ...a, status: "거부" } : a))
+    );
     if (selectedApplicant?.id === buyerId) {
       setSelectedApplicant({ ...selectedApplicant, status: "거부" });
     }
@@ -424,20 +496,30 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     try {
       const res = await debugFetch(
         url,
-        { method: "POST", headers: { "Content-Type": "application/json", ...baseHeaders } },
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...baseHeaders },
+        },
         "APPLICANT_REJECT"
       );
       const data = await safeJson(res);
       dgroup("🧾 거절 응답 JSON", () => dlog(data));
       if (!res.ok) {
-        throw new Error(`거절 실패 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`);
+        throw new Error(
+          `거절 실패 status=${res.status} body=${JSON.stringify(data).slice(
+            0,
+            500
+          )}`
+        );
       }
       // 필요 시: 상세 재조회하여 상태 일치화
       // await openDetail({ id: landId });
     } catch (e) {
       setApplicants(prevApplicants);
       if (selectedApplicant?.id === buyerId) {
-        setSelectedApplicant(prevApplicants.find((a) => a.id === buyerId) || null);
+        setSelectedApplicant(
+          prevApplicants.find((a) => a.id === buyerId) || null
+        );
       }
       dgroup("❌ 거절 실패 → 롤백", () => dlog(e?.message || e));
       alert("거절 처리에 실패했습니다. (콘솔 로그 참고)");
@@ -486,7 +568,8 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     });
   };
 
-  const handleEditChange = (key, value) => setEditForm((prev) => ({ ...prev, [key]: value }));
+  const handleEditChange = (key, value) =>
+    setEditForm((prev) => ({ ...prev, [key]: value }));
 
   const handleEditSave = async () => {
     dgroup("💾 수정 저장", () => dlog("editForm:", editForm));
@@ -505,24 +588,38 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     // 낙관적 업데이트 준비
     const next = {
       ...editForm,
-      area: editForm.area === "" || editForm.area === null ? 0 : Number(editForm.area),
+      area:
+        editForm.area === "" || editForm.area === null
+          ? 0
+          : Number(editForm.area),
     };
     const prevLands = lands;
     const prevSelected = selectedLand;
 
     // 낙관적 적용
-    setLands((prev) => prev.map((l) => (l.id === next.id ? { ...l, ...next } : l)));
+    setLands((prev) =>
+      prev.map((l) => (l.id === next.id ? { ...l, ...next } : l))
+    );
     setSelectedLand((prev) => (prev ? { ...prev, ...next } : prev));
     setEditMode(false);
 
     try {
-      const server = await updateLandOnServer({ baseHeaders, sellerId, landId, payload });
+      const server = await updateLandOnServer({
+        baseHeaders,
+        sellerId,
+        landId,
+        payload,
+      });
       // 서버에서 최신 레코드가 오면 그걸로 동기화
       if (server) {
         const mappedListItem = mapListItem(server, 0);
         const mappedDetailItem = mapDetailItem(server);
-        setLands((prev) => prev.map((l) => (l.id === landId ? { ...l, ...mappedListItem } : l)));
-        setSelectedLand((prev) => (prev ? { ...prev, ...mappedDetailItem } : prev));
+        setLands((prev) =>
+          prev.map((l) => (l.id === landId ? { ...l, ...mappedListItem } : l))
+        );
+        setSelectedLand((prev) =>
+          prev ? { ...prev, ...mappedDetailItem } : prev
+        );
       }
     } catch (e) {
       // 롤백
@@ -534,8 +631,14 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
   };
 
   /* ========== 섹션/네비 ========== */
-  const goPrev = () => { dlog("⬅ 섹션 이전:", sectionIndex - 1); setSectionIndex((i) => Math.max(0, i - 1)); };
-  const goNext = () => { dlog("➡ 섹션 다음:", sectionIndex + 1); setSectionIndex((i) => (i < sections.length - 1 ? i + 1 : 0)); };
+  const goPrev = () => {
+    dlog("⬅ 섹션 이전:", sectionIndex - 1);
+    setSectionIndex((i) => Math.max(0, i - 1));
+  };
+  const goNext = () => {
+    dlog("➡ 섹션 다음:", sectionIndex + 1);
+    setSectionIndex((i) => (i < sections.length - 1 ? i + 1 : 0));
+  };
 
   const r = selectedLand?.raw ?? {};
 
@@ -650,12 +753,20 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
               <div className="MyRegisteredLand-LandDetails">
                 📍 {land.location} | 🌱 {land.crop} | 📐 {land.area}㎡
               </div>
-              <div className="MyRegisteredLand-LandStatus">상태: {land.status}</div>
+              <div className="MyRegisteredLand-LandStatus">
+                상태: {land.status}
+              </div>
               <div className="MyRegisteredLand-ButtonGroup">
-                <div className="MyRegisteredLand-Button" onClick={() => openDetail(land)}>
+                <div
+                  className="MyRegisteredLand-Button"
+                  onClick={() => openDetail(land)}
+                >
                   자세히 보기
                 </div>
-                <div className="MyRegisteredLand-Button danger" onClick={() => handleDelete(land.id)}>
+                <div
+                  className="MyRegisteredLand-Button danger"
+                  onClick={() => handleDelete(land.id)}
+                >
                   삭제
                 </div>
               </div>
@@ -670,7 +781,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
           <p className="MyRegisteredLand-EmptyDetail">상세 불러오는 중...</p>
         ) : selectedLand ? (
           <>
-            <h3>📄 상세 정보</h3>
+            <h3 className="MyRegisteredLand-RightTitle">
+              👨‍🌾{selectedLand?.name ?? "선택한 농지"}
+            </h3>
 
             {editMode ? (
               <>
@@ -678,21 +791,27 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                 <input
                   className="MyRegisteredLand-Input"
                   value={editForm?.name ?? ""}
-                  onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((p) => ({ ...p, name: e.target.value }))
+                  }
                 />
 
                 <label>위치</label>
                 <input
                   className="MyRegisteredLand-Input"
                   value={editForm?.location ?? ""}
-                  onChange={(e) => setEditForm((p) => ({ ...p, location: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((p) => ({ ...p, location: e.target.value }))
+                  }
                 />
 
                 <label>작물</label>
                 <input
                   className="MyRegisteredLand-Input"
                   value={editForm?.crop ?? ""}
-                  onChange={(e) => setEditForm((p) => ({ ...p, crop: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((p) => ({ ...p, crop: e.target.value }))
+                  }
                 />
 
                 <label>면적(㎡)</label>
@@ -700,21 +819,31 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                   className="MyRegisteredLand-Input"
                   type="number"
                   value={editForm?.area ?? 0}
-                  onChange={(e) => setEditForm((p) => ({ ...p, area: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((p) => ({ ...p, area: e.target.value }))
+                  }
                 />
 
                 <label>상태</label>
                 <input
                   className="MyRegisteredLand-Input"
                   value={editForm?.status ?? ""}
-                  onChange={(e) => setEditForm((p) => ({ ...p, status: e.target.value }))}
+                  onChange={(e) =>
+                    setEditForm((p) => ({ ...p, status: e.target.value }))
+                  }
                 />
 
                 <div className="MyRegisteredLand-ButtonGroup">
-                  <div className="MyRegisteredLand-Button" onClick={handleEditSave}>
+                  <div
+                    className="MyRegisteredLand-Button"
+                    onClick={handleEditSave}
+                  >
                     💾 저장
                   </div>
-                  <div className="MyRegisteredLand-Button gray" onClick={() => setEditMode(false)}>
+                  <div
+                    className="MyRegisteredLand-Button gray"
+                    onClick={() => setEditMode(false)}
+                  >
                     ❌ 취소
                   </div>
                 </div>
@@ -724,12 +853,30 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                 {/* 섹션 슬라이더 */}
                 <div className="SectionSlider">
                   <div className="SectionSlider-Header">
-                    <button className="NavBtn" onClick={goPrev} disabled={sectionIndex === 0} title="이전 섹션">⬅</button>
-                    <div className="SectionTitle">{sections[sectionIndex].title}</div>
-                    <button className="NavBtn" onClick={goNext} title="다음 섹션">➡</button>
+                    <button
+                      className="NavBtn"
+                      onClick={goPrev}
+                      disabled={sectionIndex === 0}
+                      title="이전 섹션"
+                    >
+                      ⬅
+                    </button>
+                    <div className="SectionTitle">
+                      {sections[sectionIndex].title}
+                    </div>
+                    <button
+                      className="NavBtn"
+                      onClick={goNext}
+                      title="다음 섹션"
+                    >
+                      ➡
+                    </button>
                   </div>
 
-                  <div key={sectionIndex} className="SectionSlider-Body fade-slide">
+                  <div
+                    key={sectionIndex}
+                    className="SectionSlider-Body fade-slide"
+                  >
                     {sections[sectionIndex].content}
                   </div>
 
@@ -738,28 +885,37 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                       <span
                         key={i}
                         className={`dot ${i === sectionIndex ? "active" : ""}`}
-                        onClick={() => { dlog("• 섹션 점 클릭:", i); setSectionIndex(i); }}
+                        onClick={() => {
+                          dlog("• 섹션 점 클릭:", i);
+                          setSectionIndex(i);
+                        }}
                       />
                     ))}
                   </div>
                 </div>
 
                 <div className="MyRegisteredLand-ButtonGroup">
-                  <div className="MyRegisteredLand-Button" onClick={() => {
-                    dgroup("✏️ 수정 시작", () => dlog("land:", selectedLand));
-                    setEditMode(true);
-                    setEditForm({
-                      id: selectedLand.id,
-                      name: selectedLand.name,
-                      location: selectedLand.location,
-                      crop: selectedLand.crop,
-                      area: selectedLand.area,
-                      status: selectedLand.status,
-                    });
-                  }}>
+                  <div
+                    className="MyRegisteredLand-Button"
+                    onClick={() => {
+                      dgroup("✏️ 수정 시작", () => dlog("land:", selectedLand));
+                      setEditMode(true);
+                      setEditForm({
+                        id: selectedLand.id,
+                        name: selectedLand.name,
+                        location: selectedLand.location,
+                        crop: selectedLand.crop,
+                        area: selectedLand.area,
+                        status: selectedLand.status,
+                      });
+                    }}
+                  >
                     ✏️ 수정
                   </div>
-                  <div className="MyRegisteredLand-Button gray" onClick={() => setSelectedLand(null)}>
+                  <div
+                    className="MyRegisteredLand-Button gray"
+                    onClick={() => setSelectedLand(null)}
+                  >
                     닫기
                   </div>
                 </div>
@@ -771,7 +927,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
               <h4>👥 신청자 목록</h4>
 
               {applicants.length === 0 ? (
-                <p className="MyRegisteredLand-EmptyApplicants">신청자가 없습니다.</p>
+                <p className="MyRegisteredLand-EmptyApplicants">
+                  신청자가 없습니다.
+                </p>
               ) : (
                 <div className="MyRegisteredLand-ApplicantsLayout">
                   {/* 왼쪽 리스트 */}
@@ -779,7 +937,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                     {applicants.map((a) => (
                       <div
                         key={a.id}
-                        className={`ApplicantItem ${selectedApplicant?.id === a.id ? "active" : ""}`}
+                        className={`ApplicantItem ${
+                          selectedApplicant?.id === a.id ? "active" : ""
+                        }`}
                         onClick={() => {
                           dlog("👤 신청자 클릭:", a?.id, a?.name);
                           setSelectedApplicant(a);
@@ -789,7 +949,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                       >
                         <div className="ApplicantNameRow">
                           <span className="ApplicantName">{a.name}</span>
-                          <span className={`ApplicantBadge ${a.status}`}>{a.status}</span>
+                          <span className={`ApplicantBadge ${a.status}`}>
+                            {a.status}
+                          </span>
                         </div>
                         <div className="ApplicantMeta">
                           {a.age}세 · {a.sex} · {a.address}
@@ -807,7 +969,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                             {selectedApplicant.name}
                             {loadingApplicantDetail ? " (불러오는 중…)" : ""}
                           </div>
-                          <div className={`ApplicantBadge ${selectedApplicant.status}`}>
+                          <div
+                            className={`ApplicantBadge ${selectedApplicant.status}`}
+                          >
                             {selectedApplicant.status}
                           </div>
                         </div>
@@ -823,29 +987,53 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                           <div>💼 {selectedApplicant.want}</div>
 
                           <div className="ApplicantDetail-Tags">
-                            {Object.values(selectedApplicant.detail?.yellow || {}).map((t, i) => (
-                              <span key={`y-${i}`} className="Tag yellow">{t}</span>
+                            {Object.values(
+                              selectedApplicant.detail?.yellow || {}
+                            ).map((t, i) => (
+                              <span key={`y-${i}`} className="Tag yellow">
+                                {t}
+                              </span>
                             ))}
-                            {Object.values(selectedApplicant.detail?.green || {}).map((t, i) => (
-                              <span key={`g-${i}`} className="Tag green">{t}</span>
+                            {Object.values(
+                              selectedApplicant.detail?.green || {}
+                            ).map((t, i) => (
+                              <span key={`g-${i}`} className="Tag green">
+                                {t}
+                              </span>
                             ))}
-                            {Object.values(selectedApplicant.detail?.grey || {}).map((t, i) => (
-                              <span key={`gr-${i}`} className="Tag grey">{t}</span>
+                            {Object.values(
+                              selectedApplicant.detail?.grey || {}
+                            ).map((t, i) => (
+                              <span key={`gr-${i}`} className="Tag grey">
+                                {t}
+                              </span>
                             ))}
                           </div>
                         </div>
 
                         <div className="MyRegisteredLand-ButtonGroup">
-                          <div className="MyRegisteredLand-Button accept" onClick={() => acceptApplicant(selectedApplicant.id)}>
+                          <div
+                            className="MyRegisteredLand-Button accept"
+                            onClick={() =>
+                              acceptApplicant(selectedApplicant.id)
+                            }
+                          >
                             ✅ 신청 수락
                           </div>
-                          <div className="MyRegisteredLand-Button reject" onClick={() => rejectApplicant(selectedApplicant.id)}>
+                          <div
+                            className="MyRegisteredLand-Button reject"
+                            onClick={() =>
+                              rejectApplicant(selectedApplicant.id)
+                            }
+                          >
                             🚫 신청 거절
                           </div>
                         </div>
                       </>
                     ) : (
-                      <p className="MyRegisteredLand-EmptyDetail">좌측에서 신청자를 선택하세요.</p>
+                      <p className="MyRegisteredLand-EmptyDetail">
+                        좌측에서 신청자를 선택하세요.
+                      </p>
                     )}
                   </div>
                 </div>
