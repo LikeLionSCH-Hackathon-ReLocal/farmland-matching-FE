@@ -130,3 +130,57 @@
   box-sizing: border-box;
   margin-bottom: 1rem;
 }
+/* === Enhanced layout for full BE fields === */
+.FDP { max-width: 980px; }
+.FDP-imageWrap { width: 100%; margin: 6px 0 12px; }
+.FDP-image { width: 100%; height: auto; border-radius: 12px; object-fit: cover; }
+
+.FDP-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  margin-top: 8px;
+}
+
+.FDP-col-span-2 { grid-column: 1 / -1; }
+
+.FDP-field {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.FDP-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.FDP-value {
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: #222;
+  word-break: break-all;
+}
+
+.FDP-quote {
+  margin: 6px 0 0;
+  padding: 10px 12px;
+  background: #fff7ec;
+  border: 1px solid #ffe2b8;
+  border-radius: 10px;
+  color: #5a3d00;
+}
+
+.FDP-list {
+  margin: 6px 0 0 0;
+  padding-left: 16px;
+}
+@media (max-width: 860px) {
+  .FDP-grid { grid-template-columns: 1fr; }
+  .FDP-field { grid-template-columns: 90px 1fr; }
+}

@@ -141,16 +141,31 @@
 .ApplicantMeta { color: #666; font-size: 0.9rem; margin-top: 0.15rem; }
 
 .ApplicantBadge {
-  font-size: 0.75rem;
-  padding: 0.2rem 0.45rem;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  text-transform: uppercase;
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  border-radius: 0.6em;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #fff;
 }
-.ApplicantBadge.대기 { background: #fafafa; color: #555; }
-.ApplicantBadge.수락 { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
-.ApplicantBadge.거부 { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
 
+/* 매칭 대기중 → 노란색 */
+.ApplicantBadge.WAITING {
+  background-color: #f1c40f;
+  color: #fff;
+}
+
+/* 매칭 진행중 → 초록색 */
+.ApplicantBadge.IN_PROGRESS {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+/* 매칭 거절됨 → 빨간색 */
+.ApplicantBadge.REJECTED {
+  background-color: #e74c3c;
+  color: #fff;
+}
 .MyRegisteredLand-ApplicantDetail {
   border: 1px solid #e5e7eb;
   border-radius: 0.6rem;

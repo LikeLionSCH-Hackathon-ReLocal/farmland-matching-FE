@@ -64,6 +64,27 @@ async function debugFetch(url, options = {}, note = "") {
 }
 
 /* =======================
+   🏷️ 매칭 상태 유틸 (백엔드 enum과 동기)
+======================= */
+const MATCH = {
+  WAITING: "WAITING",
+  IN_PROGRESS: "IN_PROGRESS",
+  REJECTED: "REJECTED",
+};
+const MATCH_LABEL = {
+  [MATCH.WAITING]: "매칭 대기중",
+  [MATCH.IN_PROGRESS]: "매칭 수락됨",
+  [MATCH.REJECTED]: "매칭 거절됨",
+};
+function labelForMatchStatus(s) {
+  return MATCH_LABEL[s] || s || "상태 미정";
+}
+function classForMatchStatus(s) {
+  // CSS에서 .ApplicantBadge.WAITING / .IN_PROGRESS / .REJECTED 를 정의해두면 색이 바뀝니다.
+  return `ApplicantBadge ${s || MATCH.WAITING}`;
+}
+
+/* =======================
    🔧 서버 업데이트/삭제 헬퍼
 ======================= */
 // ⚠️ 서버가 PUT/DELETE 미지원이면 method를 "POST"로 바꾸세요.
@@ -202,10 +223,111 @@ function FileLinkOrText({ url, label }) {
     </div>
   );
 }
+  // 따옴표가 이중으로 들어온 문자열 처리: "\"박성진\"" -> "박성진"
+  function stripWrapQuotes(v) {
+    if (typeof v !== "string") return v;
+    const s = v.trim();
+    if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
+      return s.slice(1, -1);
+    }
+    return v;
+  }
 
+  // 서버 JSON(신청자 상세) -> 우리 화면 상태로 정규화
+  function normalizeApplicantDetail(raw) {
+    if (!raw || typeof raw !== "object") return null;
+
+    const buyerName = stripWrapQuotes(raw.buyerName);
+    const buyerNumber = stripWrapQuotes(raw.buyerNumber);
+
+    const arr = (v) => (Array.isArray(v) ? v : []);
+    const join = (v) => arr(v).filter(Boolean).join(", ");
+
+    return {
+      // 공통 식별/표시 필드
+      id: raw.buyerId ?? null,
+      name: buyerName ?? "",
+      callNumber: buyerNumber ?? "",
+
+      // 오른쪽 상세 패널에서 그대로 문자열로 출력되는 필드들:
+      presentation: raw.oneIntroduction ?? "",          // 🧾
+      interest: join(raw.interestCrop),                 // 🌱
+      suggest: join(raw.suggests),                      // 🤝 (현재 []면 빈 문자열)
+      video: raw.videoURL ?? "",                        // 🎬
+      experience: raw.experience ?? "",                 // 🧑‍🌾
+      expereince: raw.experience ?? "",                 // (오타 키 하위호환)
+      skill: join(raw.equipment),                       // 🛠️
+      want: join(raw.wantTrade),                        // 💼
+
+      // 필요시 참고용
+      licenses: arr(raw.licenses).filter(Boolean),
+      matchStatus: raw.matchStatus ?? MATCH.WAITING,
+
+      // 원본 전체
+      detail: raw,
+    };
+  }
 /* =======================
    🏗 컴포넌트
 ======================= */
+// 개별 신청자 상세 프리로드(배치 로딩) 유틸
+async function fetchApplicantDetail({ baseHeaders, sellerId, landId, buyerId }) {
+  const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
+  const res = await debugFetch(
+    url,
+    { headers: { ...baseHeaders } },
+    "APPLICANT_DETAIL[preload]"
+  );
+  const data = await safeJson(res);
+  if (!res.ok) {
+    throw new Error(
+      `프리로드 실패 buyerId=${buyerId} status=${res.status} body=${JSON.stringify(data).slice(0, 300)}`
+    );
+  }
+  return data;
+}
+
+async function preloadApplicantsDetail({ baseHeaders, sellerId, landId, list, onMerge }) {
+  // 병렬 로딩 (느린 서버면 동시성 제한 걸어도 됨)
+  const tasks = list.map((a) =>
+    fetchApplicantDetail({ baseHeaders, sellerId, landId, buyerId: a.id })
+      .then((raw) => ({ ok: true, buyerId: a.id, norm: normalizeApplicantDetail(raw) }))
+      .catch((e) => ({ ok: false, buyerId: a.id, error: e?.message || String(e) }))
+  );
+  const results = await Promise.allSettled(tasks);
+  const okItems = results
+    .map((r) => (r.status === "fulfilled" ? r.value : null))
+    .filter(Boolean)
+    .filter((r) => r.ok && r.norm);
+
+  if (okItems.length) {
+    // 상위 상태에 머지
+    onMerge?.((prev) =>
+      prev.map((a) => {
+        const hit = okItems.find((x) => x.buyerId === a.id);
+        if (!hit) return a;
+        const n = hit.norm;
+        return {
+          ...a,
+          name: n.name || a.name,
+          callNumber: n.callNumber || a.callNumber,
+          presentation: n.presentation ?? a.presentation,
+          interest: n.interest ?? a.interest,
+          suggest: n.suggest ?? a.suggest,
+          video: n.video ?? a.video,
+          experience: n.experience ?? a.experience,
+          expereince: n.expereince ?? n.experience ?? a.expereince,
+          skill: n.skill ?? a.skill,
+          want: n.want ?? a.want,
+          licenses: n.licenses ?? a.licenses,
+          matchStatus: n.matchStatus ?? a.matchStatus,
+          detail: n.detail ?? a.detail,
+        };
+      })
+    );
+  }
+}
+
 function MyRegisteredLand({ sellerId: sellerIdProp }) {
   const navigate = useNavigate();
   const params = useParams();
@@ -218,7 +340,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
   const [loadingDetail, setLoadingDetail] = useState(false);
 
   // 신청자
-  const [applicants, setApplicants] = useState([]); // [{ buyerId, name, ... , status }]
+  const [applicants, setApplicants] = useState([]); // [{ buyerId, name, ... , matchStatus }]
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [loadingApplicantDetail, setLoadingApplicantDetail] = useState(false);
 
@@ -301,6 +423,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     setApplicants([]);
     setSelectedApplicant(null);
     setSectionIndex(0);
+    
 
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}`;
     try {
@@ -330,18 +453,18 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
         ? data.buyers
         : [];
 
-      // 서버에서 주는 키 이름을 보정(buyerId/name/status 등)
+      // 서버에서 주는 키 이름을 보정(buyerId/name/matchStatus 등)
       const normalizedApplicants = listFromDetail.map((a, i) => {
         const buyerId = a?.buyerId ?? a?.id ?? a?.applicantId ?? i;
+        const matchStatus = a?.matchStatus ?? a?.status ?? MATCH.WAITING;
         return {
           buyerId,
-          id: buyerId, // 내부 편의상 id도 유지
+          id: buyerId,
           name: a?.name ?? a?.buyerName ?? `신청자#${buyerId}`,
           age: a?.age ?? a?.buyerAge ?? "-",
           sex: a?.sex ?? a?.gender ?? "-",
           address: a?.address ?? a?.buyerAddress ?? "-",
           callNumber: a?.phone ?? a?.callNumber ?? "-",
-          // 상세 클릭 시 다시 조회해서 채워줄 필드들(아래 3단계에서 업데이트됨)
           presentation: a?.presentation ?? "",
           interest: a?.interest ?? "",
           suggest: a?.suggest ?? "",
@@ -350,11 +473,21 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
           skill: a?.skill ?? "",
           want: a?.want ?? "",
           detail: a?.detail ?? { yellow: {}, green: {}, grey: {} },
-          status: a?.status ?? "대기",
+          matchStatus,
         };
       });
 
       setApplicants(normalizedApplicants);
+      dgroup("👥 신청자 목록(상세 포함)", () => console.table?.(normalizedApplicants));
+
+      // ✅✅ 들어오자마자 각 신청자의 matchStatus를 최신화: 병렬 프리로드
+      preloadApplicantsDetail({
+        baseHeaders,
+        sellerId,
+        landId,
+        list: normalizedApplicants,
+        onMerge: setApplicants,
+      }).catch((e) => dlog("프리로드 오류:", e?.message || e));
       dgroup("👥 신청자 목록(상세 포함)", () =>
         console.table?.(normalizedApplicants)
       );
@@ -383,41 +516,63 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       dgroup("🧾 신청자 상세 JSON", () => dlog(data));
       if (!res.ok) {
         throw new Error(
-          `신청자 상세 오류 status=${res.status} body=${JSON.stringify(
-            data
-          ).slice(0, 500)}`
+          `신청자 상세 오류 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`
         );
       }
-      // 상세 구조에 맞게 주입
+
+      // ✅ 서버 스키마 → 화면 스키마 정규화
+      const norm = normalizeApplicantDetail(data);
+      if (!norm) throw new Error("정규화 실패: 서버 응답 형식이 올바르지 않습니다.");
+
+      // 리스트의 해당 신청자 갱신
       setApplicants((prev) =>
         prev.map((a) =>
           a.id === buyerId
             ? {
                 ...a,
-                presentation: data.presentation ?? a.presentation,
-                interest: data.interest ?? a.interest,
-                suggest: data.suggest ?? a.suggest,
-                video: data.video ?? a.video,
-                expereince: data.expereince ?? data.experience ?? a.expereince,
-                skill: data.skill ?? a.skill,
-                want: data.want ?? a.want,
-                detail: data.detail ?? a.detail,
+                // 이름/연락처 업데이트(겹따옴표 제거된 값)
+                name: norm.name || a.name,
+                callNumber: norm.callNumber || a.callNumber,
+
+                // 오른쪽 패널에서 쓰는 문자열 필드들
+                presentation: norm.presentation ?? a.presentation,
+                interest: norm.interest ?? a.interest,
+                suggest: norm.suggest ?? a.suggest,
+                video: norm.video ?? a.video,
+                experience: norm.experience ?? a.experience,
+                expereince: norm.expereince ?? norm.experience ?? a.expereince, // 하위호환
+                skill: norm.skill ?? a.skill,
+                want: norm.want ?? a.want,
+
+                // 참고 필드
+                licenses: norm.licenses ?? a.licenses,
+                matchStatus: norm.matchStatus ?? a.matchStatus,
+                detail: norm.detail ?? a.detail,
               }
             : a
         )
       );
+
+      // 선택된 신청자 갱신(같은 규칙)
       setSelectedApplicant((prev) =>
         prev && prev.id === buyerId
           ? {
               ...prev,
-              presentation: data.presentation ?? prev.presentation,
-              interest: data.interest ?? prev.interest,
-              suggest: data.suggest ?? prev.suggest,
-              video: data.video ?? prev.video,
-              expereince: data.expereince ?? data.experience ?? prev.expereince,
-              skill: data.skill ?? prev.skill,
-              want: data.want ?? prev.want,
-              detail: data.detail ?? prev.detail,
+              name: norm.name || prev.name,
+              callNumber: norm.callNumber || prev.callNumber,
+
+              presentation: norm.presentation ?? prev.presentation,
+              interest: norm.interest ?? prev.interest,
+              suggest: norm.suggest ?? prev.suggest,
+              video: norm.video ?? prev.video,
+              experience: norm.experience ?? prev.experience,
+              expereince: norm.expereince ?? norm.experience ?? prev.expereince,
+              skill: norm.skill ?? prev.skill,
+              want: norm.want ?? prev.want,
+
+              licenses: norm.licenses ?? prev.licenses,
+              matchStatus: norm.matchStatus ?? prev.matchStatus,
+              detail: norm.detail ?? prev.detail,
             }
           : prev
       );
@@ -429,6 +584,8 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     }
   };
 
+
+
   /* ========== 4) 신청 수락/거절 ========== */
   // POST /${sellerId}/farmland/{landId}/applicants/{buyerId}/accept
   // POST /${sellerId}/farmland/{landId}/applicants/{buyerId}/reject
@@ -437,13 +594,15 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     const landId = selectedLand.id;
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}/accept`;
 
-    // 낙관적 업데이트
+    // ✅ 낙관적 업데이트: 수락 → 진행중(IN_PROGRESS)로 표시
     const prevApplicants = applicants;
     setApplicants((prev) =>
-      prev.map((a) => (a.id === buyerId ? { ...a, status: "수락" } : a))
+      prev.map((a) =>
+        a.id === buyerId ? { ...a, matchStatus: MATCH.IN_PROGRESS } : a
+      )
     );
     if (selectedApplicant?.id === buyerId) {
-      setSelectedApplicant({ ...selectedApplicant, status: "수락" });
+      setSelectedApplicant({ ...selectedApplicant, matchStatus: MATCH.IN_PROGRESS });
     }
 
     try {
@@ -485,12 +644,15 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     const landId = selectedLand.id;
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}/reject`;
 
+    // ✅ 낙관적 업데이트: 거절 → REJECTED
     const prevApplicants = applicants;
     setApplicants((prev) =>
-      prev.map((a) => (a.id === buyerId ? { ...a, status: "거부" } : a))
+      prev.map((a) =>
+        a.id === buyerId ? { ...a, matchStatus: MATCH.REJECTED } : a
+      )
     );
     if (selectedApplicant?.id === buyerId) {
-      setSelectedApplicant({ ...selectedApplicant, status: "거부" });
+      setSelectedApplicant({ ...selectedApplicant, matchStatus: MATCH.REJECTED });
     }
 
     try {
@@ -949,8 +1111,8 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                       >
                         <div className="ApplicantNameRow">
                           <span className="ApplicantName">{a.name}</span>
-                          <span className={`ApplicantBadge ${a.status}`}>
-                            {a.status}
+                          <span className={classForMatchStatus(a.matchStatus)}>
+                            {labelForMatchStatus(a.matchStatus)}
                           </span>
                         </div>
                         <div className="ApplicantMeta">
@@ -969,10 +1131,8 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                             {selectedApplicant.name}
                             {loadingApplicantDetail ? " (불러오는 중…)" : ""}
                           </div>
-                          <div
-                            className={`ApplicantBadge ${selectedApplicant.status}`}
-                          >
-                            {selectedApplicant.status}
+                          <div className={classForMatchStatus(selectedApplicant.matchStatus)}>
+                            {labelForMatchStatus(selectedApplicant.matchStatus)}
                           </div>
                         </div>
 

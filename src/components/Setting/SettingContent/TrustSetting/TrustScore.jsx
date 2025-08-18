@@ -49,11 +49,7 @@ export default function TrustScore({ user }) {
     <div className="TrustScore-container">
       <div className="RecommenderForm-description">
         신뢰 점수는 <strong>자격증, 수상경력, 대표 한마디, 자기소개 본문, SNS, 추천인</strong> 등으로 점수가 매겨지며{" "}
-        판매자에게 점수가 제공됩니다. 판매자에게 <strong>신뢰</strong>할 수 있는 사람이라는 것을
-        증명해줄 수 있는 점수입니다.
-        <br />
-        <strong>신뢰 점수는 판매자에게만 공개됩니다.</strong>
-
+        <strong>판매자에게 점수가 제공됩니다.</strong> 판매자에게 <strong>신뢰</strong> 할 수 있는 사람이라는 것을 증명해줄 수 있는 점수 입니다.
       </div>
       <div className="TrustScore-title">{user?.name || "사용자"} 의 신뢰 점수</div>
 
