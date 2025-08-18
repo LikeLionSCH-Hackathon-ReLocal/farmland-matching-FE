@@ -90,11 +90,15 @@ function SettingsModal({ onClose }) {
       case "관심 농지 목록":
         return <Star user={youngUser} />;
       case "신뢰 프로필 관리":
-        return <TrustProfile user={youngUser} onUserChange={handleUserChange} />;
+        return (
+          <TrustProfile user={youngUser} onUserChange={handleUserChange} />
+        );
       case "자격증 업로드":
-        return <Certification user={youngUser} onUserChange={handleUserChange} />;
+        return <Certification buyerId={1} />;
       case "추천인/보증인 등록":
-        return <RecommenderForm user={youngUser} onUserChange={handleUserChange} />;
+        return (
+          <RecommenderForm user={youngUser} onUserChange={handleUserChange} />
+        );
       case "나의 신뢰 레벨 확인":
         return <TrustScore user={youngUser} />;
       default:
