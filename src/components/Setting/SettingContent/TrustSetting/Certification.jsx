@@ -1,3 +1,4 @@
+// src/components/Setting/SettingContent/TrustSetting/Certification.jsx
 import { useEffect, useMemo, useState, useCallback } from "react";
 import "./Certification.css";
 import {
@@ -15,9 +16,10 @@ function normalizeLicense(item) {
     item?.licenseFile ?? item?.fileUrl ?? item?.url ?? item?.filePath ?? "";
   return {
     id: item?.id ?? item?.licenseId ?? null, // id가 없을 수도 있음
-    name,
-    file: null, // 새로 선택한 파일(로컬)
+    name,                     // 입력 중인 이름
+    file: null,               // 새로 선택한 파일(로컬)
     fileUrl: String(file || ""), // 서버에 이미 있는 파일 경로/URL
+    isEditingFile: false,     // ← 교체 모드 토글
   };
 }
 
@@ -37,7 +39,9 @@ export default function Certification({ buyerId = 1, token }) {
       const list = await getBuyerLicenses({ buyerId: safeBuyerId, token });
       const normalized = (list || []).map(normalizeLicense);
       console.group("[Certification] loadLicenses 결과");
-      console.table(normalized);
+      console.table(
+        normalized.map(({ id, name, fileUrl }) => ({ id, name, fileUrl }))
+      );
       console.groupEnd();
       setCertificates(normalized);
       setDirty(false);
@@ -72,7 +76,7 @@ export default function Certification({ buyerId = 1, token }) {
   const addCert = () => {
     setCertificates((prev) => [
       ...prev,
-      { id: null, name: "", file: null, fileUrl: "" },
+      { id: null, name: "", file: null, fileUrl: "", isEditingFile: true }, // 새 항목은 바로 input 보이게
     ]);
     setDirty(true);
   };
@@ -91,37 +95,55 @@ export default function Certification({ buyerId = 1, token }) {
         cur.name = value;
       } else if (field === "file") {
         cur.file = value || null;
-        if (value) cur.fileUrl = ""; // 교체 UX
+        if (value) cur.fileUrl = ""; // 교체 선택 시 기존 링크 숨김
         console.log(
           "[Certification] 파일 선택:",
           value?.name,
           value?.type,
           value?.size
         );
+      } else if (field === "toggleEdit") {
+        cur.isEditingFile = !cur.isEditingFile;
+        if (!cur.isEditingFile) {
+          // 교체 취소 시 선택했던 파일은 취소
+          cur.file = null;
+          // 기존 fileUrl 표시 복구 (cur.fileUrl은 원래 값 유지)
+        }
       }
+
       next[idx] = cur;
       return next;
     });
     setDirty(true);
   };
 
-  // 적어도 하나는 입력되어 있어야 저장 버튼 활성화
+  // 적어도 하나는 입력되어 있어야 저장 버튼 활성화(이름 또는 파일)
   const canSave = useMemo(
-    () => certificates.some((c) => (c.name || "").trim().length > 0 || c.file),
+    () =>
+      certificates.some(
+        (c) => (c.name || "").trim().length > 0 || c.file
+      ),
     [certificates]
   );
 
-  // Certification.jsx
   const onSave = async () => {
     if (!canSave || saving) return;
     setSaving(true);
     setError("");
 
     try {
-      const items = certificates.map((c) => ({
-        id: c.id ?? null, // 없으면 null
-        name: sanitizeName(c.name || ""),
-        file: c.file || null, // 파일 없으면 null
+      // 완전 빈 새 항목은 제외(선택)
+      const filtered = certificates.filter((c) => {
+        const hasId = c.id != null;
+        const hasName = (c.name || "").trim().length > 0;
+        const hasFile = !!c.file;
+        return hasId || hasName || hasFile;
+      });
+
+      const items = filtered.map((c) => ({
+        id: c.id ?? null,                         // 없으면 null
+        name: sanitizeName(c.name || ""),         // 이름 정리
+        file: c.file || null,                     // 파일 없으면 null(→ 전송 생략됨)
       }));
 
       console.log("[Certification] 저장 요청", items);
@@ -182,10 +204,11 @@ export default function Certification({ buyerId = 1, token }) {
                 className="Certification-Input"
               />
 
-              {/* 기존 파일 링크 + 파일 교체 입력 */}
+              {/* 파일 영역: 기본은 링크만, "파일 교체" 누르면 input 표시 */}
               <div className="Certification-FileCell">
-                {cert.fileUrl &&
-                  (looksLikeUrl(cert.fileUrl) ? (
+                {/* 교체 모드가 아니고, 기존 파일 링크가 있을 때 표시 */}
+                {!cert.isEditingFile && cert.fileUrl && (
+                  looksLikeUrl(cert.fileUrl) ? (
                     <a
                       className="Certification-ExistingLink"
                       href={cert.fileUrl}
@@ -201,15 +224,31 @@ export default function Certification({ buyerId = 1, token }) {
                     >
                       {cert.fileUrl}
                     </div>
-                  ))}
-                <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) =>
-                    changeCert(idx, "file", e.target.files?.[0] || null)
-                  }
-                  className="Certification-Input"
-                />
+                  )
+                )}
+
+                {/* 버튼: 기존 파일이 있을 때 교체/취소 토글 */}
+                {cert.fileUrl ? (
+                  <button
+                    type="button"
+                    className="Certification-TextButton"
+                    onClick={() => changeCert(idx, "toggleEdit")}
+                  >
+                    {cert.isEditingFile ? "교체 취소" : "파일 교체"}
+                  </button>
+                ) : null}
+
+                {/* 교체 모드이거나(기존 파일 있는 행), 애초에 새 행(파일 없음)일 때 input 표시 */}
+                {(cert.isEditingFile || !cert.fileUrl) && (
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={(e) =>
+                      changeCert(idx, "file", e.target.files?.[0] || null)
+                    }
+                    className="Certification-Input"
+                  />
+                )}
               </div>
 
               <button

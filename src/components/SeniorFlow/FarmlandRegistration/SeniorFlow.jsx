@@ -47,8 +47,8 @@ function SeniorFlow({ onSubmit }) {
     lng: "",
 
     crop: "",
-    areaSquare: "",
-    areaHectare: "",
+    areaSquare: "",   // ㎡
+    areaHectare: "",  // ha
 
     soilType: "",
     waterSource: "",
@@ -166,7 +166,6 @@ function SeniorFlow({ onSubmit }) {
 
   function normalizeValueForServer(k, v) {
     // 숫자/불린을 문자열로만 보내면 서버에서 파싱 못하는 경우 대비
-    // 필요시 숫자/불린 캐스팅
     if (
       [
         "ownerAge",
@@ -183,7 +182,6 @@ function SeniorFlow({ onSubmit }) {
       dwarn(`🔢 숫자 필드인데 숫자로 파싱 불가: ${k}='${v}'`);
       return String(v ?? "");
     }
-    // 불린 느낌의 값 "예/아니오" → 서버에서 기대하는 값으로 바꾸고 싶다면 여기서 조정
     return String(v ?? "");
   }
 
@@ -210,7 +208,6 @@ function SeniorFlow({ onSubmit }) {
       dlog("✅ 필수 입력값 OK");
     }
 
-    // 좌표 유효성 체크(선택)
     const latOk =
       String(data.lat ?? "") === "" ||
       (Number(data.lat) >= -90 && Number(data.lat) <= 90);
@@ -223,7 +220,7 @@ function SeniorFlow({ onSubmit }) {
       dlog("🗺️ 좌표 값 OK");
     }
 
-    // DTO 매핑 확인
+    // DTO 매핑 확인(면적 키는 예외 처리)
     const notMapped = Object.keys(data).filter(
       (k) =>
         ![
@@ -310,13 +307,15 @@ function SeniorFlow({ onSubmit }) {
       }
     });
 
-    // 2) landArea (areaSquare 우선)
-    const landArea =
-      data.areaSquare && String(data.areaSquare).trim().length > 0
-        ? data.areaSquare
-        : data.areaHectare || "";
-    if (String(landArea).trim().length > 0) {
-      fd.append("landArea", normalizeValueForServer("landArea", landArea));
+    // 2) ✅ 면적 필드 개별 전송(㎡ ↔ landArea, ha ↔ landAreaha)
+    if (String(data.areaSquare || "").trim().length > 0) {
+      fd.append("landArea", normalizeValueForServer("landArea", data.areaSquare));
+    }
+    if (String(data.areaHectare || "").trim().length > 0) {
+      fd.append(
+        "landAreaha",
+        normalizeValueForServer("landAreaha", data.areaHectare)
+      );
     }
 
     // 3) 파일
@@ -468,7 +467,6 @@ function SeniorFlow({ onSubmit }) {
       navigate("/SeniorMain");
     } catch (err) {
       derr("❌ 업로드 중 오류:", err);
-      // 흔한 오류 힌트 출력
       if (String(err?.message || "").includes("CORS")) {
         dwarn(
           "CORS 관련 오류처럼 보이면 백엔드의 CORS 설정(Origin/Methods/Headers) 확인 필요."

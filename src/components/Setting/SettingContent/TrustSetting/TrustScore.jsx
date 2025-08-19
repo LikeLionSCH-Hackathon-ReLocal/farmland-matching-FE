@@ -1,66 +1,136 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./TrustScore.css";
 
-export default function TrustScore({ user }) {
-  const detail = user?.detail || {};
+/**
+ * TrustScore (API 연동)
+ * - GET {API_BASE}/{buyerId}/trust-score
+ * - 예시 응답:
+ *   {
+ *     total: 39,
+ *     license: { key:"license", quantity:2, unitPoint:5, acquiredPoint:10 },
+ *     suggest: { key:"suggest", quantity:3, unitPoint:4, acquiredPoint:12 },
+ *     sns: { key:"sns", quantity:1, unitPoint:2, acquiredPoint:2 },
+ *     awards: { key:"awards", quantity:1, unitPoint:7, acquiredPoint:7 },
+ *     oneIntroduction: { key:"oneIntroduction", quantity:1, unitPoint:3, acquiredPoint:3 },
+ *     introduction: { key:"introduction", quantity:1, unitPoint:5, acquiredPoint:5 },
+ *     licenseQuantity: 2, suggestQuantity: 3, awardsQuantity: 1,
+ *     hasSns: true, hasOneIntroduction: true, hasIntroduction: true
+ *   }
+ */
+export default function TrustScore({ buyerId = 1, apiBase }) {
+  const API_BASE = apiBase || process.env.REACT_APP_API_BASE || "http://localhost:8080";
 
-  const certs = detail.certificationList?.length
-    ? detail.certificationList
-    : Object.values(detail.certification || {}).filter(Boolean);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const awards = detail.awardsList?.length
-    ? detail.awardsList
-    : Object.values(detail.win || {}).filter(Boolean).map(t => ({ title: t }));
+  // 디버깅 토글
+  const DEBUG = true;
+  const dlog = (...args) => DEBUG && console.log("[TrustScore]", ...args);
 
-  const recommenders = detail.recommendersList?.length
-    ? detail.recommendersList
-    : [detail.recommand1, detail.recommand2, detail.recommand3].filter(Boolean);
-
-  const RULE = {
-    CERT_PER: 5,
-    AWARD_PER: 7,
-    INTRO_ONEWORD: 3,
-    INTRO_BODY: 5,
-    INTRO_SNS: 2,
-    RECOMM_PER: 4,
-  };
+  useEffect(() => {
+    let alive = true;
+    async function fetchScore() {
+      setLoading(true);
+      setError(null);
+      try {
+        const url = `${API_BASE}/${encodeURIComponent(buyerId)}/trust-score`;
+        dlog("GET", url);
+        const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (!alive) return;
+        dlog("resp", json);
+        setData(json);
+      } catch (e) {
+        if (!alive) return;
+        dlog("error", e);
+        setError(e);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    }
+    fetchScore();
+    return () => {
+      alive = false;
+    };
+  }, [API_BASE, buyerId]);
 
   const total = useMemo(() => {
-    let s = 0;
-    s += (certs?.length || 0) * RULE.CERT_PER;
-    s += (awards?.length || 0) * RULE.AWARD_PER;
-    if (detail.intro?.OneWord) s += RULE.INTRO_ONEWORD;
-    if (detail.intro?.PullWord) s += RULE.INTRO_BODY;
-    if (detail.intro?.sns) s += RULE.INTRO_SNS;
-    s += (recommenders?.length || 0) * RULE.RECOMM_PER;
-    return s;
-  }, [certs, awards, recommenders, detail]);
+    if (!data) return 0;
+    const t = Number(data.total) || 0;
+    return Math.max(0, Math.min(t, 100));
+  }, [data]);
 
-  const rows = [
-    { icon: "📜", label: "자격증", rule: `1개당 +${RULE.CERT_PER}점`, qty: `${certs.length}개`, score: certs.length * RULE.CERT_PER },
-    { icon: "🏆", label: "수상 경력", rule: `1개당 +${RULE.AWARD_PER}점`, qty: `${awards.length}개`, score: awards.length * RULE.AWARD_PER },
-    { icon: "💬", label: "대표 한마디", rule: `작성 시 +${RULE.INTRO_ONEWORD}점`, qty: detail.intro?.OneWord ? "O" : "X", score: detail.intro?.OneWord ? RULE.INTRO_ONEWORD : 0 },
-    { icon: "📝", label: "자기소개 본문", rule: `작성 시 +${RULE.INTRO_BODY}점`, qty: detail.intro?.PullWord ? "O" : "X", score: detail.intro?.PullWord ? RULE.INTRO_BODY : 0 },
-    { icon: "🔗", label: "SNS", rule: `등록 시 +${RULE.INTRO_SNS}점`, qty: detail.intro?.sns ? "O" : "X", score: detail.intro?.sns ? RULE.INTRO_SNS : 0 },
-    { icon: "🤝", label: "추천인", rule: `1명당 +${RULE.RECOMM_PER}점`, qty: `${recommenders.length}명`, score: recommenders.length * RULE.RECOMM_PER },
-  ];
+  // 안전 추출 유틸
+  const pick = (obj, key, fallback = { quantity: 0, unitPoint: 0, acquiredPoint: 0 }) => {
+    const o = obj?.[key];
+    if (!o || typeof o !== "object") return { ...fallback };
+    return {
+      quantity: Number(o.quantity) || 0,
+      unitPoint: Number(o.unitPoint) || 0,
+      acquiredPoint: Number(o.acquiredPoint) || 0,
+    };
+  };
+
+  const rows = useMemo(() => {
+    if (!data) return [];
+    const license = pick(data, "license");
+    const suggest = pick(data, "suggest");
+    const sns = pick(data, "sns");
+    const awards = pick(data, "awards");
+    const oneIntro = pick(data, "oneIntroduction");
+    const intro = pick(data, "introduction");
+
+    return [
+      { icon: "📜", label: "자격증", rule: `1개당 +${license.unitPoint}점`, qty: `${license.quantity}개`, score: license.acquiredPoint },
+      { icon: "🤝", label: "추천인", rule: `1명당 +${suggest.unitPoint}점`, qty: `${suggest.quantity}명`, score: suggest.acquiredPoint },
+      { icon: "🔗", label: "SNS", rule: `등록 시 +${sns.unitPoint}점`, qty: data.hasSns ? "O" : "X", score: sns.acquiredPoint },
+      { icon: "🏆", label: "수상 경력", rule: `1개당 +${awards.unitPoint}점`, qty: `${awards.quantity}개`, score: awards.acquiredPoint },
+      { icon: "💬", label: "대표 한마디", rule: `작성 시 +${oneIntro.unitPoint}점`, qty: data.hasOneIntroduction ? "O" : "X", score: oneIntro.acquiredPoint },
+      { icon: "📝", label: "자기소개 본문", rule: `작성 시 +${intro.unitPoint}점`, qty: data.hasIntroduction ? "O" : "X", score: intro.acquiredPoint },
+    ];
+  }, [data]);
+
+  if (loading) {
+    return (
+      <div className="TrustScore-container">
+        <div className="RecommenderForm-description">신뢰 점수를 불러오는 중입니다…</div>
+        <div className="TrustScore-bar-wrapper">
+          <div className="TrustScore-bar-background">
+            <div className="TrustScore-bar-foreground" style={{ width: `0%` }} />
+          </div>
+          <div className="TrustScore-score-display">-- 점</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="TrustScore-container">
+        <div className="RecommenderForm-description">
+          신뢰 점수를 불러오는 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.
+        </div>
+        <pre className="TrustScore-error" style={{whiteSpace:"pre-wrap"}}>{String(error)}</pre>
+      </div>
+    );
+  }
 
   return (
     <div className="TrustScore-container">
       <div className="RecommenderForm-description">
-        신뢰 점수는 <strong>자격증, 수상경력, 대표 한마디, 자기소개 본문, SNS, 추천인</strong> 등으로 점수가 매겨지며{" "}
+        신뢰 점수는 <strong>자격증, 수상경력, 대표 한마디, 자기소개 본문, SNS, 추천인</strong> 등으로 점수가 매겨지며 {" "}
         <strong>판매자에게 점수가 제공됩니다.</strong> 판매자에게 <strong>신뢰</strong> 할 수 있는 사람이라는 것을 증명해줄 수 있는 점수 입니다.
       </div>
-      <div className="TrustScore-title">{user?.name || "사용자"} 의 신뢰 점수</div>
+
+      <div className="TrustScore-title">신뢰 점수</div>
 
       <div className="TrustScore-bar-wrapper">
         <div className="TrustScore-bar-background">
-          <div
-            className="TrustScore-bar-foreground"
-            style={{ width: `${Math.min(total, 100)}%` }}
-          />
+          <div className="TrustScore-bar-foreground" style={{ width: `${total}%` }} />
         </div>
-        <div className="TrustScore-score-display">{total} 점</div>
+        <div className="TrustScore-score-display">{Number(data?.total) || 0} 점</div>
       </div>
 
       <table className="TrustScore-table">

@@ -151,6 +151,8 @@ function mapListItem(item, idx) {
       "주소 미입력",
     crop: item?.landCrop ?? item?.crop ?? "작물 미입력",
     area: item?.landArea ?? item?.areaSquare ?? item?.area ?? "?",
+    areaHa: item?.landAreaha ?? "?",              // ✅ 추가 (ha)
+    registerDate: item?.landRegisterDate ?? "-",  // ✅ 추가 (등록일)
     status: item?.status ?? "등록 완료",
   };
   dgroup(`🧭 mapListItem(${idx})`, () => {
@@ -172,6 +174,8 @@ function mapDetailItem(item) {
       "주소 미입력",
     crop: item?.landCrop ?? item?.crop ?? "작물 미입력",
     area: item?.landArea ?? item?.areaSquare ?? item?.area ?? "?",
+    areaHa: item?.landAreaha ?? "?",              // ✅ 추가 (ha)
+    registerDate: item?.landRegisterDate ?? "-",  // ✅ 추가 (등록일)
     status: item?.status ?? "등록 완료",
     raw: { ...item },
   };
@@ -223,55 +227,62 @@ function FileLinkOrText({ url, label }) {
     </div>
   );
 }
-  // 따옴표가 이중으로 들어온 문자열 처리: "\"박성진\"" -> "박성진"
-  function stripWrapQuotes(v) {
-    if (typeof v !== "string") return v;
-    const s = v.trim();
-    if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
-      return s.slice(1, -1);
-    }
-    return v;
+
+// 따옴표가 이중으로 들어온 문자열 처리: "\"박성진\"" -> "박성진"
+function stripWrapQuotes(v) {
+  if (typeof v !== "string") return v;
+  const s = v.trim();
+  if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
+    return s.slice(1, -1);
   }
+  return v;
+}
 
-  // 서버 JSON(신청자 상세) -> 우리 화면 상태로 정규화
-  function normalizeApplicantDetail(raw) {
-    if (!raw || typeof raw !== "object") return null;
+// 서버 JSON(신청자 상세) -> 우리 화면 상태로 정규화
+function normalizeApplicantDetail(raw) {
+  if (!raw || typeof raw !== "object") return null;
 
-    const buyerName = stripWrapQuotes(raw.buyerName);
-    const buyerNumber = stripWrapQuotes(raw.buyerNumber);
+  const buyerName = stripWrapQuotes(raw.buyerName);
+  const buyerNumber = stripWrapQuotes(raw.buyerNumber);
 
-    const arr = (v) => (Array.isArray(v) ? v : []);
-    const join = (v) => arr(v).filter(Boolean).join(", ");
+  const arr = (v) => (Array.isArray(v) ? v : []);
+  const join = (v) => arr(v).filter(Boolean).join(", ");
 
-    return {
-      // 공통 식별/표시 필드
-      id: raw.buyerId ?? null,
-      name: buyerName ?? "",
-      callNumber: buyerNumber ?? "",
+  return {
+    // 공통 식별/표시 필드
+    id: raw.buyerId ?? null,
+    name: buyerName ?? "",
+    callNumber: buyerNumber ?? "",
 
-      // 오른쪽 상세 패널에서 그대로 문자열로 출력되는 필드들:
-      presentation: raw.oneIntroduction ?? "",          // 🧾
-      interest: join(raw.interestCrop),                 // 🌱
-      suggest: join(raw.suggests),                      // 🤝 (현재 []면 빈 문자열)
-      video: raw.videoURL ?? "",                        // 🎬
-      experience: raw.experience ?? "",                 // 🧑‍🌾
-      expereince: raw.experience ?? "",                 // (오타 키 하위호환)
-      skill: join(raw.equipment),                       // 🛠️
-      want: join(raw.wantTrade),                        // 💼
+    // 오른쪽 상세 패널에서 그대로 문자열로 출력되는 필드들:
+    presentation: raw.oneIntroduction ?? "", // 🧾
+    interest: join(raw.interestCrop), // 🌱
+    suggest: join(raw.suggests), // 🤝 (현재 []면 빈 문자열)
+    video: raw.videoURL ?? "", // 🎬
+    experience: raw.experience ?? "", // 🧑‍🌾
+    expereince: raw.experience ?? "", // (오타 키 하위호환)
+    skill: join(raw.equipment), // 🛠️
+    want: join(raw.wantTrade), // 💼
 
-      // 필요시 참고용
-      licenses: arr(raw.licenses).filter(Boolean),
-      matchStatus: raw.matchStatus ?? MATCH.WAITING,
+    // 필요시 참고용
+    licenses: arr(raw.licenses).filter(Boolean),
+    trustScore: raw.trustScore ?? null,
+    matchStatus: raw.matchStatus ?? MATCH.WAITING,
 
-      // 원본 전체
-      detail: raw,
-    };
-  }
+    // 원본 전체
+    detail: raw,
+  };
+}
 /* =======================
    🏗 컴포넌트
 ======================= */
 // 개별 신청자 상세 프리로드(배치 로딩) 유틸
-async function fetchApplicantDetail({ baseHeaders, sellerId, landId, buyerId }) {
+async function fetchApplicantDetail({
+  baseHeaders,
+  sellerId,
+  landId,
+  buyerId,
+}) {
   const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
   const res = await debugFetch(
     url,
@@ -281,18 +292,34 @@ async function fetchApplicantDetail({ baseHeaders, sellerId, landId, buyerId }) 
   const data = await safeJson(res);
   if (!res.ok) {
     throw new Error(
-      `프리로드 실패 buyerId=${buyerId} status=${res.status} body=${JSON.stringify(data).slice(0, 300)}`
+      `프리로드 실패 buyerId=${buyerId} status=${
+        res.status
+      } body=${JSON.stringify(data).slice(0, 300)}`
     );
   }
   return data;
 }
 
-async function preloadApplicantsDetail({ baseHeaders, sellerId, landId, list, onMerge }) {
+async function preloadApplicantsDetail({
+  baseHeaders,
+  sellerId,
+  landId,
+  list,
+  onMerge,
+}) {
   // 병렬 로딩 (느린 서버면 동시성 제한 걸어도 됨)
   const tasks = list.map((a) =>
     fetchApplicantDetail({ baseHeaders, sellerId, landId, buyerId: a.id })
-      .then((raw) => ({ ok: true, buyerId: a.id, norm: normalizeApplicantDetail(raw) }))
-      .catch((e) => ({ ok: false, buyerId: a.id, error: e?.message || String(e) }))
+      .then((raw) => ({
+        ok: true,
+        buyerId: a.id,
+        norm: normalizeApplicantDetail(raw),
+      }))
+      .catch((e) => ({
+        ok: false,
+        buyerId: a.id,
+        error: e?.message || String(e),
+      }))
   );
   const results = await Promise.allSettled(tasks);
   const okItems = results
@@ -423,7 +450,6 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     setApplicants([]);
     setSelectedApplicant(null);
     setSectionIndex(0);
-    
 
     const url = `http://localhost:8080/${sellerId}/farmland/${landId}`;
     try {
@@ -478,7 +504,9 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       });
 
       setApplicants(normalizedApplicants);
-      dgroup("👥 신청자 목록(상세 포함)", () => console.table?.(normalizedApplicants));
+      dgroup("👥 신청자 목록(상세 포함)", () =>
+        console.table?.(normalizedApplicants)
+      );
 
       // ✅✅ 들어오자마자 각 신청자의 matchStatus를 최신화: 병렬 프리로드
       preloadApplicantsDetail({
@@ -516,13 +544,16 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       dgroup("🧾 신청자 상세 JSON", () => dlog(data));
       if (!res.ok) {
         throw new Error(
-          `신청자 상세 오류 status=${res.status} body=${JSON.stringify(data).slice(0, 500)}`
+          `신청자 상세 오류 status=${res.status} body=${JSON.stringify(
+            data
+          ).slice(0, 500)}`
         );
       }
 
       // ✅ 서버 스키마 → 화면 스키마 정규화
       const norm = normalizeApplicantDetail(data);
-      if (!norm) throw new Error("정규화 실패: 서버 응답 형식이 올바르지 않습니다.");
+      if (!norm)
+        throw new Error("정규화 실패: 서버 응답 형식이 올바르지 않습니다.");
 
       // 리스트의 해당 신청자 갱신
       setApplicants((prev) =>
@@ -572,6 +603,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
 
               licenses: norm.licenses ?? prev.licenses,
               matchStatus: norm.matchStatus ?? prev.matchStatus,
+              trustScore: norm.trustScore ?? prev.trustScore,
               detail: norm.detail ?? prev.detail,
             }
           : prev
@@ -583,8 +615,6 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       setLoadingApplicantDetail(false);
     }
   };
-
-
 
   /* ========== 4) 신청 수락/거절 ========== */
   // POST /${sellerId}/farmland/{landId}/applicants/{buyerId}/accept
@@ -602,7 +632,10 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       )
     );
     if (selectedApplicant?.id === buyerId) {
-      setSelectedApplicant({ ...selectedApplicant, matchStatus: MATCH.IN_PROGRESS });
+      setSelectedApplicant({
+        ...selectedApplicant,
+        matchStatus: MATCH.IN_PROGRESS,
+      });
     }
 
     try {
@@ -652,7 +685,10 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       )
     );
     if (selectedApplicant?.id === buyerId) {
-      setSelectedApplicant({ ...selectedApplicant, matchStatus: MATCH.REJECTED });
+      setSelectedApplicant({
+        ...selectedApplicant,
+        matchStatus: MATCH.REJECTED,
+      });
     }
 
     try {
@@ -816,9 +852,13 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
           <LabeledRow label="위도" value={r.landLat} />
           <LabeledRow label="경도" value={r.landLng} />
           <LabeledRow label="작물" value={r.landCrop} />
-          <LabeledRow label="면적(㎡/ha)" value={r.landArea} />
+          {/* ✅ 면적 분리 출력: ㎡ / ha */}
+          <LabeledRow label="면적(㎡)" value={r.landArea ?? selectedLand?.area} />
+          <LabeledRow label="면적(ha)" value={r.landAreaha ?? selectedLand?.areaHa} />
           <LabeledRow label="토양" value={r.soiltype} />
           <LabeledRow label="용수" value={r.waterSource} />
+          {/* ✅ 등록일 */}
+          <LabeledRow label="등록일" value={r.landRegisterDate ?? selectedLand?.registerDate} />
         </>
       ),
     },
@@ -913,7 +953,11 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
             <div key={land.id} className="MyRegisteredLand-LandCard">
               <div className="MyRegisteredLand-LandTitle">{land.name}</div>
               <div className="MyRegisteredLand-LandDetails">
+                {/* 📐 ㎡ / ha 동시 표시 (ha 값이 유효할 때만 뒤에 붙임) */}
                 📍 {land.location} | 🌱 {land.crop} | 📐 {land.area}㎡
+                {land.areaHa !== "?" && land.areaHa !== "" && land.areaHa !== null && land.areaHa !== undefined
+                  ? ` / ${land.areaHa}ha`
+                  : ""}
               </div>
               <div className="MyRegisteredLand-LandStatus">
                 상태: {land.status}
@@ -1131,21 +1175,64 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
                             {selectedApplicant.name}
                             {loadingApplicantDetail ? " (불러오는 중…)" : ""}
                           </div>
-                          <div className={classForMatchStatus(selectedApplicant.matchStatus)}>
+                          <div
+                            className={classForMatchStatus(
+                              selectedApplicant.matchStatus
+                            )}
+                          >
                             {labelForMatchStatus(selectedApplicant.matchStatus)}
                           </div>
                         </div>
 
                         <div className="ApplicantDetail-Body">
-                          <div>📞 {selectedApplicant.callNumber}</div>
-                          <div>🧾 {selectedApplicant.presentation}</div>
-                          <div>🌱 {selectedApplicant.interest}</div>
-                          <div>🤝 {selectedApplicant.suggest}</div>
-                          <div>🎬 {selectedApplicant.video}</div>
-                          <div>🧑‍🌾 {selectedApplicant.expereince}</div>
-                          <div>🛠️ {selectedApplicant.skill}</div>
-                          <div>💼 {selectedApplicant.want}</div>
-
+                          <div className="mrl-detail-row">
+                            <span>📞 전화번호</span>
+                            <span>{selectedApplicant.callNumber}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>🧾 자기소개</span>
+                            <span>{selectedApplicant.presentation}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>🌱 관심작물</span>
+                            <span>{selectedApplicant.interest}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>🤝 추천인</span>
+                            <span>{selectedApplicant.suggest}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>📹 소개 영상</span>
+                            <span>{selectedApplicant.video}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>👨‍🌾 경력</span>
+                            <span>{selectedApplicant.experience}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>🛠️ 보유 장비</span>
+                            <span>{selectedApplicant.skill}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>💡 희망 거래</span>
+                            <span>{selectedApplicant.want}</span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>⭐ 신뢰 점수</span>
+                            <span>
+                              {selectedApplicant.trustScore ?? "미산정"}
+                            </span>
+                          </div>
+                          <div className="mrl-detail-row">
+                            <span>📑 자격증</span>
+                            <span>
+                              {Array.isArray(selectedApplicant.licenses)
+                                ? selectedApplicant.licenses
+                                    .filter(Boolean)
+                                    .join(", ")
+                                : ""}
+                            </span>
+                          </div>{" "}
                           <div className="ApplicantDetail-Tags">
                             {Object.values(
                               selectedApplicant.detail?.yellow || {}

@@ -197,3 +197,22 @@
 .Tag.yellow { background: #fffbeb; border-color: #fde68a; }
 .Tag.green { background: #ecfdf5; border-color: #a7f3d0; }
 .Tag.grey { background: #f3f4f6; border-color: #e5e7eb; }
+.mrl-detail-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.mrl-detail-row span:first-child {
+  font-weight: 600;
+  min-width: 120px; /* 라벨 고정 폭 */
+  margin-right: 8px;
+}
+
+.mrl-detail-row a {
+  color: #0077cc;
+  text-decoration: underline;
+  word-break: break-all; /* 긴 URL 줄바꿈 */
+}
+

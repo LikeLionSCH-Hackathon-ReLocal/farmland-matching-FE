@@ -50,7 +50,7 @@ export async function getBuyerLicenses({ buyerId = 1, token } = {}) {
   return normalized;
 }
 
-// src/api/licenses.js
+/** POST /{buyerId}/license-save */
 export async function saveBuyerLicenses({
   buyerId = 1,
   items = [], // [{id, name, file}]
@@ -70,10 +70,10 @@ export async function saveBuyerLicenses({
     fd.append(`licenseList[${i}].licenseId`, id);
     fd.append(`licenseList[${i}].licenseName`, name);
 
+    // 파일이 실제로 선택된 경우에만 전송 (미선택 시 생략 → 서버가 기존 파일 유지)
     if (file instanceof File) {
       fd.append(`licenseList[${i}].licenseFile`, file, file.name);
     }
-    // 파일 없으면 생략 → 서버에서 기존 파일 유지
   });
 
   console.group(`[licenses.js] POST ${url}`);
@@ -87,5 +87,3 @@ export async function saveBuyerLicenses({
   if (!res.ok) throw new Error(`POST /license-save 실패 (${res.status}) ${text}`);
   return { ok: true };
 }
-
-
