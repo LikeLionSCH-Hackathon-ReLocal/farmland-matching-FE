@@ -176,3 +176,50 @@
   justify-content: center;
   z-index: 999;
 }
+/* 기본 버튼 스타일 */
+.RightPanel-PrimaryButton {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.RightPanel-PrimaryButton.is-disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 상태별 색상 */
+.RightPanel-PrimaryButton.status-waiting {
+  background-color: #f0ad4e; /* 주황색 */
+  color: white;
+}
+
+.RightPanel-PrimaryButton.status-in_progress {
+  background-color: #5cb85c; /* 초록색 */
+  color: white;
+}
+
+.RightPanel-PrimaryButton.status-rejected {
+  background-color: #d9534f; /* 빨간색 */
+  color: white;
+}
+
+/* 매칭 취소 버튼 */
+.RightPanel-SecondaryButton.danger {
+  background-color: transparent;
+  border: 1px solid #d9534f;
+  color: #d9534f;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.RightPanel-SecondaryButton.danger:hover {
+  background-color: #d9534f;
+  color: #fff;
+}

@@ -1,46 +1,95 @@
 // src/components/Pannel/RightPanel.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "./RightPanel.css";
 import FarmlandDetailPanel from "./FarmlandDetailPanel";
 
-// NOTE: 파일명이 applications.js 인 경우가 많아 오탈자 수정
 import { getApplicants } from "../../api/applicantOne";
 import { applyForFarmland } from "../../api/applications";
 import { computeMatching } from "../../utils/matching";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+const BUYER_ID = 1; // TODO: 로그인 사용자 ID로 교체
 
 function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
+  // -----------------------------
+  // State
+  // -----------------------------
   const [pageIndex, setPageIndex] = useState(0);
   const [showDetail, setShowDetail] = useState(false);
 
-  // ✅ 신청 상태/로딩 상태
-  const [applied, setApplied] = useState(false);
   const [applying, setApplying] = useState(false);
-
   const [isFavorite, setIsFavorite] = useState(false);
+
   const [applicant, setApplicant] = useState(null);
   const [match, setMatch] = useState(null);
 
-  // ✅ BE 상세 데이터 상태
+  // 상세 데이터
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState(null);
 
+  // 신청 현황
+  const [appliedList, setAppliedList] = useState([]); // [{ landId, matchStatus }, ...]
+  const [loadingApplied, setLoadingApplied] = useState(false);
+  const [appliedError, setAppliedError] = useState(null);
+
   const maxPage = 4;
 
-  // landId 추출(백엔드 DTO에 맞게 id/landId 양쪽 대비)
+  // landId는 selected가 없을 수도 있으니 안전하게 계산
   const landId =
     selected?.id ??
     selected?.landId ??
     selected?.raw?.landId ??
     selected?.detail?.landInfo?.landId;
 
-  // ▶ 지원자/매칭 계산(기존 로직 유지)
+  // -----------------------------
+  // API: 신청 목록 불러오기 (항상 훅 top-level)
+  // -----------------------------
+  const loadApplied = useCallback(async () => {
+    try {
+      setLoadingApplied(true);
+      setAppliedError(null);
+      const res = await fetch(`${API_BASE}/applied-farmland/${BUYER_ID}`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) throw new Error(`GET /applied-farmland/${BUYER_ID} -> ${res.status}`);
+      const data = await res.json();
+      setAppliedList(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error("[RightPanel] loadApplied error:", e);
+      setAppliedError(e?.message || "신청 현황을 불러오지 못했습니다.");
+      setAppliedList([]);
+    } finally {
+      setLoadingApplied(false);
+    }
+  }, []);
+
+  // 선택 변경 시 신청목록 갱신 (selected가 없어도 훅은 호출되지만, 내부 fetch는 안전)
+  useEffect(() => {
+    loadApplied();
+  }, [loadApplied, landId]);
+
+  // 현재 선택 농지의 신청/매칭 상태
+  const currentApplied = appliedList.find((x) => String(x.landId) === String(landId));
+  const currentStatus = currentApplied?.matchStatus; // WAITING | IN_PROGRESS | REJECTED | undefined
+  const isApplied = !!currentStatus;
+
+  const statusLabelMap = {
+    WAITING: "신청 중..",
+    IN_PROGRESS: "매칭 성공",
+    REJECTED: "매칭 실패",
+  };
+  const primaryLabel = isApplied ? statusLabelMap[currentStatus] || "신청 상태" : "신청하기";
+  const primaryDisabled = isApplied || applying || !landId;
+  const statusClass = currentStatus ? `status-${currentStatus.toLowerCase()}` : "";
+
+  // -----------------------------
+  // 지원자/매칭 계산 (selected 바뀔 때마다)
+  // -----------------------------
   useEffect(() => {
     setPageIndex(0);
     setShowDetail(false);
-    setApplied(false);
     setIsFavorite(false);
 
     (async () => {
@@ -61,15 +110,18 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
     })();
   }, [selected]);
 
-  // ▶ 백엔드 상세 조회 → detail(뷰 모델) 구성
+  // -----------------------------
+  // 상세 조회 (landId 없는 경우 내부에서 안전 처리)
+  // -----------------------------
   useEffect(() => {
-    if (!landId) {
-      setDetail(null);
-      return;
-    }
     let aborted = false;
 
     (async () => {
+      if (!landId) {
+        setDetail(null);
+        return;
+      }
+
       setDetailLoading(true);
       setDetailError(null);
       try {
@@ -88,14 +140,11 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
         const areaHectareStr =
           areaSqm != null ? `${areaSqm.toLocaleString()} ㎡ (${areaHa} ha)` : undefined;
 
-        // ✅ 평면 키 + 중첩 키 모두 포함한 detail 뷰 모델
         const mapped = {
-          // 상단 타이틀/주소 표시용
           name: data.landName ?? selected?.name,
           address: data.landRoadAddress || data.landAddress || selected?.address,
           emoji: selected?.emoji,
 
-          // ✅ BE 평면 키들 그대로( FarmlandDetailPanel이 우선적으로 읽음 )
           landId: data.landId,
           landName: data.landName,
           landAddress: data.landAddress,
@@ -108,21 +157,21 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
           soiltype: data.soiltype,
           waterSource: data.waterSource,
 
-          // ✅ 소유자(평면)
           ownerName: data.ownerName,
           ownerAge: data.ownerAge,
           ownerAddress: data.ownerAddress,
 
-          // ✅ 판매자 멘트/이미지(평면)
           sellerComment: data.landComent,
           image: data.landImage,
 
-          // ✅ 중첩 구조 (FarmlandDetailPanel 보조 참조용)
           landInfo: {
             landId: data.landId,
             crop: data.landCrop ?? selected?.detail?.landInfo?.crop,
             areaHectare: areaHectareStr ?? selected?.detail?.landInfo?.areaHectare,
-            location: data.landRoadAddress || data.landAddress || selected?.detail?.landInfo?.location,
+            location:
+              data.landRoadAddress ||
+              data.landAddress ||
+              selected?.detail?.landInfo?.location,
             landNumber: data.landNumber ?? selected?.detail?.landInfo?.landNumber,
             soilType: data.soiltype ?? selected?.detail?.landInfo?.soilType,
             waterSource: data.waterSource ?? selected?.detail?.landInfo?.waterSource,
@@ -169,23 +218,23 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
     return () => {
       aborted = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [landId]);
+  }, [landId, selected]);
 
-  if (!selected) return null;
-
+  // -----------------------------
+  // Handlers
+  // -----------------------------
   const handleApply = async () => {
     if (!landId) {
       alert("landId를 확인할 수 없습니다.");
       return;
     }
-    if (applied || applying) return;
+    if (isApplied || applying) return;
 
     try {
       setApplying(true);
       const token = localStorage.getItem("accessToken");
-      await applyForFarmland({ landId, buyerId: 1, token });
-      setApplied(true);
+      await applyForFarmland({ landId, buyerId: BUYER_ID, token });
+      await loadApplied(); // 신청 후 목록 갱신
       onApply && onApply(selected);
       alert("신청이 완료되었습니다.");
     } catch (err) {
@@ -196,12 +245,32 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
     }
   };
 
+  const handleCancelApply = async () => {
+    if (!landId) return;
+    try {
+      const res = await fetch(
+        `${API_BASE}/farmland/${encodeURIComponent(landId)}/${encodeURIComponent(
+          BUYER_ID
+        )}/apply-cancel`,
+        { method: "DELETE", headers: { Accept: "application/json" } }
+      );
+      if (!res.ok) throw new Error(`DELETE apply-cancel -> ${res.status}`);
+      await loadApplied();
+      alert("신청이 취소되었습니다.");
+    } catch (e) {
+      console.error("[CANCEL] error:", e);
+      alert(e?.message || "신청 취소 중 오류가 발생했습니다.");
+    }
+  };
+
   const handleToggleFavorite = () => {
     setIsFavorite((v) => !v);
     onToggleFavorite && onToggleFavorite(selected);
   };
 
-  // ✅ 합성 뷰 모델: selected.detail을 깔고 detail로 덮어쓰기(상세 우선)
+  // -----------------------------
+  // 뷰 모델
+  // -----------------------------
   const view = {
     emoji: selected?.emoji,
     name: detail?.name ?? selected?.name,
@@ -209,11 +278,18 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
     detail: {
       ...(selected?.detail || {}),
       ...(detail || {}),
-      // landInfo는 detail 우선
       landInfo: (detail && detail.landInfo) || selected?.detail?.landInfo,
     },
   };
 
+  // -----------------------------
+  // ✅ 렌더 직전에 selected 체크 (훅 이후!)
+  // -----------------------------
+  if (!selected) return null;
+
+  // -----------------------------
+  // Render
+  // -----------------------------
   return (
     <div className="RightPanel-RightContainer">
       <div className="RightPanel-TopButtons">
@@ -234,17 +310,31 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
 
         <div className="RightPanel-ActionGroup">
           <button
-            className={`RightPanel-PrimaryButton ${applied || applying ? "is-disabled" : ""}`}
-            onClick={handleApply}
-            disabled={applied || applying || !landId}
+            className={`RightPanel-PrimaryButton ${statusClass} ${
+              primaryDisabled ? "is-disabled" : ""
+            }`}
+            onClick={!isApplied ? handleApply : undefined}
+            disabled={primaryDisabled}
             title={
-              applied ? "이미 신청 완료" :
-              applying ? "신청 처리 중..." :
-              "이 농지에 매칭을 신청합니다"
+              isApplied
+                ? statusLabelMap[currentStatus] || "신청 상태"
+                : applying
+                ? "신청 처리 중..."
+                : "이 농지에 매칭을 신청합니다"
             }
           >
-            {applied ? "신청 완료" : applying ? "신청 중..." : "신청하기"}
+            {applying && !isApplied ? "신청 중..." : primaryLabel}
           </button>
+
+          {currentStatus === "WAITING" && (
+            <button
+              className="RightPanel-SecondaryButton danger"
+              onClick={handleCancelApply}
+              title="이 신청을 취소합니다"
+            >
+              매칭 취소
+            </button>
+          )}
 
           <button
             className={`RightPanel-SecondaryButton ${isFavorite ? "active" : ""}`}
@@ -260,10 +350,18 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
         </button>
       </div>
 
-      <div className="RightPanel-ImagePlaceholder">
-        {/* UI는 '사진 자리' 그대로 유지 */}
-        사진 자리
-      </div>
+      {loadingApplied && (
+        <div className="RightPanel-InfoRow" style={{ opacity: 0.7, marginTop: 8 }}>
+          신청 현황을 불러오는 중…
+        </div>
+      )}
+      {appliedError && (
+        <div className="RightPanel-InfoRow" style={{ color: "#c00", marginTop: 8 }}>
+          {appliedError}
+        </div>
+      )}
+
+      <div className="RightPanel-ImagePlaceholder">사진 자리</div>
 
       <div className="RightPanel-PageNav">
         {pageIndex > 0 ? (
@@ -476,7 +574,6 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
         </div>
       )}
 
-      {/* 중앙 상세 패널 */}
       {showDetail && (
         <div className="RightPanel-ModalOverlay">
           <FarmlandDetailPanel data={view.detail} onClose={() => setShowDetail(false)} />

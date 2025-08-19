@@ -1,18 +1,29 @@
+// src/components/Setting/SettingContent/FarmlandMatchingSetting/Sell.jsx
 import React, { useEffect, useState } from "react";
 import "./Sell.css";
-import { getFarmlandData1 } from "../../../../api/farmland"; // 경로 확인
-import FarmlandDetailView from "./FarmlandDetailView";
 
-export default function Sell() {
+const BUYER_ID_DEFAULT = 1; // 필요시 prop이나 context로 주입 가능
+
+export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
   const [farmlands, setFarmlands] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedFarm, setSelectedFarm] = useState(null);
+  const [loadingCancel, setLoadingCancel] = useState(false);
   const itemsPerPage = 2;
 
   useEffect(() => {
     (async () => {
-      const data = await getFarmlandData1();
-      setFarmlands(data || []);
+      try {
+        const res = await fetch("http://localhost:8080/applied-farmland/1", {
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        setFarmlands(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("[Sell] 불러오기 실패:", err);
+        setFarmlands([]);
+      }
     })();
   }, []);
 
@@ -22,14 +33,12 @@ export default function Sell() {
     if (el) el.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (selectedFarm) {
-    return (
-      <FarmlandDetailView
-        farm={selectedFarm}
-        onClose={() => setSelectedFarm(null)}
-      />
-    );
-  }
+  const statusLabel = (status) => {
+    if (status === "IN_PROGRESS") return "매칭 성공";
+    if (status === "REJECTED") return "매칭 실패";
+    if (status === "WAITING") return "매칭 대기";
+    return "알 수 없음";
+  };
 
   const totalPages = Math.max(1, Math.ceil(farmlands.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -42,78 +51,119 @@ export default function Sell() {
   const handleNext = () =>
     currentPage < totalPages && setCurrentPage(currentPage + 1);
 
+  const cancelMatch = async (farm) => {
+    if (!window.confirm("정말 매칭을 취소하시겠습니까?")) return;
+    try {
+      setLoadingCancel(true);
+      const url = `http://localhost:8080/farmland/${encodeURIComponent(
+        farm.landId
+      )}/${encodeURIComponent(buyerId)}/apply-cancel`;
+
+      const res = await fetch(url, {
+        method: "DELETE", // ✅ DELETE 메소드로 변경
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // 성공 시 리스트에서 제거
+      setFarmlands((prev) => prev.filter((f) => f.landId !== farm.landId));
+      alert("매칭이 취소되었습니다.");
+    } catch (err) {
+      console.error("[Sell] 매칭 취소 실패:", err);
+      alert("매칭 취소 중 오류가 발생했습니다.");
+    } finally {
+      setLoadingCancel(false);
+    }
+  };
+
+  if (selectedFarm) {
+    return (
+      <div className="Sell-detail">
+        <h2>{selectedFarm.landName} 상세보기</h2>
+        <p>주소: {selectedFarm.landArress}</p>
+        <p>작물: {selectedFarm.landCrop}</p>
+        <p>등록일: {selectedFarm.landRegisterDate}</p>
+        <p>매칭 상태: {statusLabel(selectedFarm.matchStatus)}</p>
+        <button onClick={() => setSelectedFarm(null)}>닫기</button>
+      </div>
+    );
+  }
+
   return (
     <div className="Sell-container">
       <div className="Sell-wrapper">
         {currentFarmlands.map((farm) => {
-          const status = farm.detail?.trustMatch?.status || "알 수 없음";
-          const canChat = status === "매칭 성공";
+          const canChat = farm.matchStatus === "IN_PROGRESS";
 
           return (
-            <div key={farm.id} className="Sell-card">
+            <div key={farm.landId} className="Sell-card">
               <img
-                src={`/images/farm${(farm.id % 5) + 1}.jpg`}
+                src={
+                  farm.landImage
+                    ? farm.landImage
+                    : `/images/farm${(farm.landId % 5) + 1}.jpg`
+                }
                 alt="farm"
                 className="Sell-farm-image"
               />
 
               <div className="Sell-info-row wide">
                 <label>농장명</label>
-                <span>{farm.name}</span>
+                <span>{farm.landName}</span>
                 <label>주소</label>
-                <span>{farm.address}</span>
+                {/* 백엔드 필드가 landArress(오타)로 오므로 그대로 사용 */}
+                <span>{farm.landArress}</span>
               </div>
 
               <div className="Sell-info-row horizontal">
                 <div>
                   <label>작물</label>
-                  <span>{farm.crop}</span>
+                  <span>{farm.landCrop}</span>
                 </div>
                 <div>
                   <label>등록일</label>
-                  <span>{farm.detail?.landInfo?.Resister || farm.Resister || "미상"}</span>
+                  <span>{farm.landRegisterDate || "미상"}</span>
                 </div>
               </div>
 
               <div className="Sell-info-row horizontal">
                 <div>
                   <label>매칭 상태</label>
-                  <span>{status}</span>
+                  <span>{statusLabel(farm.matchStatus)}</span>
                 </div>
                 <div>
                   <label>예상 수익</label>
-                  <span>{farm.detail?.aiProfit?.netProfit || "계산 중"}</span>
+                  <span>{"계산 중"}</span>
                 </div>
               </div>
 
               <div className="Sell-btn-group">
-                <button className="Sell-btn detail" onClick={() => openDetail(farm)}>
+                <button
+                  className="Sell-btn detail"
+                  onClick={() => openDetail(farm)}
+                >
                   상세 보기
                 </button>
 
-                {/* ✅ 수락 → 채팅. 매칭 성공일 때만 활성화 */}
                 <button
                   className={`Sell-btn chat ${canChat ? "on" : "off"}`}
                   disabled={!canChat}
                   aria-disabled={!canChat}
                   onClick={() => {
                     if (!canChat) return;
-                    // TODO: 실제 채팅 열기 로직 연결
-                    alert(`[채팅] ${farm.name} 과(와) 채팅을 시작합니다.`);
+                    alert(`[채팅] ${farm.landName} 과(와) 채팅을 시작합니다.`);
                   }}
                 >
                   채팅
                 </button>
 
                 <button
-                className="Sell-btn reject"
-                onClick={() => {
-                  if (window.confirm("정말 삭제하시겠습니까?")) {
-                  setFarmlands((prev) => prev.filter((f) => f.id !== farm.id));
-                    }
-                  }} >
-                삭제
-              </button>
+                  className="Sell-btn reject"
+                  disabled={loadingCancel}
+                  onClick={() => cancelMatch(farm)}
+                >
+                  {loadingCancel ? "취소 중..." : "취소"}
+                </button>
               </div>
             </div>
           );
