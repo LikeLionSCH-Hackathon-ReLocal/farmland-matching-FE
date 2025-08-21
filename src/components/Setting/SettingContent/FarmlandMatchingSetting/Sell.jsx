@@ -2,13 +2,18 @@
 import React, { useEffect, useState } from "react";
 import "./Sell.css";
 
-const BUYER_ID_DEFAULT = 1; // 필요시 prop이나 context로 주입 가능
+// ✅ 프로젝트 구조에 맞게 경로 수정 필요
+// 예) src/components/Pannel/FarmlandDetailView.jsx 에 있다면:
+import FarmlandDetailView from "../../../Pannel/FarmlandDetailView";
+
+const BUYER_ID_DEFAULT = 1;
 
 export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
   const [farmlands, setFarmlands] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedFarm, setSelectedFarm] = useState(null);
+  const [selectedFarm, setSelectedFarm] = useState(null); // 상세보기용
   const [loadingCancel, setLoadingCancel] = useState(false);
+
   const itemsPerPage = 2;
 
   useEffect(() => {
@@ -28,7 +33,10 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
   }, []);
 
   const openDetail = (farm) => {
+    // 최소 요구사항: FarmlandDetailView를 호출하기만 함
+    // (데이터 연동은 FarmlandDetailView 안에서 처리)
     setSelectedFarm(farm);
+
     const el = document.querySelector(".SettingModal-SettingsDetailArea");
     if (el) el.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -38,7 +46,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
     if (status === "REJECTED") return "매칭 실패";
     if (status === "WAITING") return "매칭 대기";
     return "알 수 없음";
-  };
+    };
 
   const totalPages = Math.max(1, Math.ceil(farmlands.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -60,12 +68,11 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
       )}/${encodeURIComponent(buyerId)}/apply-cancel`;
 
       const res = await fetch(url, {
-        method: "DELETE", // ✅ DELETE 메소드로 변경
+        method: "DELETE",
         headers: { Accept: "application/json" },
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-      // 성공 시 리스트에서 제거
       setFarmlands((prev) => prev.filter((f) => f.landId !== farm.landId));
       alert("매칭이 취소되었습니다.");
     } catch (err) {
@@ -76,16 +83,13 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
     }
   };
 
+  // ✅ 상세보기 모드: FarmlandDetailView만 호출
   if (selectedFarm) {
     return (
-      <div className="Sell-detail">
-        <h2>{selectedFarm.landName} 상세보기</h2>
-        <p>주소: {selectedFarm.landAddress}</p>
-        <p>작물: {selectedFarm.landCrop}</p>
-        <p>등록일: {selectedFarm.landRegisterDate}</p>
-        <p>매칭 상태: {statusLabel(selectedFarm.matchStatus)}</p>
-        <button onClick={() => setSelectedFarm(null)}>닫기</button>
-      </div>
+      <FarmlandDetailView
+        farm={selectedFarm}            // ← 여기서 landId 등 필요한 최소 정보만 넘겨도 됨
+        onClose={() => setSelectedFarm(null)}
+      />
     );
   }
 
@@ -111,8 +115,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
                 <label>농장명</label>
                 <span>{farm.landName}</span>
                 <label>주소</label>
-                {/* 백엔드 필드가 landAddress(오타)로 오므로 그대로 사용 */}
-                <span>{farm.landAddress}</span>
+                <span>{farm.landAddress || farm.landArress || "-"}</span>
               </div>
 
               <div className="Sell-info-row horizontal">
