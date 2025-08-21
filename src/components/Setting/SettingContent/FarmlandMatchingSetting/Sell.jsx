@@ -4,7 +4,7 @@ import "./Sell.css";
 
 // ✅ 프로젝트 구조에 맞게 경로 수정 필요
 // 예) src/components/Pannel/FarmlandDetailView.jsx 에 있다면:
-import FarmlandDetailView from "../../../Pannel/FarmlandDetailView";
+import FarmlandDetailView from "./FarmlandDetailView";
 
 const BUYER_ID_DEFAULT = 1;
 
