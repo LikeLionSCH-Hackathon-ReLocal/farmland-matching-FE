@@ -102,3 +102,94 @@
   .ProfileModal-Body { grid-template-columns: 1fr; }
   .ProfileModal-QuickGrid { grid-template-columns: 1fr; }
 }
+/* 상단 목차 */
+.ProfileModal-TopNav {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #ffffffcc;
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+.ProfileModal-TopNavBtn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.ProfileModal-TopNavBtn.active { border-color: #111827; font-weight: 700; }
+
+/* 컨텐츠 영역: 단일 섹션 스크롤 */
+.ProfileModal-Content {
+  overflow: auto;
+  max-height: min(70vh, 760px);
+  padding: 12px;
+}
+
+/* 섹션 제목/페이드 효과 */
+.ProfileModal-SectionTitle { margin: 4px 0 10px; font-size: 1.05rem; font-weight: 700; }
+.fade-in { animation: pm-fade .18s ease-out; }
+@keyframes pm-fade { from {opacity: 0; transform: translateY(4px);} to {opacity: 1; transform: translateY(0);} }
+/* 상단 요약 섹션 높이 줄이기 */
+.ProfileModal-Top {
+  align-items: center;    /* 세로 가운데 정렬 */
+  gap: 0.6rem;            /* 좌우 간격 축소 */
+  padding: 0.4rem 0;      /* 위아래 여백 축소 */
+}
+
+.ProfileModal-Avatar img {
+  width: 64px; 
+  height: 64px; 
+  border-radius: 8px;
+}
+
+/* 이름/태그 간격 조금 축소 */
+.ProfileModal-Identity {
+  margin-bottom: 0.2rem;
+}
+.ProfileModal-Name {
+  font-size: 1.0rem;
+}
+
+/* 연락/주소 카드 패딩 축소 */
+.ProfileModal-QuickCard {
+  padding: 0.40rem 0.5rem;
+}
+.quick-title {
+  font-size: 0.80rem;
+  margin-bottom: 0.1rem;
+}
+/* ▼ 버튼 클릭 후 렌더링되는 본문 전체를 90%로 축소 */
+.ProfileModal-Content {
+  font-size: 90%;
+  line-height: 1.45; /* 살짝 촘촘하게 */
+}
+
+/* 섹션 내부 여백을 em 기준으로 줄여 균형 맞추기 */
+.ProfileModal-Content .ProfileModal-Section {
+  padding: 0.9em 1.1em;  /* 원래보다 약간 축소된 여백 */
+}
+
+/* 섹션 제목도 함께 줄이기(본문 대비 적당한 비율) */
+.ProfileModal-Content .ProfileModal-SectionTitle {
+  font-size: 1.05em;
+  margin-bottom: 0.7em;
+}
+
+/* 자잘한 행/라벨류도 소폭 축소 */
+.ProfileModal-Content .quick-title,
+.ProfileModal-Content .quick-row,
+.ProfileModal-Content .tag,
+.ProfileModal-Content label,
+.ProfileModal-Content input,
+.ProfileModal-Content select,
+.ProfileModal-Content textarea,
+.ProfileModal-Content button {
+  font-size: 0.95em;
+}

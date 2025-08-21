@@ -1,37 +1,100 @@
-import React, { useEffect, useCallback } from "react";
+// src/components/ProfileModal.jsx
+import React, { useEffect, useCallback, useState, Suspense } from "react";
 import "./ProfileModal.css";
 
-export default function ProfileModal({ user, loading, onClose }) {
-  // ⎯⎯⎯ ESC로 닫기 ⎯⎯⎯
-  const handleKeyDown = useCallback(
-    (e) => {
-      if (e.key === "Escape") onClose?.();
-    },
-    [onClose]
-  );
+// 지연 로딩
+const ProfileSettings = React.lazy(() => import("../Setting/SettingContent/AccountSetting/ProfileSettings"));
+const Certification   = React.lazy(() => import("../Setting/SettingContent/TrustSetting/Certification"));
+const RecommenderForm = React.lazy(() => import("../Setting/SettingContent/TrustSetting/RecommenderForm"));
+const TrustProfile    = React.lazy(() => import("../Setting/SettingContent/TrustSetting/TrustProfile"));
+const TrustScore      = React.lazy(() => import("../Setting/SettingContent/TrustSetting/TrustScore"));
 
+/**
+ * 단일 섹션 보기 + 상단 목차
+ * - 상단 요약은 항상 표시
+ * - 아래 컨텐츠 영역에는 선택된 섹션 하나만 렌더링
+ */
+export default function ProfileModal({ user, buyerId = 1, token, loading, onClose }) {
+  // ESC 닫기
+  const handleKeyDown = useCallback((e) => { if (e.key === "Escape") onClose?.(); }, [onClose]);
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
+  // 섹션 상태
+  const [active, setActive] = useState("base"); // 'base' | 'cert' | 'recom' | 'trust' | 'score'
+  const [userState, setUserState] = useState(user || null);
+  useEffect(() => setUserState(user || null), [user]);
+
+  const Loader = <div style={{ padding: "12px 0" }}>불러오는 중…</div>;
+
+  const NavButton = ({ k, label }) => (
+    <button
+      type="button"
+      className={`ProfileModal-TopNavBtn ${active === k ? "active" : ""}`}
+      onClick={() => {
+        setActive(k);
+        // 컨텐츠 상단으로 스크롤
+        const panel = document.querySelector(".ProfileModal-Content");
+        if (panel) panel.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+    >
+      {label}
+    </button>
+  );
+
+  const renderSection = () => (
+    <Suspense fallback={Loader}>
+      {active === "base" && (
+        <section className="ProfileModal-Section full fade-in">
+          <h3 className="ProfileModal-SectionTitle">기본정보</h3>
+          <ProfileSettings user={userState} onChange={(updated) => setUserState(updated)} />
+        </section>
+      )}
+      {active === "cert" && (
+        <section className="ProfileModal-Section full fade-in">
+          <h3 className="ProfileModal-SectionTitle">자격증</h3>
+          <Certification buyerId={buyerId} token={token} />
+        </section>
+      )}
+      {active === "recom" && (
+        <section className="ProfileModal-Section full fade-in">
+          <h3 className="ProfileModal-SectionTitle">추천인</h3>
+          <RecommenderForm buyerId={buyerId} token={token} user={userState} onUserChange={(u) => setUserState(u)} />
+        </section>
+      )}
+      {active === "trust" && (
+        <section className="ProfileModal-Section full fade-in">
+          <h3 className="ProfileModal-SectionTitle">신뢰 프로필</h3>
+          <TrustProfile user={userState} onUserChange={(u) => setUserState(u)} buyerId={buyerId} token={token} />
+        </section>
+      )}
+      {active === "score" && (
+        <section className="ProfileModal-Section full fade-in">
+          <h3 className="ProfileModal-SectionTitle">신뢰 점수</h3>
+          <TrustScore buyerId={buyerId} apiBase={process.env.REACT_APP_API_BASE} />
+        </section>
+      )}
+    </Suspense>
+  );
+
   return (
     <div className="ProfileModal-Overlay" role="dialog" aria-modal="true">
       <div className="ProfileModal-Card">
+        {/* 헤더 */}
         <div className="ProfileModal-Header">
           <div className="ProfileModal-Title">내 프로필</div>
-          <button className="ProfileModal-Close" onClick={onClose} aria-label="닫기">
-            ×
-          </button>
+          <button className="ProfileModal-Close" onClick={onClose} aria-label="닫기">×</button>
         </div>
 
+        {/* 상단 요약은 항상 표시 */}
         {loading ? (
           <div className="ProfileModal-Loading">불러오는 중…</div>
-        ) : !user ? (
+        ) : !userState ? (
           <div className="ProfileModal-Empty">프로필 정보를 찾을 수 없습니다.</div>
         ) : (
-          <div className="ProfileModal-Body">
-            {/* ⎯⎯⎯ 상단: 사진 + 이름/성별/나이 ⎯⎯⎯ */}
+          <>
             <section className="ProfileModal-Section full ProfileModal-Top">
               <div className="ProfileModal-Avatar">
                 <img src="/images/youngfarmer_image.png" alt="프로필" />
@@ -39,165 +102,51 @@ export default function ProfileModal({ user, loading, onClose }) {
 
               <div className="ProfileModal-TopInfo">
                 <div className="ProfileModal-Identity">
-                  <div className="ProfileModal-Name">{user.name || "이름 미입력"}</div>
+                  <div className="ProfileModal-Name">{userState.name || "이름 미입력"}</div>
                   <div className="ProfileModal-Tags">
-                    {user.sex && <span className="tag">{user.sex}</span>}
-                    {user.age && <span className="tag">{user.age}세</span>}
+                    {userState.sex && <span className="tag">{userState.sex}</span>}
+                    {userState.age && <span className="tag">{userState.age}세</span>}
                   </div>
                 </div>
 
-                {/* 연락/주소를 가독성 높게 분리 */}
                 <div className="ProfileModal-QuickGrid">
-                  {(user.callNumber || user.mail) && (
+                  {(userState.callNumber || userState.mail) && (
                     <div className="ProfileModal-QuickCard">
                       <div className="quick-title">연락</div>
-                      {user.callNumber && (
-                        <div className="quick-row">
-                          <span className="quick-ico">📞</span>
-                          <span>{user.callNumber}</span>
-                        </div>
+                      {userState.callNumber && (
+                        <div className="quick-row"><span className="quick-ico">📞</span><span>{userState.callNumber}</span></div>
                       )}
-                      {user.mail && (
-                        <div className="quick-row">
-                          <span className="quick-ico">✉️</span>
-                          <span>{user.mail}</span>
-                        </div>
+                      {userState.mail && (
+                        <div className="quick-row"><span className="quick-ico">✉️</span><span>{userState.mail}</span></div>
                       )}
                     </div>
                   )}
-
-                  {user.address && (
+                  {userState.address && (
                     <div className="ProfileModal-QuickCard">
                       <div className="quick-title">주소</div>
-                      <div className="quick-row">
-                        <span className="quick-ico">📍</span>
-                        <span className="quick-address">{user.address}</span>
-                      </div>
+                      <div className="quick-row"><span className="quick-ico">📍</span><span className="quick-address">{userState.address}</span></div>
                     </div>
                   )}
                 </div>
               </div>
             </section>
 
-            {/* 자기소개 */}
-            {(user.detail?.intro?.OneWord ||
-              user.detail?.intro?.PullWord ||
-              user.detail?.intro?.sns ||
-              user.detail?.intro?.video) && (
-              <section className="ProfileModal-Section full">
-                <h4>자기소개</h4>
-                {user.detail?.intro?.OneWord && (
-                  <div className="ProfileModal-Quote">“{user.detail.intro.OneWord}”</div>
-                )}
-                {user.detail?.intro?.PullWord && (
-                  <p className="ProfileModal-Paragraph">{user.detail.intro.PullWord}</p>
-                )}
-                {user.detail?.intro?.sns && (
-                  <div className="ProfileModal-Meta">SNS: {user.detail.intro.sns}</div>
-                )}
-                {user.detail?.intro?.video && (
-                  <a
-                    className="ProfileModal-Link"
-                    href={user.detail.intro.video}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    소개 영상 보러가기 ↗
-                  </a>
-                )}
-              </section>
-            )}
+            {/* 상단 목차 */}
+            <div className="ProfileModal-TopNav" role="navigation" aria-label="프로필 목차">
+              <NavButton k="base"  label="기본정보" />
+              <NavButton k="cert"  label="자격증" />
+              <NavButton k="recom" label="추천인" />
+              <NavButton k="trust" label="신뢰 프로필" />
+              <NavButton k="score" label="신뢰 점수" />
+            </div>
 
-            {/* 칩 섹션 */}
-            <SectionChips
-              title="자격증"
-              list={user.detail?.certificationList || Object.values(user.detail?.certification || {})}
-            />
-            <SectionChips title="수상 경력" list={formatAwards(user)} />
-            <SectionChips
-              title="관심 작물"
-              list={user.detail?.interestList || Object.values(user.detail?.interest || {})}
-            />
-            <SectionChips
-              title="사용 장비"
-              list={user.detail?.equipmentList || Object.values(user.detail?.equipment || {})}
-            />
-
-            {/* 거래 형태 */}
-            {(user.detail?.tradesList?.length || Object.values(user.detail?.trade || {}).length) > 0 && (
-              <section className="ProfileModal-Section">
-                <h4>거래 형태</h4>
-                <div className="ProfileModal-Chips">
-                  {(user.detail?.tradesList?.length
-                    ? user.detail.tradesList
-                    : Object.values(user.detail?.trade || {}))
-                    .filter(Boolean)
-                    .map((t, i) => (
-                      <span className="chip" key={i}>
-                        {t}
-                      </span>
-                    ))}
-                </div>
-                {user.detail?.leasePeriod && (
-                  <div className="ProfileModal-Meta">임대 기간: {user.detail.leasePeriod}</div>
-                )}
-                {user.detail?.otherTrade && (
-                  <div className="ProfileModal-Meta">기타: {user.detail.otherTrade}</div>
-                )}
-              </section>
-            )}
-
-            {/* 추천인 */}
-            {(user.detail?.recommendersList?.length || user.detail?.recommand1) && (
-              <section className="ProfileModal-Section full">
-                <h4>추천인</h4>
-                <div className="ProfileModal-Recommenders">
-                  {(user.detail?.recommendersList?.length
-                    ? user.detail.recommendersList
-                    : [user.detail?.recommand1, user.detail?.recommand2, user.detail?.recommand3].filter(
-                        Boolean
-                      )
-                  ).map((r, i) => (
-                    <div className="recomm-row" key={i}>
-                      <strong>{r.name || r}</strong>
-                      {r.relation && <span> · {r.relation || r.rel}</span>}
-                      {r.phone && <span> · {r.phone}</span>}
-                      {r.mail && <span> · {r.mail}</span>}
-                    </div>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
+            {/* 컨텐츠: 선택된 섹션만 표시 */}
+            <div className="ProfileModal-Content">
+              {renderSection()}
+            </div>
+          </>
         )}
       </div>
     </div>
   );
-}
-
-function SectionChips({ title, list }) {
-  const items = (list || []).filter(Boolean);
-  if (items.length === 0) return null;
-  return (
-    <section className="ProfileModal-Section">
-      <h4>{title}</h4>
-      <div className="ProfileModal-Chips">
-        {items.map((v, i) => (
-          <span className="chip" key={`${title}-${i}`}>
-            {typeof v === "string" ? v : v.title || ""}
-          </span>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function formatAwards(user) {
-  if (user?.detail?.awardsList?.length) {
-    return user.detail.awardsList.map((a) =>
-      [a.title, a.org, a.year].filter(Boolean).join(" / ")
-    );
-  }
-  const win = user?.detail?.win || {};
-  return Object.values(win || {});
 }

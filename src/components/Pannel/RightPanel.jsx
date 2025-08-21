@@ -10,7 +10,7 @@ import { computeMatching } from "../../utils/matching";
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
 const BUYER_ID = 1; // TODO: 로그인 사용자 ID로 교체
 
-function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
+function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }) {
   // -----------------------------
   // State
   // -----------------------------
@@ -65,7 +65,7 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
     }
   }, []);
 
-  // 선택 변경 시 신청목록 갱신 (selected가 없어도 훅은 호출되지만, 내부 fetch는 안전)
+  // 선택 변경 시 신청목록 갱신
   useEffect(() => {
     loadApplied();
   }, [loadApplied, landId]);
@@ -221,8 +221,32 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
   }, [landId, selected]);
 
   // -----------------------------
+  // 채팅 열기 (오버레이)
+  // -----------------------------
+  const canChat = currentStatus === "IN_PROGRESS" && !!landId;
+
+  const handleOpenChat = () => {
+    if (!detail) return;
+    const ownerNameRaw =
+      detail.ownerName ||
+      detail?.landInfo?.owner?.replace(/\s*\([^)]*\)\s*$/, "") ||
+      "판매자";
+    const ownerName = String(ownerNameRaw).replace(/\s*\([^)]*\)\s*$/, ""); // "홍길동 (70)" → "홍길동"
+    const landName = detail.landName || selected?.name || "농지";
+    onOpenChat &&
+      onOpenChat({
+        landId,
+        buyerId: BUYER_ID,
+        landName,
+        ownerName,
+      });
+  };
+
+  // -----------------------------
   // Handlers
   // -----------------------------
+  const isWaiting = currentStatus === "WAITING";
+
   const handleApply = async () => {
     if (!landId) {
       alert("landId를 확인할 수 없습니다.");
@@ -326,7 +350,7 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
             {applying && !isApplied ? "신청 중..." : primaryLabel}
           </button>
 
-          {currentStatus === "WAITING" && (
+          {isWaiting && (
             <button
               className="RightPanel-SecondaryButton danger"
               onClick={handleCancelApply}
@@ -361,7 +385,17 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
         </div>
       )}
 
-      <div className="RightPanel-ImagePlaceholder">사진 자리</div>
+      <div className="RightPanel-ImageContainer">
+        {detail?.image ? (
+          <img
+            src={detail.image}
+            alt={view.name || "농지 사진"}
+            className="RightPanel-Image"
+          />
+        ) : (
+          <div className="RightPanel-ImagePlaceholder">사진이 없습니다</div>
+        )}
+      </div>
 
       <div className="RightPanel-PageNav">
         {pageIndex > 0 ? (
@@ -376,12 +410,25 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite }) {
         )}
 
         {pageIndex < maxPage ? (
-          <button
-            className="RightPanel-PageButton"
-            onClick={() => setPageIndex((prev) => prev + 1)}
-          >
-            다음 ➡
-          </button>
+          <div className="RightPanel-PageRightGroup">
+            <button
+              className="RightPanel-PageButton"
+              onClick={() => setPageIndex((prev) => prev + 1)}
+            >
+              다음 ➡
+            </button>
+
+            {canChat && (
+              <button
+                className="RightPanel-PageButton"
+                onClick={handleOpenChat}
+                title="채팅으로 이동"
+                style={{ marginLeft: 8 }}
+              >
+                💬 채팅
+              </button>
+            )}
+          </div>
         ) : (
           <div />
         )}
