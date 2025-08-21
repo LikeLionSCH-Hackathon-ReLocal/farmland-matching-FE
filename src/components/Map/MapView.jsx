@@ -1,6 +1,6 @@
 // src/components/MapView.jsx
 import { useEffect, useRef, useState, useCallback } from "react";
-import useKakaoLoader from "../../lib/useKakaoLoader" // 경로 맞춰주세요
+import useKakaoLoader from "../../lib/useKakaoLoader" 
 import { useMarkerManager } from "../Hooks/useMakerManager";
 
 function MapView({ farmlands, onSelect, onMapLoad, selectedFarm }) {

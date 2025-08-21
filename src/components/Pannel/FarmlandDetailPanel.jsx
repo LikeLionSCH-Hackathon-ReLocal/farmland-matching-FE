@@ -2,6 +2,39 @@
 import { useRef, useEffect } from "react";
 import "./FarmlandDetailPanel.css";
 
+// Boolean 값 → UI 문자열 매핑
+function labelForBoolean(field, value) {
+  if (value === null || value === undefined) return "미입력";
+
+  // 이미 문자열(예: "있음", "없음", "인접", "비인접", "가능", "불가")로 오는 경우 그대로 사용
+  if (typeof value === "string") return value;
+
+  // Boolean → 레이블
+  switch (field) {
+    // "있음 / 없음"
+    case "landWater":
+    case "landElec":
+    case "landStorage":
+    case "landHouse":
+    case "landFence":
+    case "landWellRoad": // 포장도로
+      return value ? "있음" : "없음";
+
+    // "가능 / 불가"
+    case "landMachine":
+    case "landCar":
+      return value ? "가능" : "불가";
+
+    // "인접 / 비인접"
+    case "landRoad":
+    case "landBus":
+      return value ? "인접" : "비인접";
+
+    default:
+      return String(value);
+  }
+}
+
 function Labeled({ label, children }) {
   return (
     <div className="FDP-field">
@@ -32,7 +65,13 @@ function FarmlandDetailPanel({ data, onClose }) {
     if (!el) return;
 
     const onMouseDown = (e) => {
-      pos.current = { ...pos.current, x: e.clientX, y: e.clientY, dx: el.offsetLeft, dy: el.offsetTop };
+      pos.current = {
+        ...pos.current,
+        x: e.clientX,
+        y: e.clientY,
+        dx: el.offsetLeft,
+        dy: el.offsetTop,
+      };
       document.addEventListener("mousemove", onMouseMove);
       document.addEventListener("mouseup", onMouseUp);
     };
@@ -101,7 +140,12 @@ function FarmlandDetailPanel({ data, onClose }) {
           <div className="FarmlandDetailPanel-Buttons">
             <button className="FarmlandDetailPanel-Button">⭐ 즐겨찾기</button>
             <button className="FarmlandDetailPanel-Button">📃 신청하기</button>
-            <button className="FarmlandDetailPanel-CloseButton" onClick={onClose}>✕</button>
+            <button
+              className="FarmlandDetailPanel-CloseButton"
+              onClick={onClose}
+            >
+              ✕
+            </button>
           </div>
         </div>
 
@@ -122,7 +166,11 @@ function FarmlandDetailPanel({ data, onClose }) {
             <Labeled label="지번 주소">{be.landAddress}</Labeled>
             <Labeled label="지번">{be.landNumber}</Labeled>
             <Labeled label="작물">{be.landCrop}</Labeled>
-            <Labeled label="면적">{be.landArea != null ? formatArea(be.landArea) : landInfo.areaHectare}</Labeled>
+            <Labeled label="면적">
+              {be.landArea != null
+                ? formatArea(be.landArea)
+                : landInfo.areaHectare}
+            </Labeled>
             <Labeled label="토양">{be.soiltype}</Labeled>
             <Labeled label="수자원">{be.waterSource}</Labeled>
             <Labeled label="위도">{formatCoord(be.landLat)}</Labeled>
@@ -138,7 +186,9 @@ function FarmlandDetailPanel({ data, onClose }) {
             <Labeled label="나이">{be.ownerAge}</Labeled>
             <Labeled label="주소">{be.ownerAddress}</Labeled>
             {/* landInfo.owner(이름(나이))가 있으면 보조로 표기 */}
-            {landInfo.owner && <Labeled label="표시명">{landInfo.owner}</Labeled>}
+            {landInfo.owner && (
+              <Labeled label="표시명">{landInfo.owner}</Labeled>
+            )}
           </div>
         </section>
 
@@ -146,12 +196,24 @@ function FarmlandDetailPanel({ data, onClose }) {
         <section className="FarmlandDetailPanel-Section">
           <h3>🧰 설비</h3>
           <div className="FDP-grid">
-            <Labeled label="용수">{be.landWater}</Labeled>
-            <Labeled label="전기">{be.landElec}</Labeled>
-            <Labeled label="농기계">{be.landMachine}</Labeled>
-            <Labeled label="창고">{be.landStorage}</Labeled>
-            <Labeled label="주택">{be.landHouse}</Labeled>
-            <Labeled label="울타리">{be.landFence}</Labeled>
+            <Labeled label="용수">
+              {labelForBoolean("landWater", be.landWater)}
+            </Labeled>
+            <Labeled label="전기">
+              {labelForBoolean("landElec", be.landElec)}
+            </Labeled>
+            <Labeled label="농기계">
+              {labelForBoolean("landMachine", be.landMachine)}
+            </Labeled>
+            <Labeled label="창고">
+              {labelForBoolean("landStorage", be.landStorage)}
+            </Labeled>
+            <Labeled label="주택">
+              {labelForBoolean("landHouse", be.landHouse)}
+            </Labeled>
+            <Labeled label="울타리">
+              {labelForBoolean("landFence", be.landFence)}
+            </Labeled>
           </div>
         </section>
 
@@ -159,10 +221,18 @@ function FarmlandDetailPanel({ data, onClose }) {
         <section className="FarmlandDetailPanel-Section">
           <h3>🛣 접근성</h3>
           <div className="FDP-grid">
-            <Labeled label="도로 접함">{be.landRoad}</Labeled>
-            <Labeled label="진입로 상태">{be.landWellRoad}</Labeled>
-            <Labeled label="대중교통">{be.landBus}</Labeled>
-            <Labeled label="차량 접근">{be.landCar}</Labeled>
+            <Labeled label="도로 접함">
+              {labelForBoolean("landRoad", be.landRoad)}
+            </Labeled>
+            <Labeled label="진입로 상태">
+              {labelForBoolean("landWellRoad", be.landWellRoad)}
+            </Labeled>
+            <Labeled label="대중교통">
+              {labelForBoolean("landBus", be.landBus)}
+            </Labeled>
+            <Labeled label="차량 접근">
+              {labelForBoolean("landCar", be.landCar)}
+            </Labeled>
           </div>
         </section>
 
@@ -172,7 +242,11 @@ function FarmlandDetailPanel({ data, onClose }) {
           <div className="FDP-grid">
             <Labeled label="거래 형태">{be.landTrade}</Labeled>
             <Labeled label="매칭 상태">{be.landMatch}</Labeled>
-            <Labeled label="가격">{be.landPrice != null ? `${be.landPrice.toLocaleString()} 원` : "-"}</Labeled>
+            <Labeled label="가격">
+              {be.landPrice != null
+                ? `${be.landPrice.toLocaleString()} 원`
+                : "-"}
+            </Labeled>
             <Labeled label="가능 시기">{be.landWhen}</Labeled>
             <Labeled label="양도/거래 사유">{be.landWhy}</Labeled>
           </div>
@@ -182,7 +256,8 @@ function FarmlandDetailPanel({ data, onClose }) {
         <section className="FarmlandDetailPanel-Section">
           <h3>👵 판매자 멘트</h3>
           <blockquote className="FDP-quote">
-            "{be.landComent || data?.sellerComment || "판매자 멘트가 없습니다."}"
+            "{be.landComent || data?.sellerComment || "판매자 멘트가 없습니다."}
+            "
           </blockquote>
         </section>
 
@@ -207,7 +282,9 @@ function FarmlandDetailPanel({ data, onClose }) {
             <h3>🤝 신뢰 매칭 현황</h3>
             <div className="FDP-grid">
               <Labeled label="상태">{data.trustMatch.status}</Labeled>
-              <Labeled label="대기 중 청년">{data.trustMatch.waitingYouth}명</Labeled>
+              <Labeled label="대기 중 청년">
+                {data.trustMatch.waitingYouth}명
+              </Labeled>
               <div className="FDP-col-span-2">
                 <div className="FDP-label">희망 조건</div>
                 <ul className="FDP-list">
