@@ -73,42 +73,49 @@ function ProfileSettings({ user, onChange }) {
   };
 
   // 🔁 주소가 바뀔 때마다 자동 디바운스 지오코딩 (버튼 불필요)
+  // 🔁 주소 자동 지오코딩 useEffect 수정 부분만 보여줍니다.
   useEffect(() => {
     if (!kakaoReady) return;
+    if (!window.kakao?.maps?.services) {
+      console.warn("[Geo] Kakao services 미준비 상태. SDK 재시도 대기");
+      return;
+    }
 
     const addr = (form.address || "").trim();
-    // 너무 짧은 문자열은 스킵
     if (addr.length < 5) return;
 
-    // 이미 같은 주소로 지오코딩했고 좌표도 있으면 스킵
     if (
       lastGeocodedAddressRef.current === addr &&
       form.buyerLat &&
       form.buyerLng
-    ) {
+    )
       return;
-    }
 
-    // 디바운스
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       try {
-        const { kakao } = window;
-        const geocoder = new kakao.maps.services.Geocoder();
+        const geocoder = new window.kakao.maps.services.Geocoder();
         geocoder.addressSearch(addr, function (result, status) {
-          if (status === kakao.maps.services.Status.OK && result?.length) {
-            const { x, y } = result[0]; // x=lng, y=lat
+          if (
+            status === window.kakao.maps.services.Status.OK &&
+            result?.length
+          ) {
+            const { x, y } = result[0];
             setForm((p) => ({ ...p, buyerLat: y, buyerLng: x }));
             lastGeocodedAddressRef.current = addr;
           } else {
-            // 찾지 못해도 조용히 스킵 (필요하면 alert로 바꿔도 됨)
-            console.warn("[Geo] 주소로 좌표를 찾지 못했습니다:", addr);
+            console.warn(
+              "[Geo] 주소로 좌표를 찾지 못했습니다:",
+              addr,
+              status,
+              result
+            );
           }
         });
       } catch (e) {
-        console.error("[Geo] 지오코딩 오류:", e);
+        console.error("[Geo] 지오코딩 오류(services 확인 필요):", e);
       }
-    }, 700); // 입력 멈춘 뒤 700ms 후 실행
+    }, 700);
 
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -127,10 +134,12 @@ function ProfileSettings({ user, onChange }) {
     const latNum = form.buyerLat === "" ? undefined : parseFloat(form.buyerLat);
     const lngNum = form.buyerLng === "" ? undefined : parseFloat(form.buyerLng);
     if (form.buyerLat !== "" && Number.isNaN(latNum)) {
-      alert("위도 형식이 올바르지 않습니다."); return;
+      alert("위도 형식이 올바르지 않습니다.");
+      return;
     }
     if (form.buyerLng !== "" && Number.isNaN(lngNum)) {
-      alert("경도 형식이 올바르지 않습니다."); return;
+      alert("경도 형식이 올바르지 않습니다.");
+      return;
     }
 
     const updated = { ...user, ...form, buyerLat: latNum, buyerLng: lngNum };
