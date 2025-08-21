@@ -80,7 +80,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
     return (
       <div className="Sell-detail">
         <h2>{selectedFarm.landName} 상세보기</h2>
-        <p>주소: {selectedFarm.landArress}</p>
+        <p>주소: {selectedFarm.landAddress}</p>
         <p>작물: {selectedFarm.landCrop}</p>
         <p>등록일: {selectedFarm.landRegisterDate}</p>
         <p>매칭 상태: {statusLabel(selectedFarm.matchStatus)}</p>
@@ -111,8 +111,8 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
                 <label>농장명</label>
                 <span>{farm.landName}</span>
                 <label>주소</label>
-                {/* 백엔드 필드가 landArress(오타)로 오므로 그대로 사용 */}
-                <span>{farm.landArress}</span>
+                {/* 백엔드 필드가 landAddress(오타)로 오므로 그대로 사용 */}
+                <span>{farm.landAddress}</span>
               </div>
 
               <div className="Sell-info-row horizontal">

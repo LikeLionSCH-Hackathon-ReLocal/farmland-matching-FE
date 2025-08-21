@@ -79,6 +79,35 @@ const MATCH_LABEL = {
 function labelForMatchStatus(s) {
   return MATCH_LABEL[s] || s || "상태 미정";
 }
+
+// Boolean 값 → UI 문자열 매핑
+function labelForBoolean(field, value) {
+  if (value === null || value === undefined) return "미입력";
+
+  switch (field) {
+    case "landElec":
+    case "landStorage":
+    case "landHouse":
+    case "landFence":
+    case "landWellRoad": // 포장도로
+      return value ? "있음" : "없음";
+
+    case "landMachine":
+    case "landCar":
+      return value ? "가능" : "불가";
+
+    case "landRoad":
+    case "landBus":
+      return value ? "인접" : "비인접";
+
+    case "landWater":
+      return value ? "있음" : "없음";
+
+    default:
+      return String(value);
+  }
+}
+
 function classForMatchStatus(s) {
   // CSS에서 .ApplicantBadge.WAITING / .IN_PROGRESS / .REJECTED 를 정의해두면 색이 바뀝니다.
   return `ApplicantBadge ${s || MATCH.WAITING}`;
@@ -151,8 +180,8 @@ function mapListItem(item, idx) {
       "주소 미입력",
     crop: item?.landCrop ?? item?.crop ?? "작물 미입력",
     area: item?.landArea ?? item?.areaSquare ?? item?.area ?? "?",
-    areaHa: item?.landAreaha ?? "?",              // ✅ 추가 (ha)
-    registerDate: item?.landRegisterDate ?? "-",  // ✅ 추가 (등록일)
+    areaHa: item?.landAreaha ?? "?", // ✅ 추가 (ha)
+    registerDate: item?.landRegisterDate ?? "-", // ✅ 추가 (등록일)
     status: item?.status ?? "등록 완료",
   };
   dgroup(`🧭 mapListItem(${idx})`, () => {
@@ -174,8 +203,8 @@ function mapDetailItem(item) {
       "주소 미입력",
     crop: item?.landCrop ?? item?.crop ?? "작물 미입력",
     area: item?.landArea ?? item?.areaSquare ?? item?.area ?? "?",
-    areaHa: item?.landAreaha ?? "?",              // ✅ 추가 (ha)
-    registerDate: item?.landRegisterDate ?? "-",  // ✅ 추가 (등록일)
+    areaHa: item?.landAreaha ?? "?", // ✅ 추가 (ha)
+    registerDate: item?.landRegisterDate ?? "-", // ✅ 추가 (등록일)
     status: item?.status ?? "등록 완료",
     raw: { ...item },
   };
@@ -853,12 +882,21 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
           <LabeledRow label="경도" value={r.landLng} />
           <LabeledRow label="작물" value={r.landCrop} />
           {/* ✅ 면적 분리 출력: ㎡ / ha */}
-          <LabeledRow label="면적(㎡)" value={r.landArea ?? selectedLand?.area} />
-          <LabeledRow label="면적(ha)" value={r.landAreaha ?? selectedLand?.areaHa} />
+          <LabeledRow
+            label="면적(㎡)"
+            value={r.landArea ?? selectedLand?.area}
+          />
+          <LabeledRow
+            label="면적(ha)"
+            value={r.landAreaha ?? selectedLand?.areaHa}
+          />
           <LabeledRow label="토양" value={r.soiltype} />
           <LabeledRow label="용수" value={r.waterSource} />
           {/* ✅ 등록일 */}
-          <LabeledRow label="등록일" value={r.landRegisterDate ?? selectedLand?.registerDate} />
+          <LabeledRow
+            label="등록일"
+            value={r.landRegisterDate ?? selectedLand?.registerDate}
+          />
         </>
       ),
     },
@@ -876,12 +914,30 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       title: "시설/설비 상태",
       content: (
         <>
-          <LabeledRow label="농업용수" value={r.landWater} />
-          <LabeledRow label="전기" value={r.landElec} />
-          <LabeledRow label="농기계 접근" value={r.landMachine} />
-          <LabeledRow label="창고" value={r.landStorage} />
-          <LabeledRow label="비닐하우스" value={r.landHouse} />
-          <LabeledRow label="울타리" value={r.landFence} />
+          <LabeledRow
+            label="농업용수"
+            value={labelForBoolean("landWater", r.landWater)}
+          />
+          <LabeledRow
+            label="전기"
+            value={labelForBoolean("landElec", r.landElec)}
+          />
+          <LabeledRow
+            label="농기계 접근"
+            value={labelForBoolean("landMachine", r.landMachine)}
+          />
+          <LabeledRow
+            label="창고"
+            value={labelForBoolean("landStorage", r.landStorage)}
+          />
+          <LabeledRow
+            label="비닐하우스"
+            value={labelForBoolean("landHouse", r.landHouse)}
+          />
+          <LabeledRow
+            label="울타리"
+            value={labelForBoolean("landFence", r.landFence)}
+          />
         </>
       ),
     },
@@ -889,13 +945,26 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
       title: "접근성/교통",
       content: (
         <>
-          <LabeledRow label="도로 인접" value={r.landRoad} />
-          <LabeledRow label="포장도로" value={r.landWellRoad} />
-          <LabeledRow label="대중교통" value={r.landBus} />
-          <LabeledRow label="차량 진입" value={r.landCar} />
+          <LabeledRow
+            label="도로 인접"
+            value={labelForBoolean("landRoad", r.landRoad)}
+          />
+          <LabeledRow
+            label="포장도로"
+            value={labelForBoolean("landWellRoad", r.landWellRoad)}
+          />
+          <LabeledRow
+            label="대중교통"
+            value={labelForBoolean("landBus", r.landBus)}
+          />
+          <LabeledRow
+            label="차량 진입"
+            value={labelForBoolean("landCar", r.landCar)}
+          />
         </>
       ),
     },
+
     {
       title: "거래 정보",
       content: (
@@ -955,7 +1024,10 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
               <div className="MyRegisteredLand-LandDetails">
                 {/* 📐 ㎡ / ha 동시 표시 (ha 값이 유효할 때만 뒤에 붙임) */}
                 📍 {land.location} | 🌱 {land.crop} | 📐 {land.area}㎡
-                {land.areaHa !== "?" && land.areaHa !== "" && land.areaHa !== null && land.areaHa !== undefined
+                {land.areaHa !== "?" &&
+                land.areaHa !== "" &&
+                land.areaHa !== null &&
+                land.areaHa !== undefined
                   ? ` / ${land.areaHa}ha`
                   : ""}
               </div>

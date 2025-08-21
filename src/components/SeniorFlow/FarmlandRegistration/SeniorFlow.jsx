@@ -47,8 +47,8 @@ function SeniorFlow({ onSubmit }) {
     lng: "",
 
     crop: "",
-    areaSquare: "",   // ㎡
-    areaHectare: "",  // ha
+    areaSquare: "", // ㎡
+    areaHectare: "", // ha
 
     soilType: "",
     waterSource: "",
@@ -165,7 +165,27 @@ function SeniorFlow({ onSubmit }) {
   const REQUIRED_FIELDS = ["landName", "address", "landNumber", "crop"];
 
   function normalizeValueForServer(k, v) {
-    // 숫자/불린을 문자열로만 보내면 서버에서 파싱 못하는 경우 대비
+    // 불린 처리 대상
+    const booleanKeys = {
+      hasElectricity: { trueValues: ["있음"], falseValues: ["없음"] },
+      hasWater: { trueValues: ["있음"], falseValues: ["없음"] },
+      machineAccess: { trueValues: ["가능"], falseValues: ["불가"] },
+      hasWarehouse: { trueValues: ["있음"], falseValues: ["없음"] },
+      hasGreenhouse: { trueValues: ["있음"], falseValues: ["없음"] },
+      hasFence: { trueValues: ["있음"], falseValues: ["없음"] },
+      nearRoad: { trueValues: ["인접"], falseValues: ["비인접"] },
+      pavedRoad: { trueValues: ["있음"], falseValues: ["없음"] },
+      publicTransit: { trueValues: ["인접"], falseValues: ["비인접"] },
+      carAccess: { trueValues: ["가능"], falseValues: ["불가"] },
+    };
+
+    if (booleanKeys[k]) {
+      if (booleanKeys[k].trueValues.includes(v)) return "true";
+      if (booleanKeys[k].falseValues.includes(v)) return "false";
+      return ""; // 선택 안된 경우
+    }
+
+    // 숫자 필드 처리
     if (
       [
         "ownerAge",
@@ -178,10 +198,9 @@ function SeniorFlow({ onSubmit }) {
     ) {
       const num = String(v ?? "").trim();
       if (num && !isNaN(Number(num))) return String(Number(num));
-      if (num === "") return "";
-      dwarn(`🔢 숫자 필드인데 숫자로 파싱 불가: ${k}='${v}'`);
-      return String(v ?? "");
+      return "";
     }
+
     return String(v ?? "");
   }
 
@@ -309,7 +328,10 @@ function SeniorFlow({ onSubmit }) {
 
     // 2) ✅ 면적 필드 개별 전송(㎡ ↔ landArea, ha ↔ landAreaha)
     if (String(data.areaSquare || "").trim().length > 0) {
-      fd.append("landArea", normalizeValueForServer("landArea", data.areaSquare));
+      fd.append(
+        "landArea",
+        normalizeValueForServer("landArea", data.areaSquare)
+      );
     }
     if (String(data.areaHectare || "").trim().length > 0) {
       fd.append(

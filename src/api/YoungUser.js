@@ -1,18 +1,17 @@
+// src/api/YoungUser.js
 const BASE = "http://localhost:8080";
 
-// 1) 따옴표/공백 정리 유틸
+// 따옴표/공백 정리
 function unquote(val) {
   if (val == null) return "";
   const s = String(val).trim();
-  // 앞뒤에 큰따옴표 한 겹만 싸여 있으면 벗겨주기
   if (s.length >= 2 && s.startsWith('"') && s.endsWith('"')) {
     return s.slice(1, -1).trim();
   }
-  // 백엔드가 \"...\" 형태로 보낼 수도 있으니 역슬래시 제거
   return s.replace(/\\"/g, '"').trim();
 }
 
-/** 서버 → UI 매핑 */
+// 서버 → UI 매핑
 function mapToUiProfile(apiObj = {}) {
   return {
     id: apiObj.id ?? "",
@@ -21,28 +20,29 @@ function mapToUiProfile(apiObj = {}) {
     sex: unquote(apiObj.buyerGender),
     mail: unquote(apiObj.buyerEmail),
     callNumber: unquote(apiObj.buyerNumber),
-    // ✅ 이미지 키 정합: buyerImageURL 우선, 없으면 buyerImage
     profileImage:
-      apiObj.buyerImageURL ||
-      apiObj.buyerImage ||
-      "/images/default_profile.png",
+      apiObj.buyerImageURL || apiObj.buyerImage || "/images/default_profile.png",
     address: unquote(apiObj.buyerAddress),
+
+    // ⬇️ 좌표 매핑 (백엔드 필드명 buyerLat / buyerLng)
+    buyerLat: apiObj.buyerLat ?? null,
+    buyerLng: apiObj.buyerLng ?? null,
   };
 }
 
-/** 공통 fetch */
+// 공통 fetch
 async function request(url, options = {}) {
   const res = await fetch(url, options);
   if (!res.ok) throw new Error(`${options.method || "GET"} ${url} → ${res.status}`);
   return res.status === 204 ? null : res.json();
 }
 
-/** GET: 구매자 기본 정보 불러오기 */
+// GET: 구매자 기본 정보
 export async function getYoungUserData() {
   try {
     const data = await request(`${BASE}/buyer/1`, {
       method: "GET",
-      headers: { "Accept": "application/json" },
+      headers: { Accept: "application/json" },
     });
     const obj = Array.isArray(data) ? data[0] : data;
     return [mapToUiProfile(obj || {})];
@@ -52,7 +52,7 @@ export async function getYoungUserData() {
   }
 }
 
-/** POST/PUT: 구매자 정보 저장 (form-data 방식) */
+// POST/PUT: 구매자 정보 저장 (form-data)
 export async function saveYoungUserData(user, { method = "POST" } = {}) {
   try {
     const formData = new FormData();
@@ -63,15 +63,19 @@ export async function saveYoungUserData(user, { method = "POST" } = {}) {
     formData.append("buyerAddress", user.address || "");
     formData.append("buyerNumber", user.callNumber || "");
     formData.append("buyerEmail", user.mail || "");
-    // 파일이 새로 업로드된 경우만 append
+
+    // ⬇️ 좌표 전송
+    if (user.buyerLat != null && user.buyerLat !== "")
+      formData.append("buyerLat", String(user.buyerLat));
+    if (user.buyerLng != null && user.buyerLng !== "")
+      formData.append("buyerLng", String(user.buyerLng));
+
+    // 프로필 이미지 파일이 새로 업로드된 경우만 append
     if (user.profileImage instanceof File) {
       formData.append("buyerImage", user.profileImage);
     }
 
-    await fetch(`${BASE}/buyer-upload`, {
-      method,
-      body: formData,
-    });
+    await fetch(`${BASE}/buyer-upload`, { method, body: formData });
     return true;
   } catch (e) {
     console.error("❌ saveYoungUserData 실패:", e);

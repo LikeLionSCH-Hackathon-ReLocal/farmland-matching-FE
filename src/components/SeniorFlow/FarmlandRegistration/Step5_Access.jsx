@@ -35,9 +35,8 @@ function Step5_Access({ data, updateData, onNext, onBack }) {
         onChange={(e) => updateData("publicTransit", e.target.value)}
       >
         <option value="">선택</option>
-        <option value="좋음">좋음</option>
-        <option value="보통">보통</option>
-        <option value="나쁨">나쁨</option>
+        <option value="인접">인접</option>
+        <option value="비인접">비인접</option>
       </select>
 
       <label>차량 진입</label>

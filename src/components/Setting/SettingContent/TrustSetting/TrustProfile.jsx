@@ -11,6 +11,10 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
   const [leasePeriod, setLeasePeriod] = useState("");
   const [otherTrade, setOtherTrade] = useState("");
 
+  // ✅ 예산(만원) / 거래기간(예: 1년 내)
+  const [budget, setBudget] = useState("");         // 문자열로 보관(입력 제어), 저장 시 숫자 변환
+  const [wantPeriod, setWantPeriod] = useState(""); // “1년 내” 등
+
   // 수상경력
   const [awards, setAwards] = useState([]); // [{ title, org, year }]
 
@@ -38,27 +42,34 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
       setLoading(true);
       try {
         const data = await getBuyerTrustProfile(buyerId, { token });
-        // 데이터가 없을 수 있음(최초 등록 전)
         if (!mounted || !data) return;
 
         // ---- 백엔드 스키마 매핑 ----
-        // awards: List<String> -> [{title}]
         const awardsList = Array.isArray(data.awards) ? data.awards : [];
-        // experience: String -> hasExp/years/desc 추정 복원
-        // (형식이 자유라 정확 복원 불가: 간단 규칙 사용)
+
+        // 경험 문자열 복원(라이트 규칙)
         const expStr = (data.experience || "").trim();
         const expHas = expStr ? !/없음|무|no/i.test(expStr) : false;
         const yearsMatch = expStr.match(/(\d+)\s*년/);
         const expYearsGuess = yearsMatch ? `${yearsMatch[1]}년` : "";
-        const descGuess = expStr.replace(/경력\s*O|경력\s*있음|경력\s*X|경력\s*없음/gi, "")
-                                .replace(/\d+\s*년/gi, "")
-                                .replace(/[,\s]+/g, " ").trim();
+        const descGuess = expStr
+          .replace(/경력\s*O|경력\s*있음|경력\s*X|경력\s*없음/gi, "")
+          .replace(/\d+\s*년/gi, "")
+          .replace(/[,\s]+/g, " ")
+          .trim();
 
         setCrops(Array.isArray(data.interestCrop) ? data.interestCrop : []);
         setTools(Array.isArray(data.equipment) ? data.equipment : []);
         setTrades(Array.isArray(data.wantTrade) ? data.wantTrade : []);
         setLeasePeriod(data.rentPeriod || "");
         setOtherTrade(data.other || "");
+
+        // ✅ 예산/거래기간 로드
+        // budget은 숫자일 수 있으니 문자열로 변환해서 입력창에 표시
+        setBudget(
+          data.budget === 0 || data.budget ? String(data.budget) : ""
+        );
+        setWantPeriod(data.wantPeriod || "");
 
         setAwards(awardsList.map((t) => ({ title: t || "" })));
 
@@ -81,11 +92,9 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
     return () => { mounted = false; };
   }, [buyerId, token]);
 
-  // (기존 user 기반 초기화도 유지하고 싶다면 여기에 병합 로직 추가 가능)
   useEffect(() => {
     if (!user) return;
-    // user.detail 기반 보정(선택)
-    // ...필요 시 기존 로딩 값과 병합
+    // user.detail 기반 보정이 필요하면 여기서 병합
   }, [user]);
 
   // 유틸
@@ -100,22 +109,26 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
   const changeAward = (idx, field, value) =>
     setAwards((prev) => { const next = [...prev]; next[idx] = { ...next[idx], [field]: value }; return next; });
 
+  // 예산(만원) 입력: 숫자만 허용
+  const handleBudgetChange = (e) => {
+    const onlyDigits = e.target.value.replace(/[^\d]/g, "");
+    setBudget(onlyDigits);
+  };
+
   const canSave = useMemo(() => {
-    return (
+    const hasAwards = awards.some((a) => a.title?.trim() || a.org?.trim() || a.year?.trim());
+    const hasIntro = oneLine.trim() || intro.trim() || videoUrl.trim() || sns.trim() || personal.trim();
+    const hasBasics =
       crops.some((v) => v?.trim()) ||
       tools.some((v) => v?.trim()) ||
       trades.length > 0 ||
-      awards.some((a) => a.title?.trim() || a.org?.trim() || a.year?.trim()) ||
-      oneLine.trim() ||
-      intro.trim() ||
-      videoUrl.trim() ||
-      sns.trim() ||
-      personal.trim() ||
-      hasExp ||
-      (!!expYears?.trim()) ||
-      (!!expDesc?.trim())
-    );
-  }, [crops, tools, trades, awards, oneLine, intro, videoUrl, sns, personal, hasExp, expYears, expDesc]);
+      hasAwards ||
+      hasIntro ||
+      hasExp || !!expYears?.trim() || !!expDesc?.trim();
+
+    // ✅ budget/wantPeriod도 저장 허용 조건에 포함
+    return hasBasics || !!budget || !!wantPeriod?.trim() || !!leasePeriod?.trim() || !!otherTrade?.trim();
+  }, [crops, tools, trades, awards, oneLine, intro, videoUrl, sns, personal, hasExp, expYears, expDesc, budget, wantPeriod, leasePeriod, otherTrade]);
 
   // 🔹 저장(등록/수정 동일)
   const onSave = async () => {
@@ -126,19 +139,19 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
       }
       setSaving(true);
 
-      // awards: [{title}] -> List<String>
       const awardsPayload = awards
         .map((a) => (a?.title || "").trim())
         .filter(Boolean);
 
-      // experience: 단일 문자열로 변환(백엔드 스키마)
       const expStr = hasExp
         ? `경력 O${expYears ? `, ${expYears.trim()}` : ""}${expDesc ? `, ${expDesc.trim()}` : ""}`
         : "경력 없음";
 
+      // ✅ budget은 숫자 또는 null
+      const budgetNumber = budget ? Number(budget) : null;
+
       // 백엔드 TrustProfile 스키마에 맞춘 payload
       const payload = {
-        // trustId: 생략(서버 자동)
         awards: awardsPayload,
         experience: expStr,
         interestCrop: crops.filter((v) => !!v?.trim()),
@@ -151,8 +164,9 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
         videoURL: videoUrl.trim(),
         sns: sns.trim(),
         personal: personal.trim(),
-        // trustScore: 서버 계산/관리라면 생략, 프론트 계산 시 문자열로 넣어도 됨
-        // buyerTrustProfile: 관계 필드. 보통 payload에 포함하지 않음(서버가 buyerId로 연결)
+        // ✅ 신규 필드
+        budget: budgetNumber,         // 만원 단위 숫자
+        wantPeriod: (wantPeriod || "").trim(), // "1년 내" 등
       };
 
       const result = await saveBuyerTrustProfile(buyerId, payload, { token });
@@ -167,7 +181,7 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
           tradesList: payload.wantTrade,
           leasePeriod: payload.rentPeriod,
           otherTrade: payload.other,
-          awardsList: awardsPayload.map((t) => ({ title: t })), // 기존 UI 호환
+          awardsList: awardsPayload.map((t) => ({ title: t })),
           intro: {
             ...(user?.detail?.intro || {}),
             OneWord: payload.oneIntroduction,
@@ -176,6 +190,9 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
             sns: payload.sns,
             personal: payload.personal,
           },
+          // ✅ 프론트 보조 보관
+          budget: budgetNumber,
+          wantPeriod: payload.wantPeriod,
           // 경험은 프론트 구조대로 유지
           experience: { has: hasExp, years: expYears, desc: expDesc },
         },
@@ -195,7 +212,7 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
     <div className="TrustProfile-Container">
       <div className="TrustProfile-Header">
         <h2>신뢰 프로필</h2>
-        <p>관심 작물 / 사용 장비 / 거래 형태 / 수상 경력 / 소개 · 영상 · SNS · 성향 / 농업 경험</p>
+        <p>관심 작물 / 사용 장비 / 거래 형태 / 예산 · 거래기간 / 수상 경력 / 소개 · 영상 · SNS · 성향 / 농업 경험</p>
         {loading && <div className="TrustProfile-Loading">불러오는 중...</div>}
       </div>
 
@@ -277,6 +294,51 @@ export default function TrustProfile({ user, onUserChange, buyerId = 1, token })
               className="TrustProfile-Input TrustProfile-mt8"
             />
           )}
+        </section>
+
+        {/* ✅ 예산 · 거래기간 */}
+        <section className="TrustProfile-Card">
+          <h3>예산 · 거래기간</h3>
+
+          <div className="TrustProfile-Row">
+            <label className="TrustProfile-Label">예산</label>
+            <div className="TrustProfile-InputWrap" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <input
+                className="TrustProfile-Input"
+                inputMode="numeric"
+                placeholder="예: 5000"
+                value={budget}
+                onChange={handleBudgetChange}
+                aria-label="예산(만원)"
+              />
+              <span style={{ whiteSpace: "nowrap" }}>만원</span>
+            </div>
+          </div>
+
+          <div className="TrustProfile-Row">
+            <label className="TrustProfile-Label">거래기간</label>
+            <div className="TrustProfile-InputWrap" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {["6개월 내", "1년 내", "2년 내", "3년 내"].map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={`TrustProfile-TagButton ${wantPeriod === opt ? "selected" : ""}`}
+                    onClick={() => setWantPeriod(opt)}
+                  >
+                    {opt}
+                  </button>
+                ))}
+              </div>
+              <input
+                className="TrustProfile-Input"
+                placeholder='직접 입력 (예: "18개월 내", "1년 반 내")'
+                value={wantPeriod}
+                onChange={(e) => setWantPeriod(e.target.value)}
+                aria-label="거래기간(예: 1년 내)"
+              />
+            </div>
+          </div>
         </section>
 
         {/* 수상 경력 */}
