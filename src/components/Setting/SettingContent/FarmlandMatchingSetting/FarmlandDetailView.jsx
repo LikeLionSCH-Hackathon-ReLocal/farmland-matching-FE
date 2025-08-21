@@ -1,129 +1,222 @@
-import React, { useEffect, useMemo } from "react";
+// src/components/Setting/SettingContent/FarmlandMatchingSetting/FarmlandDetailView.jsx
+import React, { useEffect, useState } from "react";
 import "./FarmlandDetailView.css";
 
-export default function FarmlandDetailView({ farm, onClose }) {
-  // 1) 훅은 항상 최상단에서 호출
+// Panel과 동일한 Boolean → 라벨 변환
+function labelForBoolean(field, value) {
+  if (value === null || value === undefined) return "미입력";
+  if (typeof value === "string") return value;
+  switch (field) {
+    case "landWater":
+    case "landElec":
+    case "landStorage":
+    case "landHouse":
+    case "landFence":
+    case "landWellRoad":
+      return value ? "있음" : "없음";
+    case "landMachine":
+    case "landCar":
+      return value ? "가능" : "불가";
+    case "landRoad":
+    case "landBus":
+      return value ? "인접" : "비인접";
+    default:
+      return String(value);
+  }
+}
+
+function formatArea(area) {
+  if (area == null || isNaN(area)) return "-";
+  const ha = (area / 10000).toFixed(2);
+  return `${Number(area).toLocaleString()} ㎡ (${ha} ha)`;
+}
+function formatCoord(x) {
+  if (x == null || isNaN(x)) return "-";
+  return String(Number(x).toFixed(6));
+}
+
+export default function FarmlandDetailView({
+  landId,                         // ✅ Sell.jsx에서 전달
+  apiBase = "http://localhost:8080/farmland-detail",
+  prefetched = null,              // ✅ 선택: 카드의 선행 데이터
+  onClose,
+}) {
+  const [raw, setRaw] = useState(prefetched);
+  const [loading, setLoading] = useState(!prefetched);
+  const [error, setError] = useState(null);
+
+  // ESC 닫기
   useEffect(() => {
-    if (!farm) return;
     const onEsc = (e) => e.key === "Escape" && onClose?.();
     window.addEventListener("keydown", onEsc);
     return () => window.removeEventListener("keydown", onEsc);
-  }, [farm, onClose]);
+  }, [onClose]);
 
-  // 2) farm이 없어도 안전하게 기본값 만든 다음 useMemo 호출
-  const landInfo   = farm?.detail?.landInfo ?? {};
-  const aiProfit   = farm?.detail?.aiProfit ?? {};
-  const trustMatch = farm?.detail?.trustMatch ?? {};
-  const buildInfo  = farm?.detail?.BulidInfo ?? {};
-  const accessable = farm?.detail?.Accessable ?? {};
-  const tradeWork  = farm?.detail?.TradeWork ?? {};
-  const otherInfo  = farm?.detail?.otherInfo ?? {};
+  // landId로 동일 URL 호출
+  useEffect(() => {
+    if (!landId) return;
+    let alive = true;
+    (async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${apiBase}/${encodeURIComponent(landId)}`, {
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (alive) setRaw(json);
+      } catch (e) {
+        if (alive) setError(e.message || String(e));
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, [landId, apiBase]);
 
-  const buildList = useMemo(() => {
-    return [buildInfo.Facility, buildInfo.Water, buildInfo.Elec, buildInfo.Mashine, buildInfo.Store]
-      .filter(Boolean);
-  }, [buildInfo]);
+  // Panel과 동일한 우선순위 매핑(원시 → 그룹) 적용
+  const landInfo   = raw?.landInfo || {};
+  const facilities = raw?.facilities || {};
+  const access     = raw?.access || {};
+  const trade      = raw?.trade || {};
 
-  const accessList = useMemo(() => {
-    return [accessable.Access, accessable.Road, accessable.WellRoad, accessable.Bus, accessable.Car]
-      .filter(Boolean);
-  }, [accessable]);
+  const be = {
+    landId: raw?.landId ?? landInfo.landId,
+    landName: raw?.landName ?? raw?.name,
+    landAddress: raw?.landAddress,
+    landRoadAddress: raw?.landRoadAddress ?? landInfo.location,
+    landNumber: raw?.landNumber ?? landInfo.landNumber,
+    landLat: raw?.landLat ?? landInfo.lat,
+    landLng: raw?.landLng ?? landInfo.lng,
+    landCrop: raw?.landCrop ?? landInfo.crop,
+    landArea: raw?.landArea,
+    soiltype: raw?.soiltype ?? landInfo.soilType,
+    waterSource: raw?.waterSource ?? landInfo.waterSource,
 
-  // 3) 훅 선언이 모두 끝난 뒤에 early return
-  if (!farm) return null;
+    ownerName: raw?.ownerName,
+    ownerAge: raw?.ownerAge,
+    ownerAddress: raw?.ownerAddress,
 
-  const cost = aiProfit.cost || {};
+    landWater: raw?.landWater ?? facilities.water,
+    landElec: raw?.landElec ?? facilities.elec,
+    landMachine: raw?.landMachine ?? facilities.machine,
+    landStorage: raw?.landStorage ?? facilities.storage,
+    landHouse: raw?.landHouse ?? facilities.house,
+    landFence: raw?.landFence ?? facilities.fence,
+
+    landRoad: raw?.landRoad ?? access.road,
+    landWellRoad: raw?.landWellRoad ?? access.wellRoad,
+    landBus: raw?.landBus ?? access.bus,
+    landCar: raw?.landCar ?? access.car,
+
+    landTrade: raw?.landTrade ?? trade.type,
+    landMatch: raw?.landMatch ?? trade.match,
+    landPrice: raw?.landPrice ?? trade.price,
+    landWhen: raw?.landWhen ?? trade.when,
+    landWhy: raw?.landWhy ?? trade.why,
+
+    landComent: raw?.landComent ?? raw?.sellerComment,
+    landImage: raw?.landImage ?? raw?.image,
+  };
+
   const InfoRow = ({ label, value }) => (
     <div className="FDV-info-row">
       <div className="FDV-info-label">{label}</div>
       <div className="FDV-info-value">{value ?? "-"}</div>
     </div>
   );
-  const InfoList = ({ label, items }) => (
-    <div className="FDV-info-block">
-      <div className="FDV-info-label">{label}</div>
-      <ul className="FDV-list">
-        {(items && items.length ? items : ["-"]).map((t, i) => (
-          <li key={i}>{t}</li>
-        ))}
-      </ul>
-    </div>
-  );
+
+  if (loading) {
+    return (
+      <div className="FarmlandDetailView-container" aria-busy>
+        <div className="FarmlandDetailView-topbar">
+          <button className="FDV-close" onClick={onClose}>닫기 ✕</button>
+        </div>
+        <div className="FDV-note">불러오는 중…</div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="FarmlandDetailView-container" aria-live="assertive">
+        <div className="FarmlandDetailView-topbar">
+          <button className="FDV-close" onClick={onClose}>닫기 ✕</button>
+        </div>
+        <div className="FDV-note">오류: {error}</div>
+      </div>
+    );
+  }
+  if (!raw) return null;
 
   return (
     <div className="FarmlandDetailView-container" aria-readonly>
       <div className="FarmlandDetailView-topbar">
         <button className="FDV-back" onClick={onClose}>← 목록으로</button>
         <div className="FDV-title">
-          {farm.emoji} {farm.name}<span className="FDV-sub"> ({farm.address})</span>
+          {be.landName} <span className="FDV-sub">({be.landRoadAddress || be.landAddress || "-"})</span>
         </div>
         <button className="FDV-close" onClick={onClose}>닫기 ✕</button>
       </div>
 
       <div className="FarmlandDetailView-grid">
+        {/* 기본 정보 */}
         <section className="FarmlandDetailView-section">
           <h3>기본 정보</h3>
-          <InfoRow label="소유자" value={landInfo.owner} />
-          <InfoRow label="거주지" value={landInfo.Home} />
-          <InfoRow label="등록일" value={landInfo.Resister} />
-          <h4>농지 위치</h4>
-          <InfoRow label="주소" value={farm.address} />
-          <InfoRow label="지번" value={landInfo.landNumber} />
-          <InfoRow label="도로명" value={landInfo.RoadAdderss} />
-          <InfoRow label="정확 위치" value={landInfo.location} />
-          <h4>면적/토양</h4>
-          <InfoRow label="총 면적(㎡)" value={farm.area} />
-          <InfoRow label="면적(ha)" value={landInfo.areaHectare} />
-          <InfoRow label="토양 형태" value={landInfo.soilType} />
-          <InfoRow label="토질" value={landInfo.SandQual} />
-          <InfoRow label="수원" value={landInfo.waterSource} />
+          <InfoRow label="농지명" value={be.landName} />
+          <InfoRow label="도로명 주소" value={be.landRoadAddress} />
+          <InfoRow label="지번 주소" value={be.landAddress} />
+          <InfoRow label="지번" value={be.landNumber} />
+          <InfoRow label="작물" value={be.landCrop} />
+          <InfoRow label="면적" value={be.landArea != null ? formatArea(be.landArea) : landInfo.areaHectare} />
+          <InfoRow label="토양" value={be.soiltype} />
+          <InfoRow label="수자원" value={be.waterSource} />
+          <InfoRow label="위도" value={formatCoord(be.landLat)} />
+          <InfoRow label="경도" value={formatCoord(be.landLng)} />
         </section>
 
+        {/* 소유자 */}
         <section className="FarmlandDetailView-section">
-          <h3>재배 정보</h3>
-          <InfoRow label="직전 재배 이력" value={landInfo.crop || farm.crop} />
-          <h4>기반 시설</h4>
-          <InfoList label="항목" items={buildList} />
-          <h4>접근성</h4>
-          <InfoList label="항목" items={accessList} />
-          <h4>매칭 현황</h4>
-          <InfoRow label="상태" value={trustMatch.status} />
-          <InfoList label="우대 조건" items={trustMatch.preferences} />
-          <InfoRow label="대기 중 청년 수" value={trustMatch.waitingYouth} />
-          <h4>사연/에피소드</h4>
-          <div className="FDV-note">{farm.Memory || "-"}</div>
+          <h3>소유자 정보</h3>
+          <InfoRow label="성명" value={be.ownerName} />
+          <InfoRow label="나이" value={be.ownerAge} />
+          <InfoRow label="주소" value={be.ownerAddress} />
+          {landInfo.owner && <InfoRow label="표시명" value={landInfo.owner} />}
         </section>
 
+        {/* 설비 */}
         <section className="FarmlandDetailView-section">
-          <h3>희망 조건 (거래)</h3>
-          <InfoRow label="구분" value={tradeWork.Trade} />
-          <InfoRow label="유형" value={tradeWork.Type} />
-          <InfoRow label="우선 매칭" value={tradeWork.MAtch} />
-          <InfoRow label="희망 금액" value={tradeWork.Price} />
-          <InfoRow label="희망 시기" value={tradeWork.When} />
-          <h4>AI 예상 수익</h4>
-          <InfoRow label="연 예상 수익" value={aiProfit.yearlyProfit} />
-          <InfoRow label="예상 생산량" value={aiProfit.yield} />
-          <InfoRow label="평균 단가" value={aiProfit.unitPrice} />
-          <div className="FDV-info-block">
-            <div className="FDV-info-label">비용(연)</div>
-            <ul className="FDV-list">
-              <li>자재: {cost.material ?? "-"}</li>
-              <li>인건비: {cost.labor ?? "-"}</li>
-              <li>기계: {cost.machine ?? "-"}</li>
-            </ul>
-          </div>
-          <InfoRow label="순이익(±오차)" value={aiProfit.netProfit} />
-          <h4>기타 첨부 서류</h4>
-          <InfoRow label="등록 사유" value={otherInfo.Why} />
-          <InfoRow label="등기부등본" value={otherInfo.Update1} />
-          <InfoRow label="토지대장" value={otherInfo.Update2} />
-          <InfoRow label="농지원부/경영체" value={otherInfo.Update3} />
-          <h4>판매자 멘트</h4>
-          <div className="FDV-note">{farm.detail?.sellerComment || "-"}</div>
-          <div className="FarmlandDetailView-actions">
-            <button className="FarmlandDetailView-close-btn" onClick={onClose}>닫기</button>
-          </div>
+          <h3>기반 설비</h3>
+          <InfoRow label="용수" value={labelForBoolean("landWater", be.landWater)} />
+          <InfoRow label="전기" value={labelForBoolean("landElec", be.landElec)} />
+          <InfoRow label="농기계" value={labelForBoolean("landMachine", be.landMachine)} />
+          <InfoRow label="창고" value={labelForBoolean("landStorage", be.landStorage)} />
+          <InfoRow label="주택" value={labelForBoolean("landHouse", be.landHouse)} />
+          <InfoRow label="울타리" value={labelForBoolean("landFence", be.landFence)} />
+        </section>
+
+        {/* 접근성 */}
+        <section className="FarmlandDetailView-section">
+          <h3>접근성</h3>
+          <InfoRow label="도로 접함" value={labelForBoolean("landRoad", be.landRoad)} />
+          <InfoRow label="진입로 상태" value={labelForBoolean("landWellRoad", be.landWellRoad)} />
+          <InfoRow label="대중교통" value={labelForBoolean("landBus", be.landBus)} />
+          <InfoRow label="차량 접근" value={labelForBoolean("landCar", be.landCar)} />
+        </section>
+
+        {/* 거래 */}
+        <section className="FarmlandDetailView-section">
+          <h3>거래 정보</h3>
+          <InfoRow label="거래 형태" value={be.landTrade} />
+          <InfoRow label="매칭 상태" value={be.landMatch} />
+          <InfoRow label="가격" value={be.landPrice != null ? `${be.landPrice.toLocaleString()} 원` : "-"} />
+          <InfoRow label="가능 시기" value={be.landWhen} />
+          <InfoRow label="양도/거래 사유" value={be.landWhy} />
+        </section>
+
+        {/* 판매자 멘트 */}
+        <section className="FarmlandDetailView-section">
+          <h3>판매자 멘트</h3>
+          <div className="FDV-note">“{be.landComent || raw?.sellerComment || "판매자 멘트가 없습니다."}”</div>
         </section>
       </div>
     </div>

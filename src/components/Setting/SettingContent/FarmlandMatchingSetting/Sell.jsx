@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from "react";
 import "./Sell.css";
 
-// ✅ 프로젝트 구조에 맞게 경로 수정 필요
-// 예) src/components/Pannel/FarmlandDetailView.jsx 에 있다면:
 import FarmlandDetailView from "./FarmlandDetailView";
 
 const BUYER_ID_DEFAULT = 1;
@@ -87,7 +85,8 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
   if (selectedFarm) {
     return (
       <FarmlandDetailView
-        farm={selectedFarm}            // ← 여기서 landId 등 필요한 최소 정보만 넘겨도 됨
+        landId={selectedFarm.landId} // ← 여기서 landId 등 필요한 최소 정보만 넘겨도 됨
+        prefetched={selectedFarm} // ← 선택된 농장 데이터
         onClose={() => setSelectedFarm(null)}
       />
     );
