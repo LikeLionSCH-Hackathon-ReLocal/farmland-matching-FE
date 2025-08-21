@@ -1,44 +1,42 @@
-import { useEffect, useRef, useState } from "react";
+// src/components/MapView.jsx
+import { useEffect, useRef, useState, useCallback } from "react";
+import useKakaoLoader from "../../lib/useKakaoLoader" // 경로 맞춰주세요
 import { useMarkerManager } from "../Hooks/useMakerManager";
 
 function MapView({ farmlands, onSelect, onMapLoad, selectedFarm }) {
   const mapRef = useRef(null);
   const [isMapReady, setIsMapReady] = useState(false);
 
+  // ✅ 공용 로더만 사용 (중복 로드 방지)
+  const kakaoReady = useKakaoLoader(process.env.REACT_APP_KAKAO_JAVASCRIPT_KEY);
+
+  // 마커 매니저는 mapRef.current가 생긴 뒤에 동작
   const { focusOnFarm } = useMarkerManager(mapRef.current, farmlands, onSelect);
 
-  // 1. 지도 로딩
+  // 지도 초기화
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://dapi.kakao.com/v2/maps/sdk.js?appkey=15fedfbec0fde1d7f3ba7a8050c063d5&autoload=false";
-    script.async = true;
+    if (!kakaoReady) return;
+    if (!window.kakao?.maps) return;
+    if (mapRef.current) return; // 이미 생성됨
 
-    script.onload = () => {
-      window.kakao.maps.load(() => {
-        const container = document.getElementById("map");
-        if (!container) return;
+    const container = document.getElementById("map");
+    if (!container) return;
 
-        const map = new window.kakao.maps.Map(container, {
-center: new window.kakao.maps.LatLng(36.768736444259694, 126.96255752759119),
-          level: 6,
-        });
+    const map = new window.kakao.maps.Map(container, {
+      center: new window.kakao.maps.LatLng(36.768736444259694, 126.96255752759119),
+      level: 6,
+    });
 
-        mapRef.current = map;
-        setIsMapReady(true);
-        if (onMapLoad) onMapLoad(map);
-      });
-    };
+    mapRef.current = map;
+    setIsMapReady(true);
+    onMapLoad?.(map);
+  }, [kakaoReady, onMapLoad]);
 
-    document.head.appendChild(script);
-  }, []);
-
-  // 2. 왼쪽 패널에서 선택된 농지에 반응하여 줌인 및 마커 강조
+  // 선택된 농지 포커싱
   useEffect(() => {
-    if (selectedFarm && focusOnFarm) {
-      focusOnFarm(selectedFarm);
-    }
-  }, [selectedFarm, focusOnFarm]);
+    if (!isMapReady || !selectedFarm || !focusOnFarm) return;
+    focusOnFarm(selectedFarm);
+  }, [isMapReady, selectedFarm, focusOnFarm]);
 
   return (
     <div style={{ width: "100%", height: "100vh", position: "relative" }}>
