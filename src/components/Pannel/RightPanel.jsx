@@ -211,76 +211,86 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   }, [landId, selected]);
 
   // -----------------------------
-  // ✅ AI 매칭 점수 불러오기
-  // -----------------------------
-  useEffect(() => {
-    let aborted = false;
-    (async () => {
-      if (!landId) return;
+// ✅ AI 매칭 점수 불러오기
+// -----------------------------
+useEffect(() => {
+  let aborted = false;
+  (async () => {
+    if (!landId) return;
 
-      setAiLoading(true);
-      setAiError(null);
-      try {
-        const url = `${API_BASE}/farmland-detail-matchScore/${encodeURIComponent(
-          BUYER_ID
-        )}/${encodeURIComponent(landId)}`;
-        console.log("[AI SCORE] GET:", url);
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const url = `${API_BASE}/farmland-detail-matchScore/${encodeURIComponent(
+        BUYER_ID
+      )}/${encodeURIComponent(landId)}`;
+      console.log("[AI SCORE] GET:", url);
 
-        const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 
-        // 204: 추천 없음 → pageIndex(1) 제거
-        if (res.status === 204) {
-          if (!aborted) {
-            console.log("[AI SCORE] 204 No Content (추천 없음)");
-            setAiAvailable(false);
-            setAiMatchScore(null);
-            setAiScoreDetail(null);
-          }
-          return;
+      // 204: 추천 없음 → pageIndex(1) 제거
+      if (res.status === 204) {
+        if (!aborted) {
+          console.log("[AI SCORE] 204 No Content (추천 없음)");
+          setAiAvailable(false);
+          setAiMatchScore(null);
+          setAiScoreDetail(null);
         }
+        return;
+      }
 
-        if (!res.ok) throw new Error(`GET matchScore -> ${res.status}`);
+      if (!res.ok) throw new Error(`GET matchScore -> ${res.status}`);
 
-        const data = await res.json();
-        if (aborted) return;
+      const text = await res.text();   // 👈 먼저 text로 받기
+      if (aborted) return;
 
-        // 기대 스키마: { aiMatchScore: number, aiScoreDetail: string | object }
-        const score = data?.aiMatchScore ?? null;
-
-        let detailObj = null;
-        const rawDetail = data?.aiScoreDetail;
-        if (rawDetail != null) {
-          if (typeof rawDetail === "string") {
-            try {
-              detailObj = JSON.parse(rawDetail);
-            } catch (e) {
-              console.warn("[AI SCORE] aiScoreDetail JSON.parse 실패, 원문 사용:", rawDetail);
-              // 파싱 실패 시 숫자만 추출할 수 있으면 시도
-              detailObj = null;
-            }
-          } else if (typeof rawDetail === "object") {
-            detailObj = rawDetail;
-          }
-        }
-
-        setAiAvailable(true);
-        setAiMatchScore(score);
-        setAiScoreDetail(detailObj);
-      } catch (e) {
-        console.error("[AI SCORE] error:", e);
-        setAiError(e?.message || "AI 점수를 불러오지 못했습니다.");
+      // body가 "1"인 경우 추천 없음 처리
+      if (text.trim() === "1") {
+        console.log("[AI SCORE] body=1 (추천 없음)");
         setAiAvailable(false);
         setAiMatchScore(null);
         setAiScoreDetail(null);
-      } finally {
-        setAiLoading(false);
+        return;
       }
-    })();
 
-    return () => {
-      aborted = true;
-    };
-  }, [landId]);
+      // 정상 JSON 응답 파싱
+      const data = JSON.parse(text);
+
+      const score = data?.aiMatchScore ?? null;
+
+      let detailObj = null;
+      const rawDetail = data?.aiScoreDetail;
+      if (rawDetail != null) {
+        if (typeof rawDetail === "string") {
+          try {
+            detailObj = JSON.parse(rawDetail);
+          } catch (e) {
+            console.warn("[AI SCORE] aiScoreDetail JSON.parse 실패:", rawDetail);
+          }
+        } else if (typeof rawDetail === "object") {
+          detailObj = rawDetail;
+        }
+      }
+
+      setAiAvailable(true);
+      setAiMatchScore(score);
+      setAiScoreDetail(detailObj);
+    } catch (e) {
+      console.error("[AI SCORE] error:", e);
+      setAiError(e?.message || "AI 점수를 불러오지 못했습니다.");
+      setAiAvailable(false);
+      setAiMatchScore(null);
+      setAiScoreDetail(null);
+    } finally {
+      setAiLoading(false);
+    }
+  })();
+
+  return () => {
+    aborted = true;
+  };
+}, [landId]);
+
 
   // -----------------------------
   // 채팅 열기 (오버레이)
