@@ -17,7 +17,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("${API_BASE}/applied-farmland/1", {
+        const res = await fetch(`${API_BASE}/applied-farmland/1`, {
           headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -44,7 +44,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
     if (status === "REJECTED") return "매칭 실패";
     if (status === "WAITING") return "매칭 대기";
     return "알 수 없음";
-    };
+  };
 
   const totalPages = Math.max(1, Math.ceil(farmlands.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
