@@ -1,11 +1,9 @@
 // src/components/Pannel/RightPanel.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import "./RightPanel.css";
 import FarmlandDetailPanel from "./FarmlandDetailPanel";
 
-import { getApplicants } from "../../api/applicantOne";
 import { applyForFarmland } from "../../api/applications";
-import { computeMatching } from "../../utils/matching";
 
 const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
 const BUYER_ID = 1; // TODO: 로그인 사용자 ID로 교체
@@ -20,9 +18,6 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   const [applying, setApplying] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const [applicant, setApplicant] = useState(null);
-  const [match, setMatch] = useState(null);
-
   // 상세 데이터
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -33,7 +28,12 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   const [loadingApplied, setLoadingApplied] = useState(false);
   const [appliedError, setAppliedError] = useState(null);
 
-  const maxPage = 4;
+  // ✅ AI 매칭 점수 (BE 연동)
+  const [aiAvailable, setAiAvailable] = useState(null);      // true | false | null(로딩 전)
+  const [aiMatchScore, setAiMatchScore] = useState(null);    // number
+  const [aiScoreDetail, setAiScoreDetail] = useState(null);  // { area, crop, distance, facility } | null
+  const [aiError, setAiError] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
 
   // landId는 selected가 없을 수도 있으니 안전하게 계산
   const landId =
@@ -43,7 +43,7 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
     selected?.detail?.landInfo?.landId;
 
   // -----------------------------
-  // API: 신청 목록 불러오기 (항상 훅 top-level)
+  // API: 신청 목록 불러오기
   // -----------------------------
   const loadApplied = useCallback(async () => {
     try {
@@ -85,29 +85,19 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   const statusClass = currentStatus ? `status-${currentStatus.toLowerCase()}` : "";
 
   // -----------------------------
-  // 지원자/매칭 계산 (selected 바뀔 때마다)
+  // 선택 변경 시 초기화
   // -----------------------------
   useEffect(() => {
     setPageIndex(0);
     setShowDetail(false);
     setIsFavorite(false);
 
-    (async () => {
-      try {
-        const list = await getApplicants();
-        const picked = list.find((a) => a.id === 77) || list[0];
-        setApplicant(picked || null);
-
-        if (selected && picked) {
-          const res = computeMatching(selected, picked);
-          setMatch(res);
-        } else {
-          setMatch(null);
-        }
-      } catch (e) {
-        console.error("[RightPanel] getApplicants/computeMatching error:", e);
-      }
-    })();
+    // ✅ AI 점수 상태 초기화
+    setAiAvailable(null);
+    setAiMatchScore(null);
+    setAiScoreDetail(null);
+    setAiError(null);
+    setAiLoading(false);
   }, [selected]);
 
   // -----------------------------
@@ -125,10 +115,10 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
       setDetailLoading(true);
       setDetailError(null);
       try {
-        const res = await fetch(
-          `${API_BASE}/farmland-detail/${encodeURIComponent(landId)}`,
-          { method: "GET", headers: { Accept: "application/json" } }
-        );
+        const res = await fetch(`${API_BASE}/farmland-detail/${encodeURIComponent(landId)}`, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
         if (!res.ok) throw new Error(`GET /farmland-detail/${landId} -> ${res.status}`);
 
         const data = await res.json();
@@ -221,6 +211,78 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   }, [landId, selected]);
 
   // -----------------------------
+  // ✅ AI 매칭 점수 불러오기
+  // -----------------------------
+  useEffect(() => {
+    let aborted = false;
+    (async () => {
+      if (!landId) return;
+
+      setAiLoading(true);
+      setAiError(null);
+      try {
+        const url = `${API_BASE}/farmland-detail-matchScore/${encodeURIComponent(
+          BUYER_ID
+        )}/${encodeURIComponent(landId)}`;
+        console.log("[AI SCORE] GET:", url);
+
+        const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+
+        // 204: 추천 없음 → pageIndex(1) 제거
+        if (res.status === 204) {
+          if (!aborted) {
+            console.log("[AI SCORE] 204 No Content (추천 없음)");
+            setAiAvailable(false);
+            setAiMatchScore(null);
+            setAiScoreDetail(null);
+          }
+          return;
+        }
+
+        if (!res.ok) throw new Error(`GET matchScore -> ${res.status}`);
+
+        const data = await res.json();
+        if (aborted) return;
+
+        // 기대 스키마: { aiMatchScore: number, aiScoreDetail: string | object }
+        const score = data?.aiMatchScore ?? null;
+
+        let detailObj = null;
+        const rawDetail = data?.aiScoreDetail;
+        if (rawDetail != null) {
+          if (typeof rawDetail === "string") {
+            try {
+              detailObj = JSON.parse(rawDetail);
+            } catch (e) {
+              console.warn("[AI SCORE] aiScoreDetail JSON.parse 실패, 원문 사용:", rawDetail);
+              // 파싱 실패 시 숫자만 추출할 수 있으면 시도
+              detailObj = null;
+            }
+          } else if (typeof rawDetail === "object") {
+            detailObj = rawDetail;
+          }
+        }
+
+        setAiAvailable(true);
+        setAiMatchScore(score);
+        setAiScoreDetail(detailObj);
+      } catch (e) {
+        console.error("[AI SCORE] error:", e);
+        setAiError(e?.message || "AI 점수를 불러오지 못했습니다.");
+        setAiAvailable(false);
+        setAiMatchScore(null);
+        setAiScoreDetail(null);
+      } finally {
+        setAiLoading(false);
+      }
+    })();
+
+    return () => {
+      aborted = true;
+    };
+  }, [landId]);
+
+  // -----------------------------
   // 채팅 열기 (오버레이)
   // -----------------------------
   const canChat = currentStatus === "IN_PROGRESS" && !!landId;
@@ -307,7 +369,40 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   };
 
   // -----------------------------
-  // ✅ 렌더 직전에 selected 체크 (훅 이후!)
+  // ✅ 사용 가능한 페이지 목록(1번 페이지는 aiAvailable=false면 제외)
+  // -----------------------------
+  const availablePages = useMemo(() => {
+    const pages = [0];
+    if (aiAvailable) pages.push(1);             // AI 점수 페이지
+    if (view.detail?.aiProfit) pages.push(2);   // 예상 수익
+    if (view.detail?.trustMatch) pages.push(3); // 신뢰 매칭
+    pages.push(4);                               // 판매자 한마디(항상 표시)
+    return pages;
+  }, [aiAvailable, view.detail?.aiProfit, view.detail?.trustMatch]);
+
+  // 현재 pageIndex가 사용 불가 상태가 되면 가장 가까운 사용 가능한 페이지로 이동
+  useEffect(() => {
+    if (!availablePages.includes(pageIndex)) {
+      setPageIndex(availablePages[0] ?? 0);
+    }
+  }, [availablePages, pageIndex]);
+
+  const goPrev = () => {
+    const idx = availablePages.indexOf(pageIndex);
+    if (idx > 0) setPageIndex(availablePages[idx - 1]);
+  };
+  const goNext = () => {
+    const idx = availablePages.indexOf(pageIndex);
+    if (idx >= 0 && idx < availablePages.length - 1) {
+      setPageIndex(availablePages[idx + 1]);
+    }
+  };
+
+  const canGoPrev = availablePages.indexOf(pageIndex) > 0;
+  const canGoNext = availablePages.indexOf(pageIndex) < availablePages.length - 1;
+
+  // -----------------------------
+  // ✅ 렌더 직전에 selected 체크
   // -----------------------------
   if (!selected) return null;
 
@@ -334,9 +429,7 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
 
         <div className="RightPanel-ActionGroup">
           <button
-            className={`RightPanel-PrimaryButton ${statusClass} ${
-              primaryDisabled ? "is-disabled" : ""
-            }`}
+            className={`RightPanel-PrimaryButton ${statusClass} ${primaryDisabled ? "is-disabled" : ""}`}
             onClick={!isApplied ? handleApply : undefined}
             disabled={primaryDisabled}
             title={
@@ -350,7 +443,7 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
             {applying && !isApplied ? "신청 중..." : primaryLabel}
           </button>
 
-          {isWaiting && (
+          {currentStatus === "WAITING" && (
             <button
               className="RightPanel-SecondaryButton danger"
               onClick={handleCancelApply}
@@ -387,34 +480,25 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
 
       <div className="RightPanel-ImageContainer">
         {detail?.image ? (
-          <img
-            src={detail.image}
-            alt={view.name || "농지 사진"}
-            className="RightPanel-Image"
-          />
+          <img src={detail.image} alt={view.name || "농지 사진"} className="RightPanel-Image" />
         ) : (
           <div className="RightPanel-ImagePlaceholder">사진이 없습니다</div>
         )}
       </div>
 
+      {/* ✅ 페이지 네비게이션: 사용 가능한 페이지 기준으로 이동 */}
       <div className="RightPanel-PageNav">
-        {pageIndex > 0 ? (
-          <button
-            className="RightPanel-PageButton"
-            onClick={() => setPageIndex((prev) => prev - 1)}
-          >
+        {canGoPrev ? (
+          <button className="RightPanel-PageButton" onClick={goPrev}>
             ⬅ 이전
           </button>
         ) : (
           <div />
         )}
 
-        {pageIndex < maxPage ? (
+        {canGoNext ? (
           <div className="RightPanel-PageRightGroup">
-            <button
-              className="RightPanel-PageButton"
-              onClick={() => setPageIndex((prev) => prev + 1)}
-            >
+            <button className="RightPanel-PageButton" onClick={goNext}>
               다음 ➡
             </button>
 
@@ -480,86 +564,52 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
         </div>
       )}
 
-      {/* 1. 🔥 AI 매칭 점수 */}
-      {pageIndex === 1 && (
+      {/* 1. 🔥 AI 매칭 점수 (BE 데이터) */}
+      {pageIndex === 1 && aiAvailable && (
         <div className="RightPanel-InfoBlock">
           <h3 className="RightPanel-InfoTitle">🔥 AI 매칭 점수</h3>
-          {!applicant || !match ? (
-            <div className="RightPanel-InfoRow">지원자 데이터가 없습니다.</div>
-          ) : (
+
+          {aiLoading && <div className="RightPanel-InfoRow">AI 점수 불러오는 중…</div>}
+          {aiError && <div className="RightPanel-InfoRow" style={{ color: "#c00" }}>{aiError}</div>}
+
+          {!aiLoading && !aiError && (
             <>
               <div className="RightPanel-MatchHeader">
                 <div>
-                  <div className="RightPanel-MatchScore">{match.score}</div>
+                  <div className="RightPanel-MatchScore">{aiMatchScore ?? "미산정"}</div>
                   <div className="RightPanel-MatchLabel">/ 100</div>
                 </div>
-                <div className="RightPanel-MatchMeta">
-                  <div>
-                    <strong>지원자:</strong> {match.derived.applicant_name} (ID: {applicant.id})
-                  </div>
-                  <div>
-                    <strong>거리:</strong> {match.derived.distance_km.toFixed(1)} km
-                  </div>
-                </div>
               </div>
 
-              <div className="RightPanel-MatchBars">
-                {match.parts.map((p) => (
-                  <div key={p.key} className="RightPanel-MatchBarItem">
-                    <div className="RightPanel-MatchBarTop">
-                      <span>{p.key}</span>
-                      <span>{p.value}점</span>
-                    </div>
-                    <div className="RightPanel-MatchBarTrack">
-                      <div className="RightPanel-MatchBarFill" style={{ width: `${p.value}%` }} />
-                    </div>
-                    <div className="RightPanel-MatchBarNote">{p.note}</div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="RightPanel-TagGroup">
-                <div>
-                  <strong>필요 작업</strong>
-                  <div className="RightPanel-Tags">
-                    {match.derived.required_tasks.map((t) => (
-                      <span key={t} className="tag">{t}</span>
-                    ))}
-                  </div>
+              {/* 세부 산출 근거 */}
+              {aiScoreDetail ? (
+                <div className="RightPanel-MatchBars">
+                  {[
+                    { key: "면적(Area)", value: aiScoreDetail.area },
+                    { key: "작물 적합도(Crop)", value: aiScoreDetail.crop },
+                    { key: "거리(Distance)", value: aiScoreDetail.distance },
+                    { key: "시설(Facility)", value: aiScoreDetail.facility },
+                  ].map((p) => {
+                    // 값이 퍼센트가 아닐 수 있어, 시각화만 0~100으로 클램프
+                    const width = Math.max(0, Math.min(100, Number(p.value)));
+                    return (
+                      <div key={p.key} className="RightPanel-MatchBarItem">
+                        <div className="RightPanel-MatchBarTop">
+                          <span>{p.key}</span>
+                          <span>{typeof p.value === "number" ? p.value.toFixed(2) : p.value}</span>
+                        </div>
+                        <div className="RightPanel-MatchBarTrack">
+                          <div className="RightPanel-MatchBarFill" style={{ width: `${width}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-                <div>
-                  <strong>도구로 커버</strong>
-                  <div className="RightPanel-Tags">
-                    {match.derived.tasks_covered_by_tools.map((t) => (
-                      <span key={t} className="tag ok">{t}</span>
-                    ))}
-                  </div>
+              ) : (
+                <div className="RightPanel-InfoRow" style={{ opacity: 0.7 }}>
+                  상세 산출 근거가 없습니다.
                 </div>
-                <div>
-                  <strong>추천/해당 작물</strong>
-                  <div className="RightPanel-Tags">
-                    {match.derived.recommended_crops.map((c) => (
-                      <span key={c} className="tag">{c}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <strong>관심 작물</strong>
-                  <div className="RightPanel-Tags">
-                    {(applicant.interested_crops || []).map((c) => (
-                      <span key={c} className="tag">{c}</span>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <strong>선호 거래</strong>
-                  <div className="RightPanel-Tags">
-                    {(applicant.preferred_trade || []).map((t) => (
-                      <span key={t} className="tag">{t}</span>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              )}
             </>
           )}
         </div>
