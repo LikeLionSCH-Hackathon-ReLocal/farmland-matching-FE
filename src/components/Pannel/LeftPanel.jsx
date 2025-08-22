@@ -72,7 +72,7 @@ function LeftPanel({
               disabled={aiLoading || loading}
               title="AI 군집화/추천 실행"
             >
-              {aiLoading ? "AI 계산중..." : "AI"}
+              {aiLoading ? "AI 추천중..." : "AI"}
             </button>
           ) : (
             <button
