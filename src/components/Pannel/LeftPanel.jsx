@@ -4,9 +4,9 @@ import "./LeftPanel.css";
 function LeftPanel({
   farmlands,
   onSelect,
-  // 🔹 AI 관련 prop 추가
-  onAiRecommend,
-  onExitAiMode,
+  // AI 관련 prop
+  onAiRecommend = () => {},
+  onExitAiMode = () => {},
   aiMode = false,
   aiLoading = false,
   loading = false,
@@ -14,12 +14,19 @@ function LeftPanel({
   const [searchText, setSearchText] = useState("");
   const [filterKey, setFilterKey] = useState("address");
 
+  console.log("[LeftPanel] props:", {
+    aiMode,
+    aiLoading,
+    loading,
+    farmlandsCount: farmlands?.length,
+  });
+
   const filterOptions = ["address", "crop", "area", "price"];
 
   // 필터링된 목록
   const filteredFarmlands = useMemo(() => {
     const txt = String(searchText ?? "").toLowerCase();
-    return (farmlands || []).filter((farm) => {
+    const list = (farmlands || []).filter((farm) => {
       const value = farm?.[filterKey];
       if (filterKey === "area" || filterKey === "price") {
         const num = parseInt(txt, 10);
@@ -27,11 +34,17 @@ function LeftPanel({
       }
       return String(value ?? "").toLowerCase().includes(txt);
     });
+    console.log(
+      "[LeftPanel] filterKey:", filterKey,
+      "검색어:", txt,
+      "필터링 후:", list.length
+    );
+    return list;
   }, [farmlands, filterKey, searchText]);
 
   return (
     <div className="LeftPanel-LeftContainer">
-      {/* 검색/필터 */}
+      {/* 검색/필터 헤더 */}
       <div className="LeftPanel-LeftHeader">
         <input
           className="LeftPanel-SearchInput"
@@ -47,6 +60,7 @@ function LeftPanel({
               key={key}
               className={`LeftPanel-FilterButton ${filterKey === key ? "active" : ""}`}
               onClick={() => {
+                console.log("[LeftPanel] 필터 변경:", key);
                 setFilterKey(key);
                 setSearchText(""); // 필터 바꾸면 검색 초기화
               }}
@@ -68,16 +82,22 @@ function LeftPanel({
           {!aiMode ? (
             <button
               className={`LeftPanel-FilterButton ${aiLoading ? "disabled" : "ai"}`}
-              onClick={onAiRecommend}
+              onClick={() => {
+                console.log("[LeftPanel] AI 버튼 클릭");
+                onAiRecommend();
+              }}
               disabled={aiLoading || loading}
               title="AI 군집화/추천 실행"
             >
-              {aiLoading ? "AI 추천중..." : "AI"}
+              {aiLoading ? "AI 계산중..." : "AI"}
             </button>
           ) : (
             <button
               className="LeftPanel-FilterButton active"
-              onClick={onExitAiMode}
+              onClick={() => {
+                console.log("[LeftPanel] AI 추천 끄기 클릭");
+                onExitAiMode();
+              }}
               disabled={aiLoading || loading}
               title="AI 추천 끄기"
             >
@@ -89,38 +109,47 @@ function LeftPanel({
 
       {/* 농지 목록 */}
       <div className="LeftPanel-FarmlandList">
-        {filteredFarmlands.map((farm, idx) => (
-          <div
-            key={farm.id}
-            className="LeftPanel-FarmlandCard"
-            onClick={() => onSelect(farm)}
-          >
-            <div className="LeftPanel-FarmlandImage" />
-            <div className="LeftPanel-FarmlandContent">
-              <div className="LeftPanel-FarmlandTitle">
-                <div className="LeftPanel-FarmlandTag">{farm.crop}</div>
-                <div className="LeftPanel-Left-FarmlandName">{farm.name}</div>
-              </div>
-
-              <div className="LeftPanel-FarmlandMeta">
-                📍 {farm.address} <br />
-                📐 {farm.area}㎡ / 💰 {farm.price}만원
-              </div>
-            </div>
-
-            {/* ➤ 기본 화살표 + (AI모드일 때 점수/순위 뱃지) */}
-            <div className="LeftPanel-FarmlandArrow">
-              {aiMode ? (
-                <div className="LeftPanel-AIScoreBadge" title="AI 추천 점수">
-                  <div className="rank">#{idx + 1}</div>
-                  <div className="score">{farm.aiMatchScore ?? 0}</div>
+        {filteredFarmlands.map((farm, idx) => {
+          console.log(
+            "[LeftPanel] render farmland:",
+            { id: farm.id, name: farm.name, score: farm.aiMatchScore }
+          );
+          return (
+            <div
+              key={farm.id}
+              className="LeftPanel-FarmlandCard"
+              onClick={() => {
+                console.log("[LeftPanel] 선택 farmland:", farm.id, farm.name);
+                onSelect(farm);
+              }}
+            >
+              <div className="LeftPanel-FarmlandImage" />
+              <div className="LeftPanel-FarmlandContent">
+                <div className="LeftPanel-FarmlandTitle">
+                  <div className="LeftPanel-FarmlandTag">{farm.crop}</div>
+                  <div className="LeftPanel-Left-FarmlandName">{farm.name}</div>
                 </div>
-              ) : (
-                "➤"
-              )}
+
+                <div className="LeftPanel-FarmlandMeta">
+                  📍 {farm.address} <br />
+                  📐 {farm.area}㎡ / 💰 {farm.price}만원
+                </div>
+              </div>
+
+              {/* ➤ 기본 화살표 + (AI모드일 때 점수/순위 뱃지) */}
+              <div className="LeftPanel-FarmlandArrow">
+                {aiMode ? (
+                  <div className="LeftPanel-AIScoreBadge" title="AI 추천 점수">
+                    <div className="rank">#{idx + 1}</div>
+                    <div className="score">{farm.aiMatchScore ?? 0}</div>
+                  </div>
+                ) : (
+                  "➤"
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {/* 빈 상태 */}
         {filteredFarmlands.length === 0 && (
