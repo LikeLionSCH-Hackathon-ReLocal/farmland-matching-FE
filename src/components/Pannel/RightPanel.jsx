@@ -5,7 +5,7 @@ import FarmlandDetailPanel from "./FarmlandDetailPanel";
 
 import { applyForFarmland } from "../../api/applications";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+import API_BASE from "../../config/apiBase";
 const BUYER_ID = 1; // TODO: 로그인 사용자 ID로 교체
 
 function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }) {

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import "./MyRegisteredLand.css";
 import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 import { useNavigate, useParams } from "react-router-dom";
-
+import API_BASE from "../../../config/apiBase"; // 공통 API_BASE
 /* =======================
    🔎 디버깅 유틸
 ======================= */
@@ -118,7 +118,7 @@ function classForMatchStatus(s) {
 ======================= */
 // ⚠️ 서버가 PUT/DELETE 미지원이면 method를 "POST"로 바꾸세요.
 async function updateLandOnServer({ baseHeaders, sellerId, landId, payload }) {
-  const url = `http://localhost:8080/${sellerId}/farmland-update/${landId}`;
+  const url = `${API_BASE}/${sellerId}/farmland-update/${landId}`;
   const res = await debugFetch(
     url,
     {
@@ -142,7 +142,7 @@ async function updateLandOnServer({ baseHeaders, sellerId, landId, payload }) {
 }
 
 async function deleteLandOnServer({ baseHeaders, sellerId, landId }) {
-  const url = `http://localhost:8080/${sellerId}/farmland-delete/${landId}`;
+  const url = `${API_BASE}/${sellerId}/farmland-delete/${landId}`;
   const res = await debugFetch(
     url,
     {
@@ -312,7 +312,7 @@ async function fetchApplicantDetail({
   landId,
   buyerId,
 }) {
-  const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
+  const url = `${API_BASE}/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
   const res = await debugFetch(
     url,
     { headers: { ...baseHeaders } },
@@ -419,7 +419,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     (async () => {
       dlog("📥 목록 불러오기 시작");
       setLoadingList(true);
-      const url = `http://localhost:8080/${sellerId}/farmland`;
+      const url = `${API_BASE}/${sellerId}/farmland`;
       try {
         const res = await debugFetch(
           url,
@@ -480,7 +480,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
     setSelectedApplicant(null);
     setSectionIndex(0);
 
-    const url = `http://localhost:8080/${sellerId}/farmland/${landId}`;
+    const url = `${API_BASE}/${sellerId}/farmland/${landId}`;
     try {
       const res = await debugFetch(
         url,
@@ -561,7 +561,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
   const loadApplicantDetail = async (buyerId) => {
     if (!selectedLand?.id) return;
     const landId = selectedLand.id;
-    const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
+    const url = `${API_BASE}/${sellerId}/farmland/${landId}/applicants/${buyerId}`;
     try {
       setLoadingApplicantDetail(true);
       const res = await debugFetch(
@@ -651,7 +651,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
   const acceptApplicant = async (buyerId) => {
     if (!selectedLand?.id) return;
     const landId = selectedLand.id;
-    const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}/accept`;
+    const url = `${API_BASE}/${sellerId}/farmland/${landId}/applicants/${buyerId}/accept`;
 
     // ✅ 낙관적 업데이트: 수락 → 진행중(IN_PROGRESS)로 표시
     const prevApplicants = applicants;
@@ -704,7 +704,7 @@ function MyRegisteredLand({ sellerId: sellerIdProp }) {
   const rejectApplicant = async (buyerId) => {
     if (!selectedLand?.id) return;
     const landId = selectedLand.id;
-    const url = `http://localhost:8080/${sellerId}/farmland/${landId}/applicants/${buyerId}/reject`;
+    const url = `${API_BASE}/${sellerId}/farmland/${landId}/applicants/${buyerId}/reject`;
 
     // ✅ 낙관적 업데이트: 거절 → REJECTED
     const prevApplicants = applicants;

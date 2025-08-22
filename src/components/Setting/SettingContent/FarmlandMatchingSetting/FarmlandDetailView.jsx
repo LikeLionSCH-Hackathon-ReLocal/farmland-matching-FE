@@ -1,6 +1,7 @@
 // src/components/Setting/SettingContent/FarmlandMatchingSetting/FarmlandDetailView.jsx
 import React, { useEffect, useState } from "react";
 import "./FarmlandDetailView.css";
+import API_BASE from "../../../../config/apiBase";
 
 // Panel과 동일한 Boolean → 라벨 변환
 function labelForBoolean(field, value) {
@@ -37,7 +38,7 @@ function formatCoord(x) {
 
 export default function FarmlandDetailView({
   landId,                         // ✅ Sell.jsx에서 전달
-  apiBase = "http://localhost:8080/farmland-detail",
+  apiBase = `${API_BASE}/farmland-detail`, // ✅ 기본값을 공용 API_BASE로
   prefetched = null,              // ✅ 선택: 카드의 선행 데이터
   onClose,
 }) {
@@ -52,7 +53,7 @@ export default function FarmlandDetailView({
     return () => window.removeEventListener("keydown", onEsc);
   }, [onClose]);
 
-  // landId로 동일 URL 호출
+  // landId로 상세 조회
   useEffect(() => {
     if (!landId) return;
     let alive = true;
@@ -62,6 +63,13 @@ export default function FarmlandDetailView({
         const res = await fetch(`${apiBase}/${encodeURIComponent(landId)}`, {
           headers: { Accept: "application/json" },
         });
+
+        // ✅ 204 No Content 대응 (AI 미추천 등)
+        if (res.status === 204) {
+          if (alive) setRaw(null);
+          return;
+        }
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         if (alive) setRaw(json);
@@ -146,7 +154,18 @@ export default function FarmlandDetailView({
       </div>
     );
   }
-  if (!raw) return null;
+  if (!raw) {
+    return (
+      <div className="FarmlandDetailView-container" aria-readonly>
+        <div className="FarmlandDetailView-topbar">
+          <button className="FDV-back" onClick={onClose}>← 목록으로</button>
+          <div className="FDV-title">상세 정보</div>
+          <button className="FDV-close" onClick={onClose}>닫기 ✕</button>
+        </div>
+        <div className="FDV-note">표시할 상세 정보가 없습니다. (AI 미추천 또는 데이터 없음)</div>
+      </div>
+    );
+  }
 
   return (
     <div className="FarmlandDetailView-container" aria-readonly>

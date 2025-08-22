@@ -10,7 +10,7 @@ import Step7_TradeDocs from "./Step7_TradeDocs";
 import FloatingEmojis from "../../../pages/Effect/FloatingEmojis";
 import "./SeniorFlow.css";
 import { useNavigate, useParams } from "react-router-dom";
-
+import API_BASE from "../../../config/apiBase";
 /* =======================
    🔎 디버깅 토글/유틸
 ======================== */
@@ -399,7 +399,7 @@ function SeniorFlow({ onSubmit }) {
     }
 
     const fd = buildMultipart(data);
-    const uploadUrl = `http://localhost:8080/${sellerId}/farmland-upload`;
+    const uploadUrl = `${API_BASE}/${sellerId}/farmland-upload`;
     const token = localStorage.getItem("accessToken");
     const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
 

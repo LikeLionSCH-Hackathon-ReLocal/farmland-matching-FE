@@ -1,25 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./TrustScore.css";
+import API_BASE from "../../../../config/apiBase"; // 공통 API_BASE
 
 /**
  * TrustScore (API 연동)
  * - GET {API_BASE}/{buyerId}/trust-score
- * - 예시 응답:
- *   {
- *     total: 39,
- *     license: { key:"license", quantity:2, unitPoint:5, acquiredPoint:10 },
- *     suggest: { key:"suggest", quantity:3, unitPoint:4, acquiredPoint:12 },
- *     sns: { key:"sns", quantity:1, unitPoint:2, acquiredPoint:2 },
- *     awards: { key:"awards", quantity:1, unitPoint:7, acquiredPoint:7 },
- *     oneIntroduction: { key:"oneIntroduction", quantity:1, unitPoint:3, acquiredPoint:3 },
- *     introduction: { key:"introduction", quantity:1, unitPoint:5, acquiredPoint:5 },
- *     licenseQuantity: 2, suggestQuantity: 3, awardsQuantity: 1,
- *     hasSns: true, hasOneIntroduction: true, hasIntroduction: true
- *   }
  */
-export default function TrustScore({ buyerId = 1, apiBase }) {
-  const API_BASE = apiBase || process.env.REACT_APP_API_BASE || "http://localhost:8080";
-
+export default function TrustScore({ buyerId = 1 }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,13 +17,19 @@ export default function TrustScore({ buyerId = 1, apiBase }) {
 
   useEffect(() => {
     let alive = true;
+    const ctrl = new AbortController();
+
     async function fetchScore() {
       setLoading(true);
       setError(null);
       try {
         const url = `${API_BASE}/${encodeURIComponent(buyerId)}/trust-score`;
         dlog("GET", url);
-        const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          signal: ctrl.signal,
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
         if (!alive) return;
@@ -50,11 +43,13 @@ export default function TrustScore({ buyerId = 1, apiBase }) {
         if (alive) setLoading(false);
       }
     }
+
     fetchScore();
     return () => {
       alive = false;
+      ctrl.abort();
     };
-  }, [API_BASE, buyerId]);
+  }, [buyerId]);
 
   const total = useMemo(() => {
     if (!data) return 0;
@@ -112,7 +107,9 @@ export default function TrustScore({ buyerId = 1, apiBase }) {
         <div className="RecommenderForm-description">
           신뢰 점수를 불러오는 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.
         </div>
-        <pre className="TrustScore-error" style={{whiteSpace:"pre-wrap"}}>{String(error)}</pre>
+        <pre className="TrustScore-error" style={{ whiteSpace: "pre-wrap" }}>
+          {String(error)}
+        </pre>
       </div>
     );
   }
@@ -120,7 +117,7 @@ export default function TrustScore({ buyerId = 1, apiBase }) {
   return (
     <div className="TrustScore-container">
       <div className="RecommenderForm-description">
-        신뢰 점수는 <strong>자격증, 수상경력, 대표 한마디, 자기소개 본문, SNS, 추천인</strong> 등으로 점수가 매겨지며 {" "}
+        신뢰 점수는 <strong>자격증, 수상경력, 대표 한마디, 자기소개 본문, SNS, 추천인</strong> 등으로 점수가 매겨지며{" "}
         <strong>판매자에게 점수가 제공됩니다.</strong> 판매자에게 <strong>신뢰</strong> 할 수 있는 사람이라는 것을 증명해줄 수 있는 점수 입니다.
       </div>
 
@@ -145,7 +142,10 @@ export default function TrustScore({ buyerId = 1, apiBase }) {
         <tbody>
           {rows.map((r, i) => (
             <tr key={i}>
-              <td className="label"><span className="icon">{r.icon}</span>{r.label}</td>
+              <td className="label">
+                <span className="icon">{r.icon}</span>
+                {r.label}
+              </td>
               <td>{r.rule}</td>
               <td>{r.qty}</td>
               <td className="score">{r.score}점</td>

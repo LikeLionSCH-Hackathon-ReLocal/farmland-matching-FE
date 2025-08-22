@@ -1,6 +1,7 @@
 // src/components/ProfileModal.jsx
 import React, { useEffect, useCallback, useState, Suspense } from "react";
 import "./ProfileModal.css";
+import API_BASE from "../../config/apiBase"; // ✅ 공용 API 베이스 사용
 
 // 지연 로딩
 const ProfileSettings = React.lazy(() => import("../Setting/SettingContent/AccountSetting/ProfileSettings"));
@@ -55,25 +56,27 @@ export default function ProfileModal({ user, buyerId = 1, token, loading, onClos
       {active === "cert" && (
         <section className="ProfileModal-Section full fade-in">
           <h3 className="ProfileModal-SectionTitle">자격증</h3>
-          <Certification buyerId={buyerId} token={token} />
+          {/* ✅ apiBase를 하위에도 통일 전달(필요 없으면 무시됨) */}
+          <Certification buyerId={buyerId} token={token} apiBase={API_BASE} />
         </section>
       )}
       {active === "recom" && (
         <section className="ProfileModal-Section full fade-in">
           <h3 className="ProfileModal-SectionTitle">추천인</h3>
-          <RecommenderForm buyerId={buyerId} token={token} user={userState} onUserChange={(u) => setUserState(u)} />
+          <RecommenderForm buyerId={buyerId} token={token} user={userState} onUserChange={(u) => setUserState(u)} apiBase={API_BASE} />
         </section>
       )}
       {active === "trust" && (
         <section className="ProfileModal-Section full fade-in">
           <h3 className="ProfileModal-SectionTitle">신뢰 프로필</h3>
-          <TrustProfile user={userState} onUserChange={(u) => setUserState(u)} buyerId={buyerId} token={token} />
+          <TrustProfile user={userState} onUserChange={(u) => setUserState(u)} buyerId={buyerId} token={token} apiBase={API_BASE} />
         </section>
       )}
       {active === "score" && (
         <section className="ProfileModal-Section full fade-in">
           <h3 className="ProfileModal-SectionTitle">신뢰 점수</h3>
-          <TrustScore buyerId={buyerId} apiBase={process.env.REACT_APP_API_BASE} />
+          {/* ❌ process.env 사용 제거 → ✅ 공용 API_BASE 사용 */}
+          <TrustScore buyerId={buyerId} apiBase={API_BASE} />
         </section>
       )}
     </Suspense>

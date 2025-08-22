@@ -1,8 +1,7 @@
 // src/components/Setting/SettingContent/TrustSetting/RecommenderForm.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import "./RecommenderForm.css";
-
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+import API_BASE from "../../../../config/apiBase"; // API_BASE 경로 수정
 
 /**
  * props

@@ -1,9 +1,9 @@
 // api/SeniorUser.js
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8080";
-console.log("API BASE_URL:", BASE_URL);
+import API_BASE from "../config/apiBase";
+console.log("API BASE_URL:", API_BASE);
 
 export async function getSeller(sellerId) {
-  const url = `${BASE_URL}/seller/${sellerId}`;
+  const url = `${API_BASE}/seller/${sellerId}`;
   console.log("getSeller 호출 URL:", url);
 
   const res = await fetch(url);
@@ -41,7 +41,7 @@ export async function updateSeller(sellerId, profile) {
   //    - null은 남겨 두어 "해당 필드 비우기" 시나리오를 지원
   const payload = stripUndefined(mapped);
 
-  const url = `${BASE_URL}/seller-update/${sellerId}`;
+  const url = `${API_BASE}/seller-update/${sellerId}`;
   console.log("updateSeller(PATCH) 호출 URL:", url);
   console.log("updateSeller(PATCH) payload:", payload);
 

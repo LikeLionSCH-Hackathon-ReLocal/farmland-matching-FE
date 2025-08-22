@@ -1,6 +1,5 @@
 // src/api/licenses.js
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
-
+import API_BASE from "../config/apiBase";
 // 따옴표 정리 유틸: '"정보"' → '정보'
 export function sanitizeName(raw) {
   if (raw == null) return "";

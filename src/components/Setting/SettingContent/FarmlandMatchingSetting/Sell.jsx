@@ -1,7 +1,7 @@
 // src/components/Setting/SettingContent/FarmlandMatchingSetting/Sell.jsx
 import React, { useEffect, useState } from "react";
 import "./Sell.css";
-
+import API_BASE from "../../../../config/apiBase"; // 공통 API_BASE
 import FarmlandDetailView from "./FarmlandDetailView";
 
 const BUYER_ID_DEFAULT = 1;
@@ -17,7 +17,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("http://localhost:8080/applied-farmland/1", {
+        const res = await fetch("${API_BASE}/applied-farmland/1", {
           headers: { Accept: "application/json" },
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -61,7 +61,7 @@ export default function Sell({ buyerId = BUYER_ID_DEFAULT }) {
     if (!window.confirm("정말 매칭을 취소하시겠습니까?")) return;
     try {
       setLoadingCancel(true);
-      const url = `http://localhost:8080/farmland/${encodeURIComponent(
+      const url = `${API_BASE}/farmland/${encodeURIComponent(
         farm.landId
       )}/${encodeURIComponent(buyerId)}/apply-cancel`;
 

@@ -1,5 +1,5 @@
 // src/api/applications.js
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+import API_BASE from "../config/apiBase";
 
 /**
  * farmland/{landId}/{buyerId}/apply 로 신청

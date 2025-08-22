@@ -1,6 +1,5 @@
 // src/api/trustProfile.js
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
-
+import API_BASE from "../config/apiBase";
 /**
  * 구매자 신뢰정보 불러오기
  * GET /buyer-trustProfile/{buyerId}

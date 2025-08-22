@@ -1,6 +1,5 @@
 // src/api/YoungUser.js
-const BASE = "http://localhost:8080";
-
+import API_BASE from "../config/apiBase";
 // 따옴표/공백 정리
 function unquote(val) {
   if (val == null) return "";
@@ -40,7 +39,7 @@ async function request(url, options = {}) {
 // GET: 구매자 기본 정보
 export async function getYoungUserData() {
   try {
-    const data = await request(`${BASE}/buyer/1`, {
+    const data = await request(`${API_BASE}/buyer/1`, {
       method: "GET",
       headers: { Accept: "application/json" },
     });
@@ -75,7 +74,7 @@ export async function saveYoungUserData(user, { method = "POST" } = {}) {
       formData.append("buyerImage", user.profileImage);
     }
 
-    await fetch(`${BASE}/buyer-upload`, { method, body: formData });
+    await fetch(`${API_BASE}/buyer-upload`, { method, body: formData });
     return true;
   } catch (e) {
     console.error("❌ saveYoungUserData 실패:", e);

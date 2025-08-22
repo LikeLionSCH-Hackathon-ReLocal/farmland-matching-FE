@@ -1,5 +1,5 @@
 // src/api/farmland.js
-const BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+import API_BASE from "../config/apiBase";
 
 function toNumberSafe(v, fallback = 0) {
   const n = Number(v);
@@ -80,7 +80,7 @@ export function mapServerToUi(item, idx) {
 // ③ 목록 fetch
 // ──────────────────────────────
 export async function fetchFarmlands() {
-  const url = `${BASE}/farmland`;
+  const url = `${API_BASE}/farmland`;
   const res = await fetch(url, { headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`GET /farmland 실패: ${res.status}`);
   const data = await res.json();

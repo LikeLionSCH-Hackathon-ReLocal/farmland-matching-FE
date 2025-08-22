@@ -1,6 +1,5 @@
 // src/api/trustAdapter.js
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:8080";
-
+import API_BASE from "../config/apiBase";
 /** ---- BE 호출 유틸 ---- **/
 export async function getBuyerProfile(buyerId = 1, token) {
   // 👉 너희 팀에서 쓰는 프로필 GET 엔드포인트로 바꿔도 됨.

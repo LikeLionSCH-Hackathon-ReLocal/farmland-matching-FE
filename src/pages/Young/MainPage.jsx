@@ -9,8 +9,7 @@ import ChatPage from "../../components/Pannel/ChatPage"; // ⬅️ 오버레이�
 import { fetchFarmlands } from "../../api/farmland";
 import { getYoungUserData } from "../../api/YoungUser";
 import ProfileModal from "../../components/Pannel/ProfileModal";
-
-const BASE_URL = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+import API_BASE from "../../config/apiBase";
 const BUYER_ID_DEFAULT = 1;
 const TOPK_DEFAULT = 5;
 
@@ -85,7 +84,7 @@ function MainPage() {
 
   // 🔵 AI 버튼: 군집화/점수계산 트리거 → 재조회 → AI 모드 ON
   const handleAiRecommend = async () => {
-    const url = `${BASE_URL}/farmland/aiMatch`;
+    const url = `${API_BASE}/farmland/aiMatch`;
     const payload = { buyerId: BUYER_ID_DEFAULT, topK: TOPK_DEFAULT };
     const startedAt = performance.now();
 
