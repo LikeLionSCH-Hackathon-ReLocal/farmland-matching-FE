@@ -32,12 +32,17 @@ function LeftPanel({
         const num = parseInt(txt, 10);
         return Number.isNaN(num) || Number(farm?.[filterKey]) >= num;
       }
-      return String(value ?? "").toLowerCase().includes(txt);
+      return String(value ?? "")
+        .toLowerCase()
+        .includes(txt);
     });
     console.log(
-      "[LeftPanel] filterKey:", filterKey,
-      "검색어:", txt,
-      "필터링 후:", list.length
+      "[LeftPanel] filterKey:",
+      filterKey,
+      "검색어:",
+      txt,
+      "필터링 후:",
+      list.length
     );
     return list;
   }, [farmlands, filterKey, searchText]);
@@ -58,7 +63,9 @@ function LeftPanel({
           {filterOptions.map((key) => (
             <button
               key={key}
-              className={`LeftPanel-FilterButton ${filterKey === key ? "active" : ""}`}
+              className={`LeftPanel-FilterButton ${
+                filterKey === key ? "active" : ""
+              }`}
               onClick={() => {
                 console.log("[LeftPanel] 필터 변경:", key);
                 setFilterKey(key);
@@ -81,7 +88,9 @@ function LeftPanel({
           {/* 🔵 AI 버튼 / 해제 버튼 */}
           {!aiMode ? (
             <button
-              className={`LeftPanel-FilterButton ${aiLoading ? "disabled" : "ai"}`}
+              className={`LeftPanel-FilterButton ${
+                aiLoading ? "disabled" : "ai"
+              }`}
               onClick={() => {
                 console.log("[LeftPanel] AI 버튼 클릭");
                 onAiRecommend();
@@ -110,10 +119,11 @@ function LeftPanel({
       {/* 농지 목록 */}
       <div className="LeftPanel-FarmlandList">
         {filteredFarmlands.map((farm, idx) => {
-          console.log(
-            "[LeftPanel] render farmland:",
-            { id: farm.id, name: farm.name, score: farm.aiMatchScore }
-          );
+          console.log("[LeftPanel] render farmland:", {
+            id: farm.id,
+            name: farm.name,
+            score: farm.aiMatchScore,
+          });
           return (
             <div
               key={farm.id}
@@ -139,10 +149,17 @@ function LeftPanel({
               {/* ➤ 기본 화살표 + (AI모드일 때 점수/순위 뱃지) */}
               <div className="LeftPanel-FarmlandArrow">
                 {aiMode ? (
-                  <div className="LeftPanel-AIScoreBadge" title="AI 추천 점수">
-                    <div className="rank">#{idx + 1}</div>
-                    <div className="score">{farm.aiMatchScore ?? 0}</div>
-                  </div>
+                  farm.aiMatchScore != null ? (
+                    <div
+                      className="LeftPanel-AIScoreBadge"
+                      title="AI 추천 점수"
+                    >
+                      <div className="rank">#{idx + 1}</div>
+                      <div className="score">{farm.aiMatchScore}</div>
+                    </div>
+                  ) : (
+                    "➤" // 점수가 null이면 기본 화살표 표시
+                  )
                 ) : (
                   "➤"
                 )}

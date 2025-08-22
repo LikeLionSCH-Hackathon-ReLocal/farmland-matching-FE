@@ -33,9 +33,11 @@ function MainPage() {
   const [loading, setLoading] = useState(false);
 
   // 서버에서 받아온 리스트에 aiMatchScore를 끌어올림(_raw.aiMatchScore → aiMatchScore)
+  // ⚠️ null은 null로 보존 (0으로 강제 변환하지 않음)
   const attachAiScore = (rows) =>
     (rows || []).map((f) => {
-      const score = Number(f?.aiMatchScore ?? f?._raw?.aiMatchScore ?? 0);
+      const raw = f?.aiMatchScore ?? f?._raw?.aiMatchScore;
+      const score = Number.isFinite(Number(raw)) ? Number(raw) : null;
       const landId = f?.id ?? f?._raw?.landId;
       console.log("[attachAiScore] landId:", landId, "score:", score);
       return { ...f, aiMatchScore: score };
@@ -103,9 +105,12 @@ function MainPage() {
         res.headers.get("x-correlation-id") ||
         null;
 
-      console.log("[AI] 응답 수신",
-        { status: res.status, statusText: res.statusText, durationMs, requestId }
-      );
+      console.log("[AI] 응답 수신", {
+        status: res.status,
+        statusText: res.statusText,
+        durationMs,
+        requestId,
+      });
 
       // 응답 본문 로깅: JSON 시도 → 실패 시 text
       let responseBody = null;
@@ -122,12 +127,13 @@ function MainPage() {
       console.log("[AI] 응답 본문:", responseBody);
 
       if (!res.ok) {
-        // 서버 메시지 추출
         const msg =
           (responseBody && (responseBody.message || responseBody.error)) ||
           (typeof responseBody === "string" ? responseBody.slice(0, 300) : "") ||
           "원인 미상";
-        alert(`AI 추천 호출 실패 (status ${res.status})\n메시지: ${msg}\n자세한 로그는 콘솔을 확인하세요.`);
+        alert(
+          `AI 추천 호출 실패 (status ${res.status})\n메시지: ${msg}\n자세한 로그는 콘솔을 확인하세요.`
+        );
         return;
       }
 
@@ -156,9 +162,18 @@ function MainPage() {
   const displayFarmlands = useMemo(() => {
     if (!aiMode) return farmlands;
 
-    const sorted = [...farmlands]
-      .filter((f) => (f.aiMatchScore ?? 0) > 0)
-      .sort((a, b) => (b.aiMatchScore ?? 0) - (a.aiMatchScore ?? 0));
+    // 필터 제거: null/0 점수도 포함
+    // 정렬: 점수 있는 항목(숫자) → 점수 없는 항목(null) 순
+    const sorted = [...farmlands].sort((a, b) => {
+      const as = a.aiMatchScore;
+      const bs = b.aiMatchScore;
+      const aNull = as == null;
+      const bNull = bs == null;
+      if (aNull && bNull) return 0;
+      if (aNull) return 1;   // a가 null이면 뒤로
+      if (bNull) return -1;  // b가 null이면 뒤로
+      return bs - as;        // 숫자 내림차순
+    });
 
     console.log(
       "[displayFarmlands] AI 모드 목록:",
