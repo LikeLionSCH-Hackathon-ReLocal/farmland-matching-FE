@@ -5,7 +5,7 @@ import LeftPanel from "../../components/Pannel/LeftPanel";
 import RightPanel from "../../components/Pannel/RightPanel";
 import BottomPanel from "../../components/Pannel/BottomPanel";
 import MapView from "../../components/Map/MapView";
-import ChatPage from "../../components/Pannel/ChatPage";  // ⬅️ 오버레이로 띄울 채팅 페이지
+import ChatPage from "../../components/Pannel/ChatPage"; // ⬅️ 오버레이로 띄울 채팅 페이지
 import { fetchFarmlands } from "../../api/farmland";
 import { getYoungUserData } from "../../api/YoungUser";
 import ProfileModal from "../../components/Pannel/ProfileModal";
@@ -37,7 +37,11 @@ function MainPage() {
   const attachAiScore = (rows) =>
     (rows || []).map((f) => {
       const raw = f?.aiMatchScore ?? f?._raw?.aiMatchScore;
-      const score = Number.isFinite(Number(raw)) ? Number(raw) : null;
+      let score = null;
+      if (raw !== null && raw !== undefined && raw !== "") {
+        const n = Number(raw);
+        score = Number.isFinite(n) ? n : null;
+      }
       const landId = f?.id ?? f?._raw?.landId;
       console.log("[attachAiScore] landId:", landId, "score:", score);
       return { ...f, aiMatchScore: score };
@@ -129,7 +133,9 @@ function MainPage() {
       if (!res.ok) {
         const msg =
           (responseBody && (responseBody.message || responseBody.error)) ||
-          (typeof responseBody === "string" ? responseBody.slice(0, 300) : "") ||
+          (typeof responseBody === "string"
+            ? responseBody.slice(0, 300)
+            : "") ||
           "원인 미상";
         alert(
           `AI 추천 호출 실패 (status ${res.status})\n메시지: ${msg}\n자세한 로그는 콘솔을 확인하세요.`
@@ -170,9 +176,9 @@ function MainPage() {
       const aNull = as == null;
       const bNull = bs == null;
       if (aNull && bNull) return 0;
-      if (aNull) return 1;   // a가 null이면 뒤로
-      if (bNull) return -1;  // b가 null이면 뒤로
-      return bs - as;        // 숫자 내림차순
+      if (aNull) return 1; // a가 null이면 뒤로
+      if (bNull) return -1; // b가 null이면 뒤로
+      return bs - as; // 숫자 내림차순
     });
 
     console.log(
@@ -231,10 +237,7 @@ function MainPage() {
 
       {/* 채팅 오버레이 */}
       {showChat && chatProps && (
-        <ChatPage
-          {...chatProps}
-          onClose={() => setShowChat(false)}
-        />
+        <ChatPage {...chatProps} onClose={() => setShowChat(false)} />
       )}
     </div>
   );
