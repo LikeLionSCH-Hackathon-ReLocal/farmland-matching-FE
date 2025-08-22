@@ -84,9 +84,15 @@
 .LeftPanel-FarmlandImage {
   width: 5vw;
   height: 5vw;
-  background-color: #ddd;
+  background-color: #f1f1f1;
   border-radius: 1vw;
   margin-right: 1vw;
+
+  /* 🔽 이 부분 추가 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3vw; /* 이모지 크기 */
 }
 
 .LeftPanel-FarmlandContent {

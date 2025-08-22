@@ -133,7 +133,7 @@ function LeftPanel({
                 onSelect(farm);
               }}
             >
-              <div className="LeftPanel-FarmlandImage" />
+              <div className="LeftPanel-FarmlandImage">{farm.emoji}</div>
               <div className="LeftPanel-FarmlandContent">
                 <div className="LeftPanel-FarmlandTitle">
                   <div className="LeftPanel-FarmlandTag">{farm.crop}</div>
