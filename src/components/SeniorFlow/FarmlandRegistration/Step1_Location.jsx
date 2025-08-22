@@ -13,7 +13,7 @@ function Step1_Location({ data, updateData, onNext }) {
       )}`,
       {
         headers: {
-          Authorization: "KakaoAK 66a96d271fc3a0bc065ffcf78c70cf30",
+          Authorization: `KakaoAK ${process.env.REACT_APP_KAKAO_REST_API_KEY}`,
         },
       }
     )
@@ -66,7 +66,6 @@ function Step1_Location({ data, updateData, onNext }) {
         value={data.landName}
         onChange={(e) => updateData("landName", e.target.value)}
       />
-
 
       <label>행정주소</label>
       <input
