@@ -127,3 +127,41 @@
   margin-top: 0.3vw;
   line-height: 1.4;
 }
+/* 🔵 AI 추천 점수/순위 뱃지 스타일 */
+.LeftPanel-AIScoreBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 48px;
+  height: 48px;
+  padding: 4px;
+
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4cafef, #2a6fdb);
+  color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+
+  transition: transform 0.2s ease;
+}
+
+.LeftPanel-AIScoreBadge:hover {
+  transform: scale(1.05);
+}
+
+/* 순위 (#1, #2 …) */
+.LeftPanel-AIScoreBadge .rank {
+  font-size: 11px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+/* 점수 (숫자) */
+.LeftPanel-AIScoreBadge .score {
+  font-size: 13px;
+  font-weight: 700;
+}
