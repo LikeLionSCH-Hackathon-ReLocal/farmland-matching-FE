@@ -119,17 +119,25 @@ function LeftPanel({
       {/* 농지 목록 */}
       <div className="LeftPanel-FarmlandList">
         {filteredFarmlands.map((farm, idx) => {
+          // 🔵 farm 객체 전체 로그 찍기
+          console.log("[LeftPanel] farmland 객체:", farm);
+
+          // 기존 로그도 유지
           console.log("[LeftPanel] render farmland:", {
             id: farm.id,
             name: farm.name,
+            crop: farm.crop,
+            address: farm.address,
+            price: farm.price,
             score: farm.aiMatchScore,
           });
+
           return (
             <div
               key={farm.id}
               className="LeftPanel-FarmlandCard"
               onClick={() => {
-                console.log("[LeftPanel] 선택 farmland:", farm.id, farm.name);
+                console.log("[LeftPanel] 선택 farmland:", farm);
                 onSelect(farm);
               }}
             >
@@ -158,7 +166,7 @@ function LeftPanel({
                       <div className="score">{farm.aiMatchScore}</div>
                     </div>
                   ) : (
-                    "➤" // 점수가 null이면 기본 화살표 표시
+                    "➤"
                   )
                 ) : (
                   "➤"
