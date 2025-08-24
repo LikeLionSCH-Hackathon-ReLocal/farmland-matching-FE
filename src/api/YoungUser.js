@@ -1,5 +1,6 @@
 // src/api/YoungUser.js
 import API_BASE from "../config/apiBase";
+
 // 따옴표/공백 정리
 function unquote(val) {
   if (val == null) return "";
@@ -29,17 +30,30 @@ function mapToUiProfile(apiObj = {}) {
   };
 }
 
-// 공통 fetch
+// 공통 fetch (JSON 안전)
 async function request(url, options = {}) {
   const res = await fetch(url, options);
-  if (!res.ok) throw new Error(`${options.method || "GET"} ${url} → ${res.status}`);
-  return res.status === 204 ? null : res.json();
+  if (!res.ok) {
+    const text = await res.text().catch(() => "(no body)");
+    console.error("[YoungUser] !ok", res.status, text.slice(0, 300));
+    throw new Error(`${options.method || "GET"} ${url} → ${res.status}`);
+  }
+  if (res.status === 204) return null;
+  const ct = (res.headers.get("content-type") || "").toLowerCase();
+  if (!ct.includes("application/json")) {
+    const text = await res.text().catch(() => "(no body)");
+    console.error("[YoungUser] invalid content-type:", ct, text.slice(0, 300));
+    throw new Error("Response is not valid JSON");
+  }
+  return res.json();
 }
 
 // GET: 구매자 기본 정보
 export async function getYoungUserData() {
   try {
-    const data = await request(`${API_BASE}/buyer/1`, {
+    const url = `${API_BASE}/buyer/1`;
+    console.log("[YoungUser] GET", url);
+    const data = await request(url, {
       method: "GET",
       headers: { Accept: "application/json" },
     });
@@ -74,7 +88,9 @@ export async function saveYoungUserData(user, { method = "POST" } = {}) {
       formData.append("buyerImage", user.profileImage);
     }
 
-    await fetch(`${API_BASE}/buyer-upload`, { method, body: formData });
+    const url = `${API_BASE}/buyer-upload`;
+    console.log("[YoungUser] SAVE", method, url);
+    await fetch(url, { method, body: formData });
     return true;
   } catch (e) {
     console.error("❌ saveYoungUserData 실패:", e);

@@ -6,10 +6,11 @@ import RightPanel from "../../components/Pannel/RightPanel";
 import BottomPanel from "../../components/Pannel/BottomPanel";
 import MapView from "../../components/Map/MapView";
 import ChatPage from "../../components/Pannel/ChatPage"; // ⬅️ 오버레이로 띄울 채팅 페이지
-import { fetchFarmlands } from "../../api/farmland";
+// import { fetchFarmlands } from "../../api/farmland"; // 직접 fetch로 대체
 import { getYoungUserData } from "../../api/YoungUser";
 import ProfileModal from "../../components/Pannel/ProfileModal";
 import API_BASE from "../../config/apiBase";
+
 const BUYER_ID_DEFAULT = 1;
 const TOPK_DEFAULT = 5;
 
@@ -46,11 +47,35 @@ function MainPage() {
       return { ...f, aiMatchScore: score };
     });
 
+  // ✅ API_BASE를 사용해 절대 경로로 호출 + JSON 안전 체크
   const loadFarmlands = async () => {
     setLoading(true);
     try {
-      console.log("[loadFarmlands] GET /farmland 요청 시작");
-      const rows = await fetchFarmlands();
+      const url = `${API_BASE}/farmland`;
+      console.log("[loadFarmlands] GET", url, "요청 시작");
+
+      const res = await fetch(url, {
+        headers: { Accept: "application/json" },
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "(no body)");
+        console.error("[loadFarmlands] !res.ok", res.status, text.slice(0, 300));
+        throw new Error(`GET /farmland -> ${res.status}`);
+      }
+
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      if (!ct.includes("application/json")) {
+        const text = await res.text().catch(() => "(no body)");
+        console.error(
+          "[loadFarmlands] invalid content-type:",
+          ct,
+          text.slice(0, 300)
+        );
+        throw new Error("Response is not valid JSON");
+      }
+
+      const rows = await res.json();
       const withScore = attachAiScore(rows);
       console.log("[loadFarmlands] 응답 개수:", withScore.length);
       setFarmlands(withScore);

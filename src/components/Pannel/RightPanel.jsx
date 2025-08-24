@@ -2,10 +2,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import "./RightPanel.css";
 import FarmlandDetailPanel from "./FarmlandDetailPanel";
-
 import { applyForFarmland } from "../../api/applications";
-
 import API_BASE from "../../config/apiBase";
+
 const BUYER_ID = 1; // TODO: 로그인 사용자 ID로 교체
 
 function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }) {
@@ -49,11 +48,28 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
     try {
       setLoadingApplied(true);
       setAppliedError(null);
-      const res = await fetch(`${API_BASE}/applied-farmland/${BUYER_ID}`, {
+
+      const url = `${API_BASE}/applied-farmland/${BUYER_ID}`;
+      console.log("[RightPanel] loadApplied →", url);
+
+      const res = await fetch(url, {
         method: "GET",
         headers: { Accept: "application/json" },
       });
-      if (!res.ok) throw new Error(`GET /applied-farmland/${BUYER_ID} -> ${res.status}`);
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "(no body)");
+        console.error("[RightPanel] loadApplied !ok", res.status, text.slice(0, 300));
+        throw new Error(`GET /applied-farmland/${BUYER_ID} -> ${res.status}`);
+      }
+
+      const ct = (res.headers.get("content-type") || "").toLowerCase();
+      if (!ct.includes("application/json")) {
+        const text = await res.text().catch(() => "(no body)");
+        console.error("[RightPanel] loadApplied invalid content-type:", ct, text.slice(0, 300));
+        throw new Error("Response is not valid JSON");
+      }
+
       const data = await res.json();
       setAppliedList(Array.isArray(data) ? data : []);
     } catch (e) {
@@ -115,11 +131,26 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
       setDetailLoading(true);
       setDetailError(null);
       try {
-        const res = await fetch(`${API_BASE}/farmland-detail/${encodeURIComponent(landId)}`, {
+        const url = `${API_BASE}/farmland-detail/${encodeURIComponent(landId)}`;
+        console.log("[RightPanel] detail GET:", url);
+
+        const res = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json" },
         });
-        if (!res.ok) throw new Error(`GET /farmland-detail/${landId} -> ${res.status}`);
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "(no body)");
+          console.error("[RightPanel] detail !ok", res.status, text.slice(0, 300));
+          throw new Error(`GET /farmland-detail/${landId} -> ${res.status}`);
+        }
+
+        const ct = (res.headers.get("content-type") || "").toLowerCase();
+        if (!ct.includes("application/json")) {
+          const text = await res.text().catch(() => "(no body)");
+          console.error("[RightPanel] detail invalid content-type:", ct, text.slice(0, 300));
+          throw new Error("Response is not valid JSON");
+        }
 
         const data = await res.json();
         if (aborted) return;
@@ -211,86 +242,85 @@ function RightPanel({ selected, onClose, onApply, onToggleFavorite, onOpenChat }
   }, [landId, selected]);
 
   // -----------------------------
-// ✅ AI 매칭 점수 불러오기
-// -----------------------------
-useEffect(() => {
-  let aborted = false;
-  (async () => {
-    if (!landId) return;
+  // ✅ AI 매칭 점수 불러오기
+  // -----------------------------
+  useEffect(() => {
+    let aborted = false;
+    (async () => {
+      if (!landId) return;
 
-    setAiLoading(true);
-    setAiError(null);
-    try {
-      const url = `${API_BASE}/farmland-detail-matchScore/${encodeURIComponent(
-        BUYER_ID
-      )}/${encodeURIComponent(landId)}`;
-      console.log("[AI SCORE] GET:", url);
+      setAiLoading(true);
+      setAiError(null);
+      try {
+        const url = `${API_BASE}/farmland-detail-matchScore/${encodeURIComponent(
+          BUYER_ID
+        )}/${encodeURIComponent(landId)}`;
+        console.log("[AI SCORE] GET:", url);
 
-      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+        const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
 
-      // 204: 추천 없음 → pageIndex(1) 제거
-      if (res.status === 204) {
-        if (!aborted) {
-          console.log("[AI SCORE] 204 No Content (추천 없음)");
+        // 204: 추천 없음 → pageIndex(1) 제거
+        if (res.status === 204) {
+          if (!aborted) {
+            console.log("[AI SCORE] 204 No Content (추천 없음)");
+            setAiAvailable(false);
+            setAiMatchScore(null);
+            setAiScoreDetail(null);
+          }
+          return;
+        }
+
+        if (!res.ok) throw new Error(`GET matchScore -> ${res.status}`);
+
+        const text = await res.text();
+        if (aborted) return;
+
+        // body가 "1"인 경우 추천 없음 처리
+        if (text.trim() === "1") {
+          console.log("[AI SCORE] body=1 (추천 없음)");
           setAiAvailable(false);
           setAiMatchScore(null);
           setAiScoreDetail(null);
+          return;
         }
-        return;
-      }
 
-      if (!res.ok) throw new Error(`GET matchScore -> ${res.status}`);
+        // 정상 JSON 응답 파싱
+        const data = JSON.parse(text);
 
-      const text = await res.text();   // 👈 먼저 text로 받기
-      if (aborted) return;
+        const score = data?.aiMatchScore ?? null;
 
-      // body가 "1"인 경우 추천 없음 처리
-      if (text.trim() === "1") {
-        console.log("[AI SCORE] body=1 (추천 없음)");
+        let detailObj = null;
+        const rawDetail = data?.aiScoreDetail;
+        if (rawDetail != null) {
+          if (typeof rawDetail === "string") {
+            try {
+              detailObj = JSON.parse(rawDetail);
+            } catch (e) {
+              console.warn("[AI SCORE] aiScoreDetail JSON.parse 실패:", rawDetail);
+            }
+          } else if (typeof rawDetail === "object") {
+            detailObj = rawDetail;
+          }
+        }
+
+        setAiAvailable(true);
+        setAiMatchScore(score);
+        setAiScoreDetail(detailObj);
+      } catch (e) {
+        console.error("[AI SCORE] error:", e);
+        setAiError(e?.message || "AI 점수를 불러오지 못했습니다.");
         setAiAvailable(false);
         setAiMatchScore(null);
         setAiScoreDetail(null);
-        return;
+      } finally {
+        setAiLoading(false);
       }
+    })();
 
-      // 정상 JSON 응답 파싱
-      const data = JSON.parse(text);
-
-      const score = data?.aiMatchScore ?? null;
-
-      let detailObj = null;
-      const rawDetail = data?.aiScoreDetail;
-      if (rawDetail != null) {
-        if (typeof rawDetail === "string") {
-          try {
-            detailObj = JSON.parse(rawDetail);
-          } catch (e) {
-            console.warn("[AI SCORE] aiScoreDetail JSON.parse 실패:", rawDetail);
-          }
-        } else if (typeof rawDetail === "object") {
-          detailObj = rawDetail;
-        }
-      }
-
-      setAiAvailable(true);
-      setAiMatchScore(score);
-      setAiScoreDetail(detailObj);
-    } catch (e) {
-      console.error("[AI SCORE] error:", e);
-      setAiError(e?.message || "AI 점수를 불러오지 못했습니다.");
-      setAiAvailable(false);
-      setAiMatchScore(null);
-      setAiScoreDetail(null);
-    } finally {
-      setAiLoading(false);
-    }
-  })();
-
-  return () => {
-    aborted = true;
-  };
-}, [landId]);
-
+    return () => {
+      aborted = true;
+    };
+  }, [landId]);
 
   // -----------------------------
   // 채팅 열기 (오버레이)
@@ -600,7 +630,6 @@ useEffect(() => {
                     { key: "거리(Distance)", value: aiScoreDetail.distance },
                     { key: "시설(Facility)", value: aiScoreDetail.facility },
                   ].map((p) => {
-                    // 값이 퍼센트가 아닐 수 있어, 시각화만 0~100으로 클램프
                     const width = Math.max(0, Math.min(100, Number(p.value)));
                     return (
                       <div key={p.key} className="RightPanel-MatchBarItem">
