@@ -95,3 +95,25 @@ export async function fetchFarmlands() {
   return list.map(mapServerToUi).filter((f) => f.lat != null && f.lng != null);
 }
 
+// ──────────────────────────────
+// ③ 목록 fetch (URL 하드코딩 테스트 버전)
+// ──────────────────────────────
+// export async function fetchFarmlands() {
+//   // 테스트: 로컬호스트 대신 서버 IP 하드코딩
+//   const url = "http://43.203.207.57/api/farmland";
+
+//   console.log("👉 farmland API 호출:", url);
+
+//   const res = await fetch(url, { headers: { Accept: "application/json" } });
+//   if (!res.ok) throw new Error(`GET /farmland 실패: ${res.status}`);
+//   const data = await res.json();
+
+//   const list = Array.isArray(data)
+//     ? data
+//     : Array.isArray(data?.content)
+//     ? data.content
+//     : [];
+
+//   // 지도 마커용: 좌표 없는 항목 제외
+//   return list.map(mapServerToUi).filter((f) => f.lat != null && f.lng != null);
+// }
