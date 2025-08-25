@@ -1,5 +1,8 @@
+// src/components/LeftPanel.jsx
 import { useMemo, useState } from "react";
 import "./LeftPanel.css";
+// 경로는 프로젝트 구조에 맞게 수정하세요 (예: "../../api/farmland")
+import { inferEmojiFromCrop } from "../../api/farmland";
 
 function LeftPanel({
   farmlands,
@@ -11,8 +14,9 @@ function LeftPanel({
   aiLoading = false,
   loading = false,
 }) {
+  // 기본 필터 키를 백엔드 키로 통일
   const [searchText, setSearchText] = useState("");
-  const [filterKey, setFilterKey] = useState("address");
+  const [filterKey, setFilterKey] = useState("landAddress");
 
   console.log("[LeftPanel] props:", {
     aiMode,
@@ -21,21 +25,24 @@ function LeftPanel({
     farmlandsCount: farmlands?.length,
   });
 
-  const filterOptions = ["address", "crop", "area", "price"];
+  // 백엔드 키 그대로 사용
+  const filterOptions = ["landAddress", "landCrop", "landArea", "landPrice"];
 
-  // 필터링된 목록
+  // 필터링 (문자열: 포함검색 / 숫자: 입력값 이상)
   const filteredFarmlands = useMemo(() => {
     const txt = String(searchText ?? "").toLowerCase();
     const list = (farmlands || []).filter((farm) => {
       const value = farm?.[filterKey];
-      if (filterKey === "area" || filterKey === "price") {
+
+      if (filterKey === "landArea" || filterKey === "landPrice") {
         const num = parseInt(txt, 10);
-        return Number.isNaN(num) || Number(farm?.[filterKey]) >= num;
+        // 숫자 아님 → 전체 허용, 숫자면 해당 값 이상만
+        return Number.isNaN(num) || Number(value) >= num;
       }
-      return String(value ?? "")
-        .toLowerCase()
-        .includes(txt);
+
+      return String(value ?? "").toLowerCase().includes(txt);
     });
+
     console.log(
       "[LeftPanel] filterKey:",
       filterKey,
@@ -53,7 +60,17 @@ function LeftPanel({
       <div className="LeftPanel-LeftHeader">
         <input
           className="LeftPanel-SearchInput"
-          placeholder={`${filterKey} 검색`}
+          placeholder={
+            filterKey === "landAddress"
+              ? "주소 검색"
+              : filterKey === "landCrop"
+              ? "작물 검색"
+              : filterKey === "landArea"
+              ? "면적(이상) 입력"
+              : filterKey === "landPrice"
+              ? "가격(이상) 입력"
+              : "검색"
+          }
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
           disabled={loading || aiLoading}
@@ -73,19 +90,19 @@ function LeftPanel({
               }}
               disabled={loading || aiLoading}
             >
-              {key === "address"
+              {key === "landAddress"
                 ? "주소"
-                : key === "crop"
+                : key === "landCrop"
                 ? "작물"
-                : key === "area"
+                : key === "landArea"
                 ? "면적"
-                : key === "price"
+                : key === "landPrice"
                 ? "가격"
                 : key}
             </button>
           ))}
 
-          {/* 🔵 AI 버튼 / 해제 버튼 */}
+          {/* AI 실행 / 해제 버튼 */}
           {!aiMode ? (
             <button
               className={`LeftPanel-FilterButton ${
@@ -96,7 +113,7 @@ function LeftPanel({
                 onAiRecommend();
               }}
               disabled={aiLoading || loading}
-              title="AI 군집화/추천 실행"
+              title="AI 추천 실행"
             >
               {aiLoading ? "AI 계산중..." : "AI"}
             </button>
@@ -119,45 +136,60 @@ function LeftPanel({
       {/* 농지 목록 */}
       <div className="LeftPanel-FarmlandList">
         {filteredFarmlands.map((farm, idx) => {
-          // 🔵 farm 객체 전체 로그 찍기
+          // 원본 BE 객체 그대로 로그
           console.log("[LeftPanel] farmland 객체:", farm);
 
-          // 기존 로그도 유지
+          // 렌더에 쓰는 키들도 BE 키로 통일
           console.log("[LeftPanel] render farmland:", {
-            id: farm.id,
-            name: farm.name,
-            crop: farm.crop,
-            address: farm.address,
-            price: farm.price,
-            score: farm.aiMatchScore,
+            landId: farm?.landId,
+            landName: farm?.landName,
+            landCrop: farm?.landCrop,
+            landAddress: farm?.landAddress,
+            landPrice: farm?.landPrice,
+            aiMatchScore: farm?.aiMatchScore,
           });
+
+          const emoji = inferEmojiFromCrop
+            ? inferEmojiFromCrop(farm?.landCrop)
+            : "🌱";
+
+          const priceText =
+            typeof farm?.landPrice === "number"
+              ? farm.landPrice.toLocaleString()
+              : String(farm?.landPrice ?? "-");
 
           return (
             <div
-              key={farm.id}
+              key={farm?.landId ?? `${farm?.landName ?? "land"}-${idx}`}
               className="LeftPanel-FarmlandCard"
               onClick={() => {
                 console.log("[LeftPanel] 선택 farmland:", farm);
-                onSelect(farm);
+                onSelect?.(farm); // BE 객체 그대로 전달
               }}
             >
-              <div className="LeftPanel-FarmlandImage">{farm.emoji}</div>
+              <div className="LeftPanel-FarmlandImage">{emoji}</div>
+
               <div className="LeftPanel-FarmlandContent">
                 <div className="LeftPanel-FarmlandTitle">
-                  <div className="LeftPanel-FarmlandTag">{farm.crop}</div>
-                  <div className="LeftPanel-Left-FarmlandName">{farm.name}</div>
+                  <div className="LeftPanel-FarmlandTag">
+                    {farm?.landCrop ?? "작물 미입력"}
+                  </div>
+                  <div className="LeftPanel-Left-FarmlandName">
+                    {farm?.landName ?? "-"}
+                  </div>
                 </div>
 
                 <div className="LeftPanel-FarmlandMeta">
-                  📍 {farm.address} <br />
-                  📐 {farm.area}㎡ / 💰 {farm.price}만원
+                  📍 {farm?.landAddress ?? "-"}
+                  <br />
+                  📐 {farm?.landArea ?? "-"}㎡ / 💰 {priceText}만원
                 </div>
               </div>
 
               {/* ➤ 기본 화살표 + (AI모드일 때 점수/순위 뱃지) */}
               <div className="LeftPanel-FarmlandArrow">
                 {aiMode ? (
-                  farm.aiMatchScore != null ? (
+                  farm?.aiMatchScore != null ? (
                     <div
                       className="LeftPanel-AIScoreBadge"
                       title="AI 추천 점수"
@@ -180,7 +212,7 @@ function LeftPanel({
         {filteredFarmlands.length === 0 && (
           <div className="LeftPanel-Empty">
             {aiMode
-              ? "AI 추천 대상 농지가 없습니다. (aiMatchScore가 0)"
+              ? "AI 추천 대상 농지가 없습니다. (aiMatchScore 없음)"
               : "조건에 맞는 농지가 없습니다."}
           </div>
         )}
